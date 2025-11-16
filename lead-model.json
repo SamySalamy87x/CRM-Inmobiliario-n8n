@@ -1,0 +1,42 @@
+{
+  "lead": {
+    "id": "string - UUID",
+    "name": "string - Nombre completo del cliente",
+    "email": "string - Email del cliente",
+    "phone": "string - Número de WhatsApp",
+    "source": "string - Fuente del lead (email, whatsapp, web, etc)",
+    "status": "string - Estado actual (nuevo, contactado, interesado, agendado, ganado, perdido)",
+    "created_at": "timestamp - Fecha de creación",
+    "updated_at": "timestamp - Última actualización",
+    "followup_day": "number - Día actual de seguimiento (1-5)",
+    "next_followup": "timestamp - Fecha/hora del próximo seguimiento",
+    "interested": "boolean - Si mostró interés",
+    "preferred_contact": "string - Preferencia de contacto (llamada, zoom, whatsapp)",
+    "scheduled_date": "timestamp - Fecha agendada (si aplica)",
+    "scheduled_time": "string - Hora agendada (si aplica)",
+    "notes": "string - Notas del agente",
+    "response_A_count": "number - Cuantas veces seleccionó opción A",
+    "response_B_count": "number - Cuantas veces seleccionó opción B",
+    "response_C_count": "number - Cuantas veces seleccionó opción C"
+  },
+  "lead_database_example": {
+    "id": "lead-001",
+    "name": "Juan Pérez",
+    "email": "juan@example.com",
+    "phone": "+528001234567",
+    "source": "whatsapp",
+    "status": "nuevo",
+    "created_at": "2025-11-16T05:00:00Z",
+    "updated_at": "2025-11-16T05:00:00Z",
+    "followup_day": 0,
+    "next_followup": "2025-11-16T18:00:00Z",
+    "interested": null,
+    "preferred_contact": null,
+    "scheduled_date": null,
+    "scheduled_time": null,
+    "notes": "Nuevo lead desde día 1",
+    "response_A_count": 0,
+    "response_B_count": 0,
+    "response_C_count": 0
+  }
+}
