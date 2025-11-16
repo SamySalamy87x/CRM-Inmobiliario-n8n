@@ -1,0 +1,41 @@
+{
+  "day1_email": {
+    "subject": "¡Felicidades! Tu crédito especial está aprobado - Ciudad Maderas",
+    "body": "Hola {nombre},\n\n¡Muchas felicidades! 🎉\n\nHoy cuentas con un crédito especial aprobado para iniciar la construcción de tu casa o patrimonio en tu terreno dentro de Ciudad Maderas.\n\nLo mejor de todo es que este beneficio es sin revisión de buró de crédito ni comprobantes de ingresos. Es un programa diseñado exclusivamente para clientes como tú, con la tranquilidad de que todo se adapta a tus necesidades de pago.\n\nComo tu asesora financiera Yoselin Vilchis, mi objetivo es acompañarte paso a paso para que este proyecto sea una inversión segura, rentable y sin complicaciones.\n\nPodrás elegir entre siete prototipos de casas que podemos desarrollar en tu terreno, creando un verdadero traje a la medida según lo que desees lograr.\n\nAhora bien, para que podamos avanzar en tu proyecto, necesito que escuches el audio adjunto donde te explico el programa y luego me des tu respuesta.",
+    "includes_audio": true,
+    "bot_message": "¿Te interesa más información sobre este crédito especial? Selecciona tu opción:"
+  },
+  "day2_whatsapp": {
+    "text": "Hola {nombre}, espero te encuentres muy bien y que tengas un gran día! 😊\n\nSoy Yoselin Vilchis, tu asesora inmobiliaria y de inversión de Ciudad Maderas.\n\nPaso a saludarte y saber si tuviste oportunidad de leer mi mensaje y escuchar mi audio.\n\nMe pongo a tus ordenes nuevamente, un gusto poder atenderte.\n\n¿Te gustaría conocer más detalles de nuestras casas premium?",
+    "includes_image": true,
+    "bot_message": "¿Te interesa más información? Selecciona tu opción:"
+  },
+  "day3_whatsapp": {
+    "text": "Hola {nombre}! 👋\n\nMe gustaría poder platicarte de esta gran opción de hacer crecer tu inversión con Ciudad Maderas y llevarla al siguiente nivel! 🚀\n\n¿Me permitirías platicarte un poco más?",
+    "includes_image": true,
+    "bot_message": "¿Quieres que te explique más? Selecciona tu opción:"
+  },
+  "day4_whatsapp": {
+    "text": "Hola {nombre}, espero estés teniendo un excelente día!\n\nTe saluda Yoselin Vilchis, tu asesora de inversión inmobiliaria de Ciudad Maderas.\n\nMe imagino has tenido complicaciones para leer mis mensajes, espero todo se encuentre muy bien.\n\nNo quiero saturarte, hoy te quiero compartir el brochure donde se ven los modelos de casas y más detalles 🏘️\n\nPuedes revisarlo en los archivos adjuntos.",
+    "includes_pdf": true,
+    "includes_image": true,
+    "bot_message": "¿Interesado en alguno de nuestros modelos? Selecciona tu opción:"
+  },
+  "day5_whatsapp": {
+    "text": "Hola {nombre}, nuevamente te saluda Yoselin Vilchis! 👋\n\nEspero te encuentres muy bien!\n\nMira este video donde te muestro todo lo que ofrecemos en Ciudad Maderas 🎬\n\nOjalá tengas oportunidad de responderme si estás interesado o no en este nuevo proyecto, para no seguirte mandando más mensajes.\n\nEsto me ayuda a darte la atención que mereces.",
+    "includes_video": true,
+    "bot_message": "¿Cuál es tu decisión? Por favor, selecciona tu opción:"
+  },
+  "bot_options": {
+    "initial_response": {
+      "option_A": "Sí, quiero más información 📚",
+      "option_B": "No, no me interesa por ahora"
+    },
+    "interested_response": {
+      "option_A": "Llamada de primer contacto ☎️",
+      "option_B": "Asesoría por Zoom 💻",
+      "option_C": "Información por WhatsApp 💬"
+    },
+    "scheduling_message": "Perfecto! Ahora selecciona tu día y hora preferida usando el calendario 📅"
+  }
+}
