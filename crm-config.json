@@ -1,0 +1,77 @@
+{
+  "crm": {
+    "name": "Ciudad Maderas CRM",
+    "version": "1.0.0",
+    "description": "Automated CRM for Real Estate Lead Management",
+    "developer": "Yoselin Vilchis"
+  },
+  "leads": {
+    "states": ["nuevo", "contactado", "interesado", "agendado", "ganado", "perdido"],
+    "sources": ["email", "whatsapp", "web", "referencia", "otro"]
+  },
+  "followup_sequence": {
+    "day1": {
+      "hour": "18:00",
+      "channel": "email",
+      "content": "email_inicial",
+      "includes": ["saludo_personalizado", "audio", "bot_opciones"]
+    },
+    "day2": {
+      "hour": "09:00",
+      "channel": "whatsapp",
+      "content": "seguimiento_1",
+      "includes": ["saludo", "foto_casas", "bot_opciones"]
+    },
+    "day3": {
+      "hour": "19:30",
+      "channel": "whatsapp",
+      "content": "seguimiento_2",
+      "includes": ["invitacion_platica", "foto_casas", "bot_opciones"]
+    },
+    "day4": {
+      "hour": "14:00",
+      "channel": "whatsapp",
+      "content": "seguimiento_3",
+      "includes": ["disculpa", "brochure_pdf", "bot_opciones"]
+    },
+    "day5": {
+      "hour": "12:00",
+      "channel": "whatsapp",
+      "content": "seguimiento_4",
+      "includes": ["video", "llamado_respuesta", "bot_opciones"]
+    }
+  },
+  "bot_options": {
+    "initial": {
+      "A": "Más información",
+      "B": "No me interesa"
+    },
+    "if_interested": {
+      "A": "Llamada de primer contacto",
+      "B": "Asesoría por Zoom",
+      "C": "Información por WhatsApp"
+    }
+  },
+  "channels": {
+    "email": {
+      "enabled": true,
+      "provider": "gmail",
+      "from": "yosvilchis.ciudadmaderas@gmail.com"
+    },
+    "whatsapp": {
+      "enabled": true,
+      "provider": "twilio",
+      "requires_phone": true
+    },
+    "google_calendar": {
+      "enabled": true,
+      "integration": "n8n",
+      "auto_schedule": true
+    }
+  },
+  "n8n_webhooks": {
+    "new_lead": "/webhook/new-lead",
+    "lead_response": "/webhook/lead-response",
+    "schedule_callback": "/webhook/schedule-callback"
+  }
+}
