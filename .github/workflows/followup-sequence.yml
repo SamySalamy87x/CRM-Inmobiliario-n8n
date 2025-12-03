@@ -1,0 +1,141 @@
+name: Seguimiento Automatizado - 5 Días
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 18 * * *'  # Día 1 - 18:00 Email
+    - cron: '0 9 * * *'   # Día 2 - 09:00 WhatsApp
+    - cron: '0 19,30 * * *'  # Día 3 - 19:30 WhatsApp
+    - cron: '0 14 * * *'  # Día 4 - 14:00 WhatsApp
+    - cron: '0 12 * * *'  # Día 5 - 12:00 WhatsApp
+
+jobs:
+  day_1_email_followup:
+    runs-on: ubuntu-latest
+    name: "Día 1: Email de Bienvenida + Audio + Bot"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Day 1 Email Follow-up
+        env:
+          N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK_FOLLOWUP_DAY1 }}
+        run: |
+          curl -X POST $N8N_WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d '{
+              "followup_day": 1,
+              "template": "email_welcome_audio_bot",
+              "time": "18:00",
+              "include_audio": true,
+              "include_bot_options": true
+            }'
+
+  day_2_whatsapp_photos:
+    runs-on: ubuntu-latest
+    name: "Día 2: WhatsApp Fotos de Propiedades + Bot"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Day 2 WhatsApp Follow-up
+        env:
+          N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK_FOLLOWUP_DAY2 }}
+        run: |
+          curl -X POST $N8N_WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d '{
+              "followup_day": 2,
+              "channel": "whatsapp",
+              "template": "property_photos",
+              "time": "09:00",
+              "media_type": "photos",
+              "include_bot_options": true
+            }'
+
+  day_3_whatsapp_invitation:
+    runs-on: ubuntu-latest
+    name: "Día 3: WhatsApp Invitación a Visita + Bot"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Day 3 WhatsApp Follow-up
+        env:
+          N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK_FOLLOWUP_DAY3 }}
+        run: |
+          curl -X POST $N8N_WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d '{
+              "followup_day": 3,
+              "channel": "whatsapp",
+              "template": "property_visit_invitation",
+              "time": "19:30",
+              "include_calendar_link": true,
+              "include_bot_options": true
+            }'
+
+  day_4_whatsapp_brochure:
+    runs-on: ubuntu-latest
+    name: "Día 4: WhatsApp Folleto PDF + Bot"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Day 4 WhatsApp Follow-up
+        env:
+          N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK_FOLLOWUP_DAY4 }}
+        run: |
+          curl -X POST $N8N_WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d '{
+              "followup_day": 4,
+              "channel": "whatsapp",
+              "template": "property_brochure",
+              "time": "14:00",
+              "media_type": "pdf",
+              "include_bot_options": true
+            }'
+
+  day_5_whatsapp_video_cta:
+    runs-on: ubuntu-latest
+    name: "Día 5: WhatsApp Vídeo + CTA"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Day 5 WhatsApp Follow-up
+        env:
+          N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK_FOLLOWUP_DAY5 }}
+        run: |
+          curl -X POST $N8N_WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d '{
+              "followup_day": 5,
+              "channel": "whatsapp",
+              "template": "property_video_cta",
+              "time": "12:00",
+              "media_type": "video",
+              "include_call_to_action": true,
+              "is_final_followup": true
+            }'
