@@ -1,0 +1,130 @@
+name: Integración Multi-Canal (Email, WhatsApp, Google Calendar)
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '*/30 * * * *'  # Every 30 minutes
+
+jobs:
+  email_integration:
+    runs-on: ubuntu-latest
+    name: "Integración Gmail"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Configure Gmail API
+        env:
+          GMAIL_API_KEY: ${{ secrets.GMAIL_API_KEY }}
+          N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK_EMAIL }}
+        run: |
+          curl -X POST $N8N_WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d '{
+              "channel": "email",
+              "provider": "gmail",
+              "action": "sync",
+              "config": {
+                "templates": "enabled",
+                "tracking": "enabled",
+                "personalization": "enabled"
+              }
+            }'
+
+  whatsapp_integration:
+    runs-on: ubuntu-latest
+    name: "Integración Twilio WhatsApp"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Configure Twilio WhatsApp
+        env:
+          TWILIO_ACCOUNT_SID: ${{ secrets.TWILIO_ACCOUNT_SID }}
+          TWILIO_AUTH_TOKEN: ${{ secrets.TWILIO_AUTH_TOKEN }}
+          N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK_WHATSAPP }}
+        run: |
+          curl -X POST $N8N_WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d '{
+              "channel": "whatsapp",
+              "provider": "twilio",
+              "action": "sync",
+              "config": {
+                "business_account": "enabled",
+                "media_upload": "enabled",
+                "message_templates": "enabled",
+                "webhook_notifications": "enabled"
+              }
+            }'
+
+  google_calendar_integration:
+    runs-on: ubuntu-latest
+    name: "Integración Google Calendar"
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Configure Google Calendar
+        env:
+          GOOGLE_CALENDAR_API_KEY: ${{ secrets.GOOGLE_CALENDAR_API_KEY }}
+          N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK_CALENDAR }}
+        run: |
+          curl -X POST $N8N_WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d '{
+              "channel": "calendar",
+              "provider": "google",
+              "action": "sync",
+              "config": {
+                "auto_scheduling": "enabled",
+                "event_notifications": "enabled",
+                "timezone": "America/Mexico_City",
+                "working_hours": "09:00-18:00"
+              }
+            }'
+
+  channel_orchestration:
+    runs-on: ubuntu-latest
+    name: "Orquestación de Canales"
+    needs: [email_integration, whatsapp_integration, google_calendar_integration]
+    steps:
+      - uses: actions/checkout@v3
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      - name: Install dependencies
+        run: npm install
+      - name: Orchestrate Multi-Channel Flow
+        env:
+          N8N_WEBHOOK: ${{ secrets.N8N_WEBHOOK_ORCHESTRATION }}
+        run: |
+          curl -X POST $N8N_WEBHOOK \
+            -H "Content-Type: application/json" \
+            -d '{
+              "action": "orchestrate_channels",
+              "channels": ["email", "whatsapp", "calendar"],
+              "priority": {
+                "email": 1,
+                "whatsapp": 2,
+                "calendar": 3
+              },
+              "rules": {
+                "deduplication": "enabled",
+                "rate_limiting": "enabled",
+                "frequency_capping": "enabled"
+              }
+            }'
