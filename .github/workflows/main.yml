@@ -1,0 +1,164 @@
+name: CRM Inmobiliario - Captura y Seguimiento de Leads
+
+on:
+  push:
+    branches: [ main ]
+  schedule:
+    - cron: '0 18 * * *'  # Daily at 18:00 for lead capture
+    - cron: '0 9 * * *'   # Daily at 09:00 for follow-ups
+
+jobs:
+  lead_capture:
+    runs-on: ubuntu-latest
+    name: Captura de Leads
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Install dependencies
+        run: npm install
+      
+      - name: Trigger n8n Lead Capture Workflow
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_LEAD_CAPTURE }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          curl -X POST $N8N_WEBHOOK_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $N8N_API_KEY" \
+            -d '{
+              "action": "capture_leads",
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+            }'
+
+  automated_followup:
+    runs-on: ubuntu-latest
+    name: Seguimiento Automatizado de 5 Días
+    needs: lead_capture
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Trigger n8n Follow-up Workflow
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_FOLLOWUP }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          curl -X POST $N8N_WEBHOOK_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $N8N_API_KEY" \
+            -d '{
+              "action": "execute_followup_sequence",
+              "days": [1, 2, 3, 4, 5],
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+            }'
+
+  multi_channel_communication:
+    runs-on: ubuntu-latest
+    name: Comunicación Multi-Canal
+    needs: lead_capture
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Trigger Multi-Channel Workflow
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_MULTICHANNEL }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          curl -X POST $N8N_WEBHOOK_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $N8N_API_KEY" \
+            -d '{
+              "channels": ["email", "whatsapp", "calendar"],
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+            }'
+
+  lead_scoring_response:
+    runs-on: ubuntu-latest
+    name: Scoring y Respuesta de Leads
+    needs: multi_channel_communication
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Trigger Lead Scoring Workflow
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_SCORING }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          curl -X POST $N8N_WEBHOOK_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $N8N_API_KEY" \
+            -d '{
+              "action": "calculate_lead_score",
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+            }'
+
+  calendar_sync:
+    runs-on: ubuntu-latest
+    name: Sincronización de Calendario
+    needs: lead_scoring_response
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Trigger Calendar Sync Workflow
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_CALENDAR }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          curl -X POST $N8N_WEBHOOK_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $N8N_API_KEY" \
+            -d '{
+              "action": "sync_calendar_events",
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+            }'
+
+  reporting_analytics:
+    runs-on: ubuntu-latest
+    name: Reportes y Analítica
+    needs: [lead_capture, automated_followup, multi_channel_communication]
+    if: always()
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+      
+      - name: Trigger Analytics Workflow
+        env:
+          N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_ANALYTICS }}
+          N8N_API_KEY: ${{ secrets.N8N_API_KEY }}
+        run: |
+          curl -X POST $N8N_WEBHOOK_URL \
+            -H "Content-Type: application/json" \
+            -H "Authorization: Bearer $N8N_API_KEY" \
+            -d '{
+              "action": "generate_reports",
+              "report_types": ["daily", "weekly", "monthly"],
+              "timestamp": "'$(date -u +%Y-%m-%dT%H:%M:%SZ)'"
+            }'
