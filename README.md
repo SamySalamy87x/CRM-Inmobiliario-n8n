@@ -98,8 +98,7 @@ The main configuration file contains:
 ```json
 {
   "crm": {
-    "name": "Ciudad Maderas CRM",
-    "version": "1.0.0",
+    "name": "Digital Dr Qro CRM",    "version": "1.0.0",
     "description": "Automated CRM for Real Estate Lead Management"
   },
   "leads": {
@@ -226,9 +225,10 @@ MIT License - see LICENSE file for details
 
 ## 👨‍💼 Author
 
-**Yoselin Vilchis** - Lead Developer
-**Ciudad Maderas CRM** - v1.0.0
-
+**Omar Rafael Perez Gallardo** - Lead Developer
+**Teléfono:** 4422861825  
+**Email:** digitaldr.qro@gmail.com  
+**Digital Dr Qro CRM** - v1.0.0
 ## 🔗 Resources
 
 - [n8n Documentation](https://docs.n8n.io/)
