@@ -1,10 +1,9 @@
 {
   "crm": {
-    "name": "Ciudad Maderas CRM",
+    "name": "Digital Dr Qro CRM",
     "version": "1.0.0",
     "description": "Automated CRM for Real Estate Lead Management",
-    "developer": "Yoselin Vilchis"
-  },
+    "developer": "Omar Rafael Perez Gallardo"  },
   "leads": {
     "states": ["nuevo", "contactado", "interesado", "agendado", "ganado", "perdido"],
     "sources": ["email", "whatsapp", "web", "referencia", "otro"]
