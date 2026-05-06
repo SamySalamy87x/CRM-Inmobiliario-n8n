@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reporte Ejecutivo — Inteligencia Comercial Ecodeli</title>
+<style>
+  :root {
+    --bg:        #0b0f14;
+    --surface:   #131920;
+    --surface2:  #1a2230;
+    --border:    #1f2d3d;
+    --green:     #00c47a;
+    --green-dim: #00875a;
+    --teal:      #00b4d8;
+    --amber:     #f59e0b;
+    --red:       #ef4444;
+    --text:      #e2e8f0;
+    --muted:     #64748b;
+    --pill-bg:   #0d2b1e;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Segoe UI', system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+  }
+
+  header {
+    background: linear-gradient(135deg, #071a0f 0%, #0b1a2e 100%);
+    border-bottom: 1px solid var(--border);
+    padding: 32px 40px 28px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .header-left h1 { font-size: 22px; font-weight: 700; color: #fff; letter-spacing: -.3px; }
+  .header-left h1 span { color: var(--green); }
+  .header-left p { margin-top: 4px; font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; }
+  .header-meta { display: flex; gap: 12px; flex-wrap: wrap; }
+  .badge { display: inline-flex; align-items: center; gap: 6px; background: var(--pill-bg); border: 1px solid var(--green-dim); color: var(--green); border-radius: 20px; padding: 5px 14px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: .8px; }
+  .badge.amber { background: #1f1500; border-color: #92600a; color: var(--amber); }
+  .badge.teal  { background: #001a22; border-color: #006b82; color: var(--teal); }
+
+  .toolbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 40px; background: var(--surface); border-bottom: 1px solid var(--border); flex-wrap: wrap; gap: 10px; }
+  .tabs { display: flex; gap: 4px; }
+  .tab { background: none; border: 1px solid transparent; color: var(--muted); border-radius: 8px; padding: 6px 16px; font-size: 12px; font-weight: 600; cursor: pointer; transition: all .18s; text-transform: uppercase; letter-spacing: .6px; }
+  .tab:hover { background: var(--surface2); color: var(--text); }
+  .tab.active { background: var(--pill-bg); border-color: var(--green-dim); color: var(--green); }
+  .btn-print { background: var(--green); color: #000; border: none; border-radius: 8px; padding: 7px 18px; font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 6px; text-transform: uppercase; letter-spacing: .5px; transition: opacity .18s; }
+  .btn-print:hover { opacity: .85; }
+
+  main { padding: 36px 40px; max-width: 1200px; margin: 0 auto; }
+  section.view { display: none; }
+  section.view.active { display: block; }
+
+  .summary-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 12px; margin-bottom: 32px; }
+  .stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 18px 20px; position: relative; overflow: hidden; }
+  .stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 3px; background: var(--green); }
+  .stat-card.amber::before { background: var(--amber); }
+  .stat-card.teal::before  { background: var(--teal); }
+  .stat-card .num { font-size: 32px; font-weight: 800; color: var(--green); line-height: 1; }
+  .stat-card.amber .num { color: var(--amber); }
+  .stat-card.teal  .num { color: var(--teal); }
+  .stat-card .label { margin-top: 6px; font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .7px; }
+
+  .signals-grid { display: flex; flex-direction: column; gap: 20px; }
+  .signal-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; transition: border-color .2s; }
+  .signal-card:hover { border-color: var(--green-dim); }
+  .signal-header { display: flex; align-items: flex-start; gap: 16px; padding: 20px 24px; cursor: pointer; user-select: none; }
+  .signal-num { flex-shrink: 0; width: 36px; height: 36px; border-radius: 50%; background: var(--pill-bg); border: 1.5px solid var(--green-dim); color: var(--green); font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+  .signal-title-block { flex: 1; }
+  .signal-title-block h2 { font-size: 16px; font-weight: 700; color: #fff; margin-bottom: 4px; }
+  .signal-title-block .subtitle { font-size: 12px; color: var(--muted); }
+  .signal-meta { display: flex; align-items: center; gap: 10px; flex-shrink: 0; }
+  .priority-chip { background: #1f0a0a; border: 1px solid #7f1d1d; color: var(--red); border-radius: 20px; padding: 3px 12px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: .8px; }
+  .chevron { color: var(--muted); font-size: 18px; transition: transform .25s; line-height: 1; }
+  .signal-card.open .chevron { transform: rotate(180deg); }
+  .signal-body { display: none; padding: 0 24px 24px; border-top: 1px solid var(--border); }
+  .signal-card.open .signal-body { display: block; }
+
+  .seven-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-top: 20px; }
+  .block { background: var(--surface2); border: 1px solid var(--border); border-radius: 10px; padding: 16px; }
+  .block.full { grid-column: 1 / -1; }
+  .block h3 { font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .block h3 .icon { font-size: 14px; }
+  .block p, .block li { font-size: 13px; color: var(--text); line-height: 1.65; }
+  .block ul { padding-left: 16px; }
+  .block ul li { margin-bottom: 4px; }
+  .block.highlight { background: #071a0f; border-color: var(--green-dim); }
+  .block.highlight p { color: var(--green); font-style: italic; font-size: 14px; line-height: 1.7; }
+  .block.warn { background: #150e00; border-color: #92600a; }
+  .block.warn h3 { color: var(--amber); }
+  .block.action { background: #060f1c; border-color: #1a3a5c; }
+  .block.action h3 { color: var(--teal); }
+
+  .deliverable-box { background: #03100a; border: 1px dashed var(--green-dim); border-radius: 8px; padding: 12px 14px; margin-top: 8px; }
+  .deliverable-box .title { font-size: 12px; font-weight: 700; color: var(--green); margin-bottom: 6px; }
+  .deliverable-box ul { padding-left: 14px; }
+  .deliverable-box li { font-size: 12px; color: #94a3b8; margin-bottom: 3px; }
+  .deadline-row { display: flex; align-items: center; gap: 8px; margin-top: 8px; flex-wrap: wrap; }
+  .deadline-chip { background: #001a22; border: 1px solid #006b82; color: var(--teal); border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 600; }
+  .resp-chip { background: var(--pill-bg); border: 1px solid var(--green-dim); color: var(--green); border-radius: 20px; padding: 3px 12px; font-size: 11px; font-weight: 600; }
+
+  .matrix-wrap { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  thead th { background: var(--surface2); color: var(--muted); text-transform: uppercase; letter-spacing: .8px; font-size: 10px; padding: 12px 16px; text-align: left; border-bottom: 1px solid var(--border); }
+  tbody tr { border-bottom: 1px solid var(--border); transition: background .15s; }
+  tbody tr:hover { background: var(--surface2); }
+  tbody td { padding: 14px 16px; }
+  .impact-bar { display: flex; align-items: center; gap: 8px; }
+  .bar { height: 6px; border-radius: 3px; background: var(--green); width: 80px; }
+  .time-now  { color: var(--green); font-weight: 700; }
+  .time-24h  { color: var(--amber); font-weight: 700; }
+  .time-48h  { color: var(--teal);  font-weight: 700; }
+
+  .strategy-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 28px; }
+  @media (max-width: 700px) {
+    .strategy-grid { grid-template-columns: 1fr; }
+    header { padding: 20px; }
+    main { padding: 20px; }
+    .toolbar { padding: 12px 20px; }
+    .seven-grid { grid-template-columns: 1fr; }
+  }
+  .strategy-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; padding: 24px; }
+  .strategy-card h2 { font-size: 14px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+  .arrow-transform { display: flex; align-items: center; gap: 16px; padding: 12px 0; }
+  .transform-from { flex: 1; background: #1a0a0a; border: 1px solid #7f1d1d; border-radius: 10px; padding: 14px 16px; }
+  .transform-from .label { font-size: 10px; color: var(--red); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; font-weight: 700; }
+  .transform-from p { color: #fca5a5; font-size: 13px; }
+  .arrow-icon { color: var(--green); font-size: 24px; flex-shrink: 0; }
+  .transform-to { flex: 1; background: #071a0f; border: 1px solid var(--green-dim); border-radius: 10px; padding: 14px 16px; }
+  .transform-to .label { font-size: 10px; color: var(--green); text-transform: uppercase; letter-spacing: .8px; margin-bottom: 6px; font-weight: 700; }
+  .transform-to p { color: #6ee7b7; font-size: 13px; }
+  .axes-list { display: flex; flex-direction: column; gap: 8px; margin-top: 12px; }
+  .axis-item { display: flex; align-items: center; gap: 10px; background: var(--surface2); border-radius: 8px; padding: 10px 14px; border-left: 3px solid var(--green); }
+  .axis-num { width: 22px; height: 22px; background: var(--green); color: #000; border-radius: 50%; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+  .axis-text { font-size: 13px; color: var(--text); }
+  .result-chips { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 14px; }
+  .result-chip { background: var(--pill-bg); border: 1px solid var(--green-dim); color: var(--green); border-radius: 8px; padding: 8px 16px; font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+  .result-chip .arrow { font-size: 16px; }
+
+  .email-card { background: var(--surface); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .email-toolbar { display: flex; align-items: center; justify-content: space-between; padding: 14px 20px; background: var(--surface2); border-bottom: 1px solid var(--border); }
+  .email-toolbar span { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: .8px; font-weight: 600; }
+  .btn-copy { background: var(--surface); border: 1px solid var(--border); color: var(--text); border-radius: 6px; padding: 5px 14px; font-size: 11px; cursor: pointer; font-weight: 600; display: flex; align-items: center; gap: 6px; transition: all .18s; }
+  .btn-copy:hover { background: var(--pill-bg); border-color: var(--green-dim); color: var(--green); }
+  .btn-copy.copied { background: var(--pill-bg); border-color: var(--green-dim); color: var(--green); }
+  .email-field { display: flex; align-items: baseline; gap: 12px; padding: 10px 20px; border-bottom: 1px solid var(--border); }
+  .email-field .field-label { font-size: 11px; color: var(--muted); font-weight: 700; text-transform: uppercase; letter-spacing: .6px; width: 60px; flex-shrink: 0; }
+  .email-field .field-val { font-size: 13px; color: var(--text); }
+  .email-body { padding: 24px; font-size: 14px; color: #cbd5e1; line-height: 1.8; white-space: pre-wrap; }
+  .email-body strong { color: #fff; }
+
+  .pitch-strip { background: linear-gradient(90deg, #071a0f 0%, #06101c 100%); border: 1px solid var(--green-dim); border-radius: 10px; padding: 14px 18px; font-size: 13px; color: #a7f3d0; font-style: italic; line-height: 1.65; margin-top: 10px; }
+  .pitch-strip::before { content: '\201C'; font-size: 28px; color: var(--green); line-height: .5; vertical-align: -8px; margin-right: 4px; }
+  .pitch-strip::after  { content: '\201D'; font-size: 28px; color: var(--green); line-height: .5; vertical-align: -8px; margin-left: 4px; }
+
+  footer { text-align: center; padding: 28px; color: var(--muted); font-size: 11px; border-top: 1px solid var(--border); margin-top: 40px; }
+  footer strong { color: var(--green); }
+
+  @media print {
+    body { background: #fff; color: #000; }
+    header, .toolbar, .signal-body, .signal-card, .block, table, .strategy-card, .email-card { background: #fff !important; border-color: #ccc !important; color: #000 !important; break-inside: avoid; }
+    .signal-body { display: block !important; }
+    .btn-print, .tabs { display: none; }
+    .chevron { display: none; }
+    main { padding: 10px; }
+    section.view { display: block !important; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-left">
+    <h1>Reporte Ejecutivo — <span>Ecodeli</span> Inteligencia Comercial</h1>
+    <p>Enfoque accionable · 5 señales estratégicas · Mayo 2026</p>
+  </div>
+  <div class="header-meta">
+    <span class="badge">⚡ 5 Señales</span>
+    <span class="badge amber">🎯 Alta Prioridad</span>
+    <span class="badge teal">📋 5 Entregables</span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="tabs">
+    <button class="tab active" onclick="showView('signals',this)">Señales</button>
+    <button class="tab" onclick="showView('matrix',this)">Matriz de Acciones</button>
+    <button class="tab" onclick="showView('strategy',this)">Propuesta Estratégica</button>
+    <button class="tab" onclick="showView('email',this)">Correo Listo</button>
+  </div>
+  <button class="btn-print" onclick="window.print()">🖨 Imprimir</button>
+</div>
+
+<main>
+
+  <section class="view active" id="view-signals">
+    <div class="summary-bar">
+      <div class="stat-card"><div class="num">5</div><div class="label">Señales detectadas</div></div>
+      <div class="stat-card amber"><div class="num amber">5</div><div class="label">Entregables inmediatos</div></div>
+      <div class="stat-card teal"><div class="num teal">↑</div><div class="label">Ticket promedio estimado</div></div>
+      <div class="stat-card"><div class="num">48h</div><div class="label">Ventana de acción</div></div>
+      <div class="stat-card"><div class="num">3</div><div class="label">Verticales cubiertas</div></div>
+    </div>
+    <div class="signals-grid">
+
+      <div class="signal-card" id="card-1">
+        <div class="signal-header" onclick="toggleCard(1)">
+          <div class="signal-num">1</div>
+          <div class="signal-title-block">
+            <h2>Modelo Híbrido — Producto + Servicio Integral</h2>
+            <div class="subtitle">Fuente: LinkedIn corporativo Ecodeli · Descripciones públicas de empresa</div>
+          </div>
+          <div class="signal-meta"><span class="priority-chip">Alta</span><span class="chevron">▾</span></div>
+        </div>
+        <div class="signal-body">
+          <div class="seven-grid">
+            <div class="block"><h3><span class="icon">📊</span> Dato público y fuente</h3><p>Perfiles públicos describen la oferta como <strong>productos ecológicos + servicios integrales de limpieza profesional</strong>, incluyendo sanitización y operación.</p></div>
+            <div class="block"><h3><span class="icon">💡</span> Significado comercial</h3><p>Ecodeli <strong>no compite como proveedor tradicional</strong>: compite como operador completo. Permite capturar contratos más grandes (outsourcing + insumos).</p></div>
+            <div class="block warn"><h3><span class="icon">⚠️</span> Problema para ventas</h3><ul><li>Pierde margen al cotizar producto aislado</li><li>Pierde contratos integrales</li><li>Queda fuera de decisiones estratégicas del cliente</li></ul></div>
+            <div class="block action"><h3><span class="icon">⚙️</span> Solución concreta</h3><p>Reconfigurar oferta a modelo <strong>"operación + suministro"</strong>:</p><ul style="margin-top:8px"><li>Producto + reposición automática</li><li>Control de consumo</li><li>KPI operativos</li><li>Supervisión en sitio</li></ul></div>
+            <div class="block full"><h3><span class="icon">📁</span> Entregable hoy</h3><div class="deliverable-box"><div class="title">Documento: "Modelo Ecodeli Operación Total (versión comercial)"</div><ul><li>Esquema servicio + insumos</li><li>Comparativo vs proveedor tradicional</li><li>Impacto en costos del cliente</li></ul></div><div class="pitch-strip">Hoy no estamos compitiendo contra proveedores de insumos, estamos compitiendo contra operadores. La propuesta es migrar a un modelo donde Ecodeli controle operación, consumo y continuidad, no solo suministro.</div><div class="deadline-row"><span class="resp-chip">Dirección comercial</span><span class="deadline-chip">⏱ 24h</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="signal-card" id="card-2">
+        <div class="signal-header" onclick="toggleCard(2)">
+          <div class="signal-num">2</div>
+          <div class="signal-title-block">
+            <h2>Posicionamiento en Cuentas Institucionales</h2>
+            <div class="subtitle">Fuente: Registros públicos · Portales oficiales · Documentos de contratos</div>
+          </div>
+          <div class="signal-meta"><span class="priority-chip">Alta</span><span class="chevron">▾</span></div>
+        </div>
+        <div class="signal-body">
+          <div class="seven-grid">
+            <div class="block"><h3><span class="icon">📊</span> Dato público y fuente</h3><p>Registros públicos muestran a Ecodeli participando en <strong>servicios de limpieza institucional y sector salud</strong> (portales oficiales y documentos públicos).</p></div>
+            <div class="block"><h3><span class="icon">💡</span> Significado comercial</h3><p>Ecodeli ya está validado en licitaciones, cumplimiento normativo y operación crítica. Entrada directa a <strong>hospitales, universidades y gobierno</strong>.</p></div>
+            <div class="block warn"><h3><span class="icon">⚠️</span> Problema para ventas</h3><ul><li>No usa casos de éxito como ventaja competitiva</li><li>No acelera licitaciones</li><li>No estandariza propuestas institucionales</li></ul></div>
+            <div class="block action"><h3><span class="icon">⚙️</span> Solución concreta</h3><p>Crear <strong>portafolio institucional reutilizable</strong>:</p><ul style="margin-top:8px"><li>Casos documentados por vertical</li><li>Cumplimiento normativo certificado</li><li>Capacidades operativas probadas</li></ul></div>
+            <div class="block full"><h3><span class="icon">📁</span> Entregable hoy</h3><div class="deliverable-box"><div class="title">Carpeta: "Casos institucionales Ecodeli (versión ventas)"</div><ul><li>Tipo de cliente + sector</li><li>Problema detectado</li><li>Solución aplicada</li><li>Resultado medido</li></ul></div><div class="pitch-strip">Ya operamos en entornos donde el error no es opción. Podemos trasladar ese mismo estándar a tu operación con control total y cumplimiento documentado.</div><div class="deadline-row"><span class="resp-chip">Licitaciones + Ventas</span><span class="deadline-chip">⏱ 48h</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="signal-card" id="card-3">
+        <div class="signal-header" onclick="toggleCard(3)">
+          <div class="signal-num">3</div>
+          <div class="signal-title-block">
+            <h2>Liderazgo Activo — Agustín Bujaidar Solís</h2>
+            <div class="subtitle">Fuente: Actividad pública en LinkedIn · Convenciones comerciales</div>
+          </div>
+          <div class="signal-meta"><span class="priority-chip">Alta</span><span class="chevron">▾</span></div>
+        </div>
+        <div class="signal-body">
+          <div class="seven-grid">
+            <div class="block"><h3><span class="icon">📊</span> Dato público y fuente</h3><p>Actividad pública muestra participación en <strong>crecimiento empresarial, convenciones comerciales, alianzas (ej. Tork) y comunicación organizacional</strong>.</p></div>
+            <div class="block"><h3><span class="icon">💡</span> Significado comercial</h3><p>Dirección enfocada en <strong>expansión, eficiencia, alianzas estratégicas y posicionamiento</strong>. Visión alineada con propuestas de escala.</p></div>
+            <div class="block warn"><h3><span class="icon">⚠️</span> Problema para ventas</h3><ul><li>Sin conexión con esa visión, ventas queda operativa</li><li>No escala influencia interna</li><li>No impulsa cambio estructural</li></ul></div>
+            <div class="block action"><h3><span class="icon">⚙️</span> Solución concreta</h3><p>Subir propuestas en <strong>formato ejecutivo</strong>:</p><ul style="margin-top:8px"><li>Impacto en ingresos cuantificado</li><li>Eficiencia operativa demostrada</li><li>Diferenciación vs competencia</li></ul></div>
+            <div class="block full"><h3><span class="icon">📁</span> Entregable hoy</h3><div class="deliverable-box"><div class="title">Documento 1 página: "3 iniciativas para escalar cuentas estratégicas Ecodeli"</div><ul><li>Palanca 1: Paquetización por industria</li><li>Palanca 2: Control de consumo</li><li>Palanca 3: Modelo de operación integral</li></ul></div><div class="pitch-strip">Detectamos una oportunidad clara de escalar cuentas estratégicas con tres palancas: paquetización por industria, control de consumo y modelo de operación integral.</div><div class="deadline-row"><span class="resp-chip">Marilú</span><span class="deadline-chip" style="background:#1f0a0a;border-color:#7f1d1d;color:#ef4444">🔴 Hoy</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="signal-card" id="card-4">
+        <div class="signal-header" onclick="toggleCard(4)">
+          <div class="signal-num">4</div>
+          <div class="signal-title-block">
+            <h2>Alianzas con Marcas Globales (ej. Tork)</h2>
+            <div class="subtitle">Fuente: Publicaciones públicas de A. Bujaidar · Colaboraciones documentadas</div>
+          </div>
+          <div class="signal-meta"><span class="priority-chip">Alta</span><span class="chevron">▾</span></div>
+        </div>
+        <div class="signal-body">
+          <div class="seven-grid">
+            <div class="block"><h3><span class="icon">📊</span> Dato público y fuente</h3><p>Publicaciones mencionan colaboración con soluciones tipo <strong>Tork-Ecodeli</strong>, enfocadas en ahorro y sustentabilidad.</p></div>
+            <div class="block"><h3><span class="icon">💡</span> Significado comercial</h3><p>Ecodeli puede posicionarse como <strong>proveedor premium, solución de eficiencia y socio estratégico en reducción de costos operativos</strong>.</p></div>
+            <div class="block warn"><h3><span class="icon">⚠️</span> Problema para ventas</h3><ul><li>No traduce alianzas en ROI tangible</li><li>No cuantifica el ahorro</li><li>No hay argumento financiero estructurado</li></ul></div>
+            <div class="block action"><h3><span class="icon">⚙️</span> Solución concreta</h3><p>Convertir alianzas en <strong>casos de ahorro cuantificado</strong> con metodología replicable por cliente.</p></div>
+            <div class="block full"><h3><span class="icon">📁</span> Entregable hoy</h3><div class="deliverable-box"><div class="title">Herramienta: "Calculadora de ahorro Ecodeli (consumo vs control)"</div><ul><li>Input: consumo actual del cliente</li><li>Output: ahorro proyectado mensual / anual</li><li>Comparativo: con vs sin modelo Ecodeli</li></ul></div><div class="pitch-strip">No es un cambio de producto, es una optimización de consumo con impacto directo en tu costo operativo mensual.</div><div class="deadline-row"><span class="resp-chip">Comercial + Análisis</span><span class="deadline-chip">⏱ 24h</span></div></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="signal-card" id="card-5">
+        <div class="signal-header" onclick="toggleCard(5)">
+          <div class="signal-num">5</div>
+          <div class="signal-title-block">
+            <h2>Capacidad Logística y Estructura Nacional</h2>
+            <div class="subtitle">Fuente: Información pública corporativa · Perfil de empresa</div>
+          </div>
+          <div class="signal-meta"><span class="priority-chip">Alta</span><span class="chevron">▾</span></div>
+        </div>
+        <div class="signal-body">
+          <div class="seven-grid">
+            <div class="block"><h3><span class="icon">📊</span> Dato público y fuente</h3><p>Ecodeli Industrial posicionada como empresa con <strong>cobertura nacional, estructura operativa amplia y múltiples líneas de producto</strong>.</p></div>
+            <div class="block"><h3><span class="icon">💡</span> Significado comercial</h3><p>Capacidad de atender <strong>cadenas multi-sede, corporativos grandes y operaciones distribuidas</strong> desde un solo contrato marco.</p></div>
+            <div class="block warn"><h3><span class="icon">⚠️</span> Problema para ventas</h3><ul><li>No se ofrecen contratos nacionales</li><li>Se vende por sucursal en lugar de por empresa</li><li>Capacidad nacional sub-explotada</li></ul></div>
+            <div class="block action"><h3><span class="icon">⚙️</span> Solución concreta</h3><p>Diseñar y ofrecer <strong>contratos marco multi-sede</strong> con incentivos por volumen y SLA estandarizados.</p></div>
+            <div class="block full"><h3><span class="icon">📁</span> Entregable hoy</h3><div class="deliverable-box"><div class="title">Propuesta: "Modelo contrato nacional Ecodeli"</div><ul><li>Precios escalonados por volumen / sedes</li><li>SLA definido por tipo de operación</li><li>Cobertura geográfica documentada</li></ul></div><div class="pitch-strip">En lugar de gestionar proveedores por sucursal, centralizamos operación, estandarizamos servicio y reducimos costos administrativos del cliente.</div><div class="deadline-row"><span class="resp-chip">Dirección comercial</span><span class="deadline-chip">⏱ 48h</span></div></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="view" id="view-matrix">
+    <div class="summary-bar" style="margin-bottom:28px">
+      <div class="stat-card"><div class="num">1</div><div class="label">Acción para hoy</div></div>
+      <div class="stat-card amber"><div class="num amber">2</div><div class="label">Acciones en 24h</div></div>
+      <div class="stat-card teal"><div class="num teal">2</div><div class="label">Acciones en 48h</div></div>
+    </div>
+    <div class="matrix-wrap">
+      <table>
+        <thead><tr><th>#</th><th>Acción</th><th>Entregable</th><th>Impacto</th><th>Responsable</th><th>Plazo</th></tr></thead>
+        <tbody>
+          <tr><td style="color:var(--muted);font-weight:700">01</td><td style="font-weight:600;color:#fff">One-page ejecutivo</td><td style="color:#94a3b8">3 iniciativas para escalar cuentas</td><td><div class="impact-bar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="resp-chip">Marilú</span></td><td class="time-now">🔴 Hoy</td></tr>
+          <tr><td style="color:var(--muted);font-weight:700">02</td><td style="font-weight:600;color:#fff">Modelo operación total</td><td style="color:#94a3b8">Documento comercial Operación Total</td><td><div class="impact-bar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="resp-chip">Dir. Comercial</span></td><td class="time-24h">🟡 24h</td></tr>
+          <tr><td style="color:var(--muted);font-weight:700">03</td><td style="font-weight:600;color:#fff">Calculadora de ahorro</td><td style="color:#94a3b8">Herramienta consumo vs control</td><td><div class="impact-bar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="resp-chip">Comercial + Análisis</span></td><td class="time-24h">🟡 24h</td></tr>
+          <tr><td style="color:var(--muted);font-weight:700">04</td><td style="font-weight:600;color:#fff">Casos institucionales</td><td style="color:#94a3b8">Carpeta ventas con casos por vertical</td><td><div class="impact-bar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="resp-chip">Licitaciones</span></td><td class="time-48h">🔵 48h</td></tr>
+          <tr><td style="color:var(--muted);font-weight:700">05</td><td style="font-weight:600;color:#fff">Contrato multi-sede</td><td style="color:#94a3b8">Modelo contrato nacional con SLA</td><td><div class="impact-bar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="resp-chip">Dirección</span></td><td class="time-48h">🔵 48h</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="view" id="view-strategy">
+    <div class="strategy-grid">
+      <div class="strategy-card">
+        <h2>🏢 Propuesta Ecodeli — Nivel Estratégico</h2>
+        <div class="arrow-transform">
+          <div class="transform-from"><div class="label">De</div><p>Venta por producto aislado</p></div>
+          <div class="arrow-icon">→</div>
+          <div class="transform-to"><div class="label">A</div><p>Venta por solución operativa integral</p></div>
+        </div>
+        <div class="axes-list">
+          <div class="axis-item"><div class="axis-num">1</div><div class="axis-text">Paquetización por industria</div></div>
+          <div class="axis-item"><div class="axis-num">2</div><div class="axis-text">Control de consumo medible</div></div>
+          <div class="axis-item"><div class="axis-num">3</div><div class="axis-text">Operación integral en sitio</div></div>
+          <div class="axis-item"><div class="axis-num">4</div><div class="axis-text">Contratos multi-sede nacionales</div></div>
+        </div>
+        <div class="result-chips">
+          <div class="result-chip"><span class="arrow">↑</span> Ticket promedio</div>
+          <div class="result-chip"><span class="arrow">↑</span> Contratos grandes</div>
+          <div class="result-chip"><span class="arrow">↑</span> Diferenciación</div>
+        </div>
+      </div>
+      <div class="strategy-card">
+        <h2>👤 Propuesta para Marilú</h2>
+        <div class="arrow-transform">
+          <div class="transform-from"><div class="label">De</div><p>Ejecutora de ventas</p></div>
+          <div class="arrow-icon">→</div>
+          <div class="transform-to"><div class="label">A</div><p>Arquitecta de soluciones estratégicas</p></div>
+        </div>
+        <div class="axes-list">
+          <div class="axis-item" style="border-color:var(--teal)"><div class="axis-num" style="background:var(--teal)">1</div><div class="axis-text">Usar paquetes por industria en cada cotización</div></div>
+          <div class="axis-item" style="border-color:var(--teal)"><div class="axis-num" style="background:var(--teal)">2</div><div class="axis-text">Vender ahorro cuantificado, no producto</div></div>
+          <div class="axis-item" style="border-color:var(--teal)"><div class="axis-num" style="background:var(--teal)">3</div><div class="axis-text">Proponer pilotos de 30 días con KPI</div></div>
+          <div class="axis-item" style="border-color:var(--teal)"><div class="axis-num" style="background:var(--teal)">4</div><div class="axis-text">Escalar cuentas a contrato multi-sede</div></div>
+        </div>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:16px">
+      <div class="block highlight"><h3><span class="icon">🎯</span> Pitch señal 1</h3><p>Hoy no competimos contra proveedores de insumos, competimos contra operadores. La propuesta: Ecodeli controla operación, consumo y continuidad.</p></div>
+      <div class="block highlight"><h3><span class="icon">🏥</span> Pitch señal 2</h3><p>Ya operamos donde el error no es opción. Trasladamos ese estándar a tu operación con control total y cumplimiento documentado.</p></div>
+      <div class="block highlight"><h3><span class="icon">📈</span> Pitch señal 3</h3><p>Tres palancas claras: paquetización por industria, control de consumo y modelo de operación integral.</p></div>
+      <div class="block highlight"><h3><span class="icon">💰</span> Pitch señal 4</h3><p>No es un cambio de producto, es una optimización de consumo con impacto directo en tu costo operativo mensual.</p></div>
+      <div class="block highlight"><h3><span class="icon">🗺️</span> Pitch señal 5</h3><p>Centralizamos operación, estandarizamos servicio y reducimos costos administrativos. Un contrato para toda la empresa.</p></div>
+    </div>
+  </section>
+
+  <section class="view" id="view-email">
+    <div class="email-card">
+      <div class="email-toolbar">
+        <span>Correo Reenviable — Listo para enviar</span>
+        <button class="btn-copy" id="btnCopy" onclick="copyEmail()">📋 Copiar correo</button>
+      </div>
+      <div class="email-field"><span class="field-label">Asunto</span><span class="field-val" style="color:#fff;font-weight:600">Propuesta para acelerar cuentas estratégicas Ecodeli</span></div>
+      <div class="email-field"><span class="field-label">Para</span><span class="field-val">[Dirección / Responsable]</span></div>
+      <div class="email-field"><span class="field-label">De</span><span class="field-val">Marilú</span></div>
+      <div class="email-body" id="emailBody">Hola,
+
+Identifiqué una oportunidad clara para fortalecer el posicionamiento comercial de Ecodeli.
+
+Hoy tenemos capacidades para competir en cuentas grandes, pero el enfoque sigue centrado en producto. La propuesta es evolucionar hacia soluciones integrales que incluyan operación, control de consumo y continuidad.
+
+Las acciones inmediatas son:
+
+  • Paquetes por industria
+  • Calculadora de ahorro
+  • Casos institucionales
+  • Contratos multi-sede
+
+Esto permitirá aumentar el ticket promedio, acelerar cierres y posicionar a Ecodeli como socio operativo, no solo proveedor.
+
+Quedo disponible para avanzar con una implementación inmediata.
+
+Saludos.</div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  Reporte generado para <strong>Ecodeli Industrial</strong> · Inteligencia Comercial Accionable · Mayo 2026
+</footer>
+
+<script>
+  function showView(name, el) {
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+    document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+    document.getElementById('view-' + name).classList.add('active');
+    el.classList.add('active');
+  }
+  function toggleCard(n) {
+    document.getElementById('card-' + n).classList.toggle('open');
+  }
+  function copyEmail() {
+    const text = 'Asunto: Propuesta para acelerar cuentas estratégicas Ecodeli\n\n' + document.getElementById('emailBody').innerText;
+    navigator.clipboard.writeText(text).then(() => {
+      const btn = document.getElementById('btnCopy');
+      btn.textContent = '✓ Copiado';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 Copiar correo'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+  document.getElementById('card-1').classList.add('open');
+</script>
+</body>
+</html>
