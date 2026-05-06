@@ -1,0 +1,906 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Reporte Ejecutivo — Inteligencia Comercial Ecodeli</title>
+<style>
+:root {
+  --bg:#0b0f14; --surface:#131920; --surface2:#1a2230; --border:#1f2d3d;
+  --green:#00c47a; --green-dim:#00875a; --teal:#00b4d8; --amber:#f59e0b;
+  --red:#ef4444; --text:#e2e8f0; --muted:#64748b; --pill:#0d2b1e;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--text);font-family:'Segoe UI',system-ui,sans-serif;font-size:14px;line-height:1.6}
+
+/* HEADER */
+header{background:linear-gradient(135deg,#071a0f,#0b1a2e);border-bottom:1px solid var(--border);padding:28px 40px;display:flex;align-items:center;justify-content:space-between;gap:20px;flex-wrap:wrap}
+.h-title{font-size:21px;font-weight:700;color:#fff;letter-spacing:-.3px}
+.h-title span{color:var(--green)}
+.h-sub{margin-top:3px;font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:1px}
+.h-badges{display:flex;gap:10px;flex-wrap:wrap}
+.badge{display:inline-flex;align-items:center;gap:5px;background:var(--pill);border:1px solid var(--green-dim);color:var(--green);border-radius:20px;padding:4px 13px;font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.7px}
+.badge.a{background:#1f1500;border-color:#92600a;color:var(--amber)}
+.badge.t{background:#001a22;border-color:#006b82;color:var(--teal)}
+
+/* TOOLBAR */
+.toolbar{display:flex;align-items:center;justify-content:space-between;padding:12px 40px;background:var(--surface);border-bottom:1px solid var(--border);flex-wrap:wrap;gap:10px}
+.tabs{display:flex;gap:4px}
+.tab{background:none;border:1px solid transparent;color:var(--muted);border-radius:8px;padding:6px 15px;font-size:11px;font-weight:600;cursor:pointer;transition:all .18s;text-transform:uppercase;letter-spacing:.6px}
+.tab:hover{background:var(--surface2);color:var(--text)}
+.tab.active{background:var(--pill);border-color:var(--green-dim);color:var(--green)}
+.btn-print{background:var(--green);color:#000;border:none;border-radius:8px;padding:6px 16px;font-size:11px;font-weight:700;cursor:pointer;text-transform:uppercase;letter-spacing:.5px;transition:opacity .18s}
+.btn-print:hover{opacity:.85}
+
+/* MAIN */
+main{padding:32px 40px;max-width:1200px;margin:0 auto}
+section.view{display:none}
+section.view.active{display:block}
+
+/* STATS */
+.stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-bottom:28px}
+.sc{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:16px 18px;position:relative;overflow:hidden}
+.sc::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:var(--green)}
+.sc.a::before{background:var(--amber)}.sc.t::before{background:var(--teal)}
+.sc .n{font-size:30px;font-weight:800;color:var(--green);line-height:1}
+.sc.a .n{color:var(--amber)}.sc.t .n{color:var(--teal)}
+.sc .l{margin-top:5px;font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px}
+
+/* SIGNAL CARDS */
+.sigs{display:flex;flex-direction:column;gap:18px}
+.sig{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden;transition:border-color .2s}
+.sig:hover{border-color:var(--green-dim)}
+.sig-hd{display:flex;align-items:flex-start;gap:14px;padding:18px 22px;cursor:pointer;user-select:none}
+.sig-n{flex-shrink:0;width:34px;height:34px;border-radius:50%;background:var(--pill);border:1.5px solid var(--green-dim);color:var(--green);font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center}
+.sig-t{flex:1}
+.sig-t h2{font-size:15px;font-weight:700;color:#fff;margin-bottom:3px}
+.sig-t .src{font-size:11px;color:var(--muted)}
+.sig-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.pri{background:#1f0a0a;border:1px solid #7f1d1d;color:var(--red);border-radius:20px;padding:2px 10px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.7px}
+.chv{color:var(--muted);font-size:17px;transition:transform .25s;line-height:1}
+.sig.open .chv{transform:rotate(180deg)}
+.sig-bd{display:none;padding:0 22px 22px;border-top:1px solid var(--border)}
+.sig.open .sig-bd{display:block}
+.g7{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px;margin-top:18px}
+.blk{background:var(--surface2);border:1px solid var(--border);border-radius:10px;padding:14px}
+.blk.full{grid-column:1/-1}
+.blk h3{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:var(--muted);margin-bottom:9px;display:flex;align-items:center;gap:5px}
+.blk p,.blk li{font-size:13px;color:var(--text);line-height:1.65}
+.blk ul{padding-left:15px}
+.blk ul li{margin-bottom:3px}
+.blk.hl{background:#071a0f;border-color:var(--green-dim)}
+.blk.hl p{color:var(--green);font-style:italic;font-size:14px}
+.blk.wn{background:#150e00;border-color:#92600a}
+.blk.wn h3{color:var(--amber)}
+.blk.ac{background:#060f1c;border-color:#1a3a5c}
+.blk.ac h3{color:var(--teal)}
+.dlv{background:#03100a;border:1px dashed var(--green-dim);border-radius:8px;padding:11px 13px;margin-top:7px}
+.dlv .dt{font-size:11px;font-weight:700;color:var(--green);margin-bottom:5px}
+.dlv ul{padding-left:13px}
+.dlv li{font-size:11px;color:#94a3b8;margin-bottom:2px}
+.dr{display:flex;align-items:center;gap:7px;margin-top:8px;flex-wrap:wrap}
+.dc{background:#001a22;border:1px solid #006b82;color:var(--teal);border-radius:20px;padding:2px 11px;font-size:11px;font-weight:600}
+.rc{background:var(--pill);border:1px solid var(--green-dim);color:var(--green);border-radius:20px;padding:2px 11px;font-size:11px;font-weight:600}
+.ps{background:linear-gradient(90deg,#071a0f,#06101c);border:1px solid var(--green-dim);border-radius:10px;padding:13px 16px;font-size:13px;color:#a7f3d0;font-style:italic;line-height:1.65;margin-top:9px}
+.ps::before{content:'\201C';font-size:26px;color:var(--green);line-height:.5;vertical-align:-7px;margin-right:3px}
+.ps::after{content:'\201D';font-size:26px;color:var(--green);line-height:.5;vertical-align:-7px;margin-left:3px}
+
+/* MATRIX */
+.mwrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{background:var(--surface2);color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-size:10px;padding:11px 15px;text-align:left;border-bottom:1px solid var(--border)}
+tbody tr{border-bottom:1px solid var(--border);transition:background .15s}
+tbody tr:hover{background:var(--surface2)}
+tbody td{padding:13px 15px}
+.ibar{display:flex;align-items:center;gap:7px}
+.bar{height:5px;border-radius:3px;background:var(--green);width:80px}
+.tn{color:var(--green);font-weight:700}.t2{color:var(--amber);font-weight:700}.t4{color:var(--teal);font-weight:700}
+
+/* STRATEGY */
+.sgrid{display:grid;grid-template-columns:1fr 1fr;gap:18px;margin-bottom:24px}
+.scard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px}
+.scard h2{font-size:13px;font-weight:700;color:var(--green);text-transform:uppercase;letter-spacing:.7px;margin-bottom:14px;display:flex;align-items:center;gap:7px}
+.at{display:flex;align-items:center;gap:14px;padding:10px 0}
+.tf{flex:1;background:#1a0a0a;border:1px solid #7f1d1d;border-radius:10px;padding:13px 14px}
+.tf .lb{font-size:10px;color:var(--red);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;font-weight:700}
+.tf p{color:#fca5a5;font-size:13px}
+.ai-icon{color:var(--green);font-size:22px;flex-shrink:0}
+.to{flex:1;background:#071a0f;border:1px solid var(--green-dim);border-radius:10px;padding:13px 14px}
+.to .lb{font-size:10px;color:var(--green);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;font-weight:700}
+.to p{color:#6ee7b7;font-size:13px}
+.axl{display:flex;flex-direction:column;gap:7px;margin-top:10px}
+.ax{display:flex;align-items:center;gap:9px;background:var(--surface2);border-radius:8px;padding:9px 13px;border-left:3px solid var(--green)}
+.axn{width:20px;height:20px;background:var(--green);color:#000;border-radius:50%;font-size:11px;font-weight:800;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.axt{font-size:13px;color:var(--text)}
+.rcs{display:flex;gap:9px;flex-wrap:wrap;margin-top:12px}
+.rc2{background:var(--pill);border:1px solid var(--green-dim);color:var(--green);border-radius:8px;padding:7px 14px;font-size:12px;font-weight:600;display:flex;align-items:center;gap:5px}
+
+/* EMAIL */
+.ecard{background:var(--surface);border:1px solid var(--border);border-radius:14px;overflow:hidden}
+.etb{display:flex;align-items:center;justify-content:space-between;padding:12px 18px;background:var(--surface2);border-bottom:1px solid var(--border)}
+.etb span{font-size:11px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;font-weight:600}
+.bcopy{background:var(--surface);border:1px solid var(--border);color:var(--text);border-radius:6px;padding:5px 13px;font-size:11px;cursor:pointer;font-weight:600;display:flex;align-items:center;gap:5px;transition:all .18s}
+.bcopy:hover,.bcopy.ok{background:var(--pill);border-color:var(--green-dim);color:var(--green)}
+.ef{display:flex;align-items:baseline;gap:11px;padding:9px 18px;border-bottom:1px solid var(--border)}
+.ef .fl{font-size:11px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.5px;width:55px;flex-shrink:0}
+.ef .fv{font-size:13px;color:var(--text)}
+.eb{padding:22px;font-size:14px;color:#cbd5e1;line-height:1.8;white-space:pre-wrap}
+
+/* FOOTER */
+footer{text-align:center;padding:24px;color:var(--muted);font-size:11px;border-top:1px solid var(--border);margin-top:36px}
+footer strong{color:var(--green)}
+
+/* ═══ AI PANEL ═══ */
+#aiBtn{
+  position:fixed;bottom:28px;right:28px;
+  width:56px;height:56px;border-radius:50%;
+  background:linear-gradient(135deg,#00c47a,#00875a);
+  border:none;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 20px rgba(0,196,122,.45);
+  z-index:1001;transition:transform .2s,box-shadow .2s;
+}
+#aiBtn:hover{transform:scale(1.1);box-shadow:0 6px 28px rgba(0,196,122,.6)}
+#aiBtn svg{width:24px;height:24px;fill:none;stroke:#000;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ai-pulse{position:absolute;width:56px;height:56px;border-radius:50%;background:rgba(0,196,122,.25);animation:aiPulse 2.5s infinite}
+@keyframes aiPulse{0%{transform:scale(1);opacity:1}100%{transform:scale(2);opacity:0}}
+
+#aiPanel{
+  position:fixed;top:0;right:0;bottom:0;width:400px;
+  background:var(--surface);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;
+  z-index:1000;
+  transform:translateX(100%);
+  transition:transform .32s cubic-bezier(.4,0,.2,1);
+  box-shadow:-12px 0 40px rgba(0,0,0,.5);
+}
+#aiPanel.open{transform:translateX(0)}
+
+.ai-hd{
+  background:linear-gradient(135deg,#071a0f,#06101c);
+  border-bottom:1px solid var(--border);
+  padding:16px 18px;
+  display:flex;align-items:center;gap:12px;
+  flex-shrink:0;
+}
+.ai-hd-icon{
+  width:36px;height:36px;border-radius:50%;
+  background:linear-gradient(135deg,var(--green),var(--green-dim));
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;
+}
+.ai-hd-icon svg{width:18px;height:18px;fill:none;stroke:#000;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.ai-hd-text{flex:1}
+.ai-hd-text strong{font-size:14px;color:#fff;display:block}
+.ai-hd-text span{font-size:11px;color:var(--green);text-transform:uppercase;letter-spacing:.7px}
+.ai-hd-close{background:none;border:none;color:var(--muted);cursor:pointer;font-size:20px;line-height:1;padding:4px;border-radius:6px;transition:color .18s}
+.ai-hd-close:hover{color:var(--text)}
+
+/* API SETUP */
+#apiSetup{
+  flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;
+  padding:28px;text-align:center;gap:16px;
+}
+.ai-setup-icon{font-size:48px;margin-bottom:4px}
+#apiSetup h3{font-size:16px;font-weight:700;color:#fff}
+#apiSetup p{font-size:13px;color:var(--muted);line-height:1.65}
+.api-input-wrap{width:100%;display:flex;flex-direction:column;gap:8px}
+#apiKeyIn{
+  width:100%;background:var(--surface2);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;color:var(--text);font-size:13px;
+  font-family:monospace;letter-spacing:.5px;
+  transition:border-color .18s;
+}
+#apiKeyIn:focus{outline:none;border-color:var(--green-dim)}
+#apiKeyIn::placeholder{color:var(--muted);font-family:'Segoe UI',system-ui,sans-serif;letter-spacing:0}
+.btn-activate{
+  width:100%;background:var(--green);color:#000;border:none;border-radius:8px;
+  padding:10px;font-size:13px;font-weight:700;cursor:pointer;
+  text-transform:uppercase;letter-spacing:.5px;transition:opacity .18s;
+}
+.btn-activate:hover{opacity:.85}
+.api-note{font-size:11px;color:var(--muted);margin-top:4px}
+.api-note a{color:var(--green)}
+
+/* CHAT INTERFACE */
+#chatIface{flex:1;display:flex;flex-direction:column;overflow:hidden}
+
+.quick-wrap{padding:12px 14px;border-bottom:1px solid var(--border);flex-shrink:0}
+.quick-label{font-size:10px;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:8px;font-weight:600}
+.quick-pills{display:flex;flex-wrap:wrap;gap:6px}
+.qp{
+  background:var(--surface2);border:1px solid var(--border);
+  color:var(--text);border-radius:16px;padding:5px 12px;font-size:11px;
+  cursor:pointer;font-weight:500;transition:all .18s;white-space:nowrap;
+}
+.qp:hover{background:var(--pill);border-color:var(--green-dim);color:var(--green)}
+
+#msgs{
+  flex:1;overflow-y:auto;padding:16px 14px;
+  display:flex;flex-direction:column;gap:14px;
+  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
+}
+
+.msg{display:flex;gap:10px;align-items:flex-start}
+.msg.user{flex-direction:row-reverse}
+.msg-av{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:12px;font-weight:700;
+}
+.msg.ai .msg-av{background:linear-gradient(135deg,var(--green),var(--green-dim));color:#000}
+.msg.user .msg-av{background:var(--surface2);border:1px solid var(--border);color:var(--text)}
+.msg-bubble{
+  max-width:82%;border-radius:14px;padding:11px 14px;
+  font-size:13px;line-height:1.65;
+}
+.msg.ai .msg-bubble{background:var(--surface2);border:1px solid var(--border);color:var(--text);border-top-left-radius:4px}
+.msg.user .msg-bubble{background:linear-gradient(135deg,var(--green),var(--green-dim));color:#000;font-weight:500;border-top-right-radius:4px}
+
+/* Markdown in AI bubbles */
+.msg.ai .msg-bubble strong{color:#fff}
+.msg.ai .msg-bubble h2,.msg.ai .msg-bubble h3{color:var(--green);font-size:12px;text-transform:uppercase;letter-spacing:.7px;margin:10px 0 6px;font-weight:700}
+.msg.ai .msg-bubble ul,.msg.ai .msg-bubble ol{padding-left:16px;margin:6px 0}
+.msg.ai .msg-bubble li{margin-bottom:4px}
+.msg.ai .msg-bubble code{background:var(--bg);border-radius:4px;padding:1px 6px;font-family:monospace;font-size:12px;color:var(--teal)}
+.msg.ai .msg-bubble pre{background:var(--bg);border-radius:8px;padding:12px;margin:8px 0;overflow-x:auto}
+.msg.ai .msg-bubble pre code{background:none;padding:0;color:#e2e8f0}
+.msg.ai .msg-bubble hr{border:none;border-top:1px solid var(--border);margin:10px 0}
+.msg.ai .msg-bubble p{margin-bottom:8px}
+.msg.ai .msg-bubble p:last-child{margin-bottom:0}
+
+.cursor{display:inline-block;width:2px;height:14px;background:var(--green);vertical-align:middle;animation:blink .7s infinite;margin-left:2px}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+
+.msg-ts{font-size:10px;color:var(--muted);margin-top:4px;text-align:right}
+.msg.user .msg-ts{text-align:left}
+
+.typing-ind{display:flex;gap:4px;align-items:center;padding:6px 0}
+.typing-ind span{width:6px;height:6px;border-radius:50%;background:var(--green-dim);animation:typing .9s infinite}
+.typing-ind span:nth-child(2){animation-delay:.15s}
+.typing-ind span:nth-child(3){animation-delay:.3s}
+@keyframes typing{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-6px)}}
+
+.chat-bar{
+  padding:12px 14px;border-top:1px solid var(--border);
+  display:flex;gap:9px;align-items:flex-end;flex-shrink:0;
+}
+#chatIn{
+  flex:1;background:var(--surface2);border:1px solid var(--border);
+  border-radius:12px;padding:9px 13px;color:var(--text);font-size:13px;
+  resize:none;max-height:120px;min-height:40px;font-family:'Segoe UI',system-ui,sans-serif;
+  line-height:1.55;transition:border-color .18s;
+}
+#chatIn:focus{outline:none;border-color:var(--green-dim)}
+#chatIn::placeholder{color:var(--muted)}
+#sendBtn{
+  width:36px;height:36px;flex-shrink:0;
+  background:var(--green);border:none;border-radius:10px;
+  color:#000;cursor:pointer;display:flex;align-items:center;justify-content:center;
+  transition:opacity .18s;
+}
+#sendBtn:hover{opacity:.85}
+#sendBtn:disabled{background:var(--surface2);color:var(--muted);cursor:not-allowed;opacity:1}
+#sendBtn svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.5;stroke-linecap:round;stroke-linejoin:round}
+
+.ai-footer{padding:8px 14px;text-align:center;border-top:1px solid var(--border);flex-shrink:0}
+.ai-footer span{font-size:10px;color:var(--muted)}
+.ai-footer button{background:none;border:none;color:var(--muted);cursor:pointer;font-size:10px;text-decoration:underline;margin-left:6px}
+.ai-footer button:hover{color:var(--text)}
+
+/* Responsive */
+@media(max-width:700px){
+  .sgrid{grid-template-columns:1fr}
+  header{padding:18px}
+  main{padding:18px}
+  .toolbar{padding:10px 18px}
+  .g7{grid-template-columns:1fr}
+  #aiPanel{width:100%}
+}
+@media print{
+  body{background:#fff;color:#000}
+  header,.toolbar,.sig-bd,.sig,.blk,table,.scard,.ecard{background:#fff !important;border-color:#ccc !important;color:#000 !important;break-inside:avoid}
+  .sig-bd{display:block !important}
+  .btn-print,.tabs,#aiBtn,#aiPanel{display:none !important}
+  .chv{display:none}
+  main{padding:10px}
+  section.view{display:block !important}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <div class="h-title">Reporte Ejecutivo — <span>Ecodeli</span> Inteligencia Comercial</div>
+    <div class="h-sub">Enfoque accionable · 5 señales estratégicas · Mayo 2026</div>
+  </div>
+  <div class="h-badges">
+    <span class="badge">⚡ 5 Señales</span>
+    <span class="badge a">🎯 Alta Prioridad</span>
+    <span class="badge t">📋 5 Entregables</span>
+  </div>
+</header>
+
+<div class="toolbar">
+  <div class="tabs">
+    <button class="tab active" onclick="showV('signals',this)">Señales</button>
+    <button class="tab" onclick="showV('matrix',this)">Matriz</button>
+    <button class="tab" onclick="showV('strategy',this)">Estrategia</button>
+    <button class="tab" onclick="showV('email',this)">Correo</button>
+  </div>
+  <button class="btn-print" onclick="window.print()">🖨 Imprimir</button>
+</div>
+
+<main>
+
+<!-- ── SEÑALES ── -->
+<section class="view active" id="view-signals">
+  <div class="stats">
+    <div class="sc"><div class="n">5</div><div class="l">Señales detectadas</div></div>
+    <div class="sc a"><div class="n">5</div><div class="l">Entregables inmediatos</div></div>
+    <div class="sc t"><div class="n">↑</div><div class="l">Ticket promedio</div></div>
+    <div class="sc"><div class="n">48h</div><div class="l">Ventana de acción</div></div>
+    <div class="sc"><div class="n">3</div><div class="l">Verticales cubiertas</div></div>
+  </div>
+  <div class="sigs">
+
+    <div class="sig" id="c1">
+      <div class="sig-hd" onclick="toggleC(1)">
+        <div class="sig-n">1</div>
+        <div class="sig-t"><h2>Modelo Híbrido — Producto + Servicio Integral</h2><div class="src">Fuente: LinkedIn corporativo · Descripciones públicas</div></div>
+        <div class="sig-meta"><span class="pri">Alta</span><span class="chv">▾</span></div>
+      </div>
+      <div class="sig-bd"><div class="g7">
+        <div class="blk"><h3>📊 Dato público</h3><p>Perfiles públicos describen la oferta como <strong>productos ecológicos + servicios integrales de limpieza profesional</strong>, incluyendo sanitización y operación.</p></div>
+        <div class="blk"><h3>💡 Significado comercial</h3><p>Ecodeli <strong>no compite como proveedor tradicional</strong>: compite como operador completo. Permite capturar contratos más grandes (outsourcing + insumos).</p></div>
+        <div class="blk wn"><h3>⚠️ Problema para ventas</h3><ul><li>Pierde margen al cotizar producto aislado</li><li>Pierde contratos integrales</li><li>Queda fuera de decisiones estratégicas</li></ul></div>
+        <div class="blk ac"><h3>⚙️ Solución concreta</h3><p>Reconfigurar oferta a modelo <strong>"operación + suministro"</strong>:</p><ul style="margin-top:7px"><li>Producto + reposición automática</li><li>Control de consumo</li><li>KPI operativos</li><li>Supervisión en sitio</li></ul></div>
+        <div class="blk full"><h3>📁 Entregable hoy</h3>
+          <div class="dlv"><div class="dt">Documento: "Modelo Ecodeli Operación Total (versión comercial)"</div><ul><li>Esquema servicio + insumos</li><li>Comparativo vs proveedor tradicional</li><li>Impacto en costos del cliente</li></ul></div>
+          <div class="ps">Hoy no estamos compitiendo contra proveedores de insumos, estamos compitiendo contra operadores. La propuesta es migrar a un modelo donde Ecodeli controle operación, consumo y continuidad, no solo suministro.</div>
+          <div class="dr"><span class="rc">Dirección comercial</span><span class="dc">⏱ 24h</span></div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="sig" id="c2">
+      <div class="sig-hd" onclick="toggleC(2)">
+        <div class="sig-n">2</div>
+        <div class="sig-t"><h2>Posicionamiento en Cuentas Institucionales</h2><div class="src">Fuente: Registros públicos · Portales oficiales · Contratos</div></div>
+        <div class="sig-meta"><span class="pri">Alta</span><span class="chv">▾</span></div>
+      </div>
+      <div class="sig-bd"><div class="g7">
+        <div class="blk"><h3>📊 Dato público</h3><p>Registros públicos muestran a Ecodeli participando en <strong>servicios de limpieza institucional y sector salud</strong> (portales oficiales y documentos públicos).</p></div>
+        <div class="blk"><h3>💡 Significado comercial</h3><p>Ecodeli ya está validado en licitaciones, cumplimiento normativo y operación crítica. Entrada directa a <strong>hospitales, universidades y gobierno</strong>.</p></div>
+        <div class="blk wn"><h3>⚠️ Problema para ventas</h3><ul><li>No usa casos de éxito como ventaja competitiva</li><li>No acelera licitaciones</li><li>No estandariza propuestas institucionales</li></ul></div>
+        <div class="blk ac"><h3>⚙️ Solución concreta</h3><p>Crear <strong>portafolio institucional reutilizable</strong>:</p><ul style="margin-top:7px"><li>Casos documentados por vertical</li><li>Cumplimiento normativo certificado</li><li>Capacidades operativas probadas</li></ul></div>
+        <div class="blk full"><h3>📁 Entregable hoy</h3>
+          <div class="dlv"><div class="dt">Carpeta: "Casos institucionales Ecodeli (versión ventas)"</div><ul><li>Tipo de cliente + sector</li><li>Problema detectado</li><li>Solución aplicada</li><li>Resultado medido</li></ul></div>
+          <div class="ps">Ya operamos en entornos donde el error no es opción. Podemos trasladar ese mismo estándar a tu operación con control total y cumplimiento documentado.</div>
+          <div class="dr"><span class="rc">Licitaciones + Ventas</span><span class="dc">⏱ 48h</span></div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="sig" id="c3">
+      <div class="sig-hd" onclick="toggleC(3)">
+        <div class="sig-n">3</div>
+        <div class="sig-t"><h2>Liderazgo Activo — Agustín Bujaidar Solís</h2><div class="src">Fuente: Actividad pública LinkedIn · Convenciones comerciales</div></div>
+        <div class="sig-meta"><span class="pri">Alta</span><span class="chv">▾</span></div>
+      </div>
+      <div class="sig-bd"><div class="g7">
+        <div class="blk"><h3>📊 Dato público</h3><p>Actividad pública muestra participación en <strong>crecimiento empresarial, convenciones, alianzas (Tork) y comunicación organizacional</strong>.</p></div>
+        <div class="blk"><h3>💡 Significado comercial</h3><p>Dirección enfocada en <strong>expansión, eficiencia, alianzas estratégicas y posicionamiento</strong>. Visión alineada con propuestas de escala.</p></div>
+        <div class="blk wn"><h3>⚠️ Problema para ventas</h3><ul><li>Sin conexión con esa visión, ventas queda operativa</li><li>No escala influencia interna</li><li>No impulsa cambio estructural</li></ul></div>
+        <div class="blk ac"><h3>⚙️ Solución concreta</h3><p>Subir propuestas en <strong>formato ejecutivo</strong>:</p><ul style="margin-top:7px"><li>Impacto en ingresos cuantificado</li><li>Eficiencia operativa demostrada</li><li>Diferenciación vs competencia</li></ul></div>
+        <div class="blk full"><h3>📁 Entregable hoy</h3>
+          <div class="dlv"><div class="dt">Documento 1 página: "3 iniciativas para escalar cuentas estratégicas Ecodeli"</div><ul><li>Palanca 1: Paquetización por industria</li><li>Palanca 2: Control de consumo</li><li>Palanca 3: Modelo de operación integral</li></ul></div>
+          <div class="ps">Detectamos una oportunidad clara de escalar cuentas estratégicas con tres palancas: paquetización por industria, control de consumo y modelo de operación integral.</div>
+          <div class="dr"><span class="rc">Marilú</span><span class="dc" style="background:#1f0a0a;border-color:#7f1d1d;color:#ef4444">🔴 Hoy</span></div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="sig" id="c4">
+      <div class="sig-hd" onclick="toggleC(4)">
+        <div class="sig-n">4</div>
+        <div class="sig-t"><h2>Alianzas con Marcas Globales (ej. Tork)</h2><div class="src">Fuente: Publicaciones públicas A. Bujaidar · Colaboraciones</div></div>
+        <div class="sig-meta"><span class="pri">Alta</span><span class="chv">▾</span></div>
+      </div>
+      <div class="sig-bd"><div class="g7">
+        <div class="blk"><h3>📊 Dato público</h3><p>Publicaciones mencionan colaboración con soluciones tipo <strong>Tork-Ecodeli</strong>, enfocadas en ahorro y sustentabilidad.</p></div>
+        <div class="blk"><h3>💡 Significado comercial</h3><p>Ecodeli puede posicionarse como <strong>proveedor premium, solución de eficiencia y socio estratégico en reducción de costos operativos</strong>.</p></div>
+        <div class="blk wn"><h3>⚠️ Problema para ventas</h3><ul><li>No traduce alianzas en ROI tangible</li><li>No cuantifica el ahorro</li><li>No hay argumento financiero estructurado</li></ul></div>
+        <div class="blk ac"><h3>⚙️ Solución concreta</h3><p>Convertir alianzas en <strong>casos de ahorro cuantificado</strong> con metodología replicable por cliente.</p></div>
+        <div class="blk full"><h3>📁 Entregable hoy</h3>
+          <div class="dlv"><div class="dt">Herramienta: "Calculadora de ahorro Ecodeli (consumo vs control)"</div><ul><li>Input: consumo actual del cliente</li><li>Output: ahorro proyectado mensual / anual</li><li>Comparativo: con vs sin modelo Ecodeli</li></ul></div>
+          <div class="ps">No es un cambio de producto, es una optimización de consumo con impacto directo en tu costo operativo mensual.</div>
+          <div class="dr"><span class="rc">Comercial + Análisis</span><span class="dc">⏱ 24h</span></div>
+        </div>
+      </div></div>
+    </div>
+
+    <div class="sig" id="c5">
+      <div class="sig-hd" onclick="toggleC(5)">
+        <div class="sig-n">5</div>
+        <div class="sig-t"><h2>Capacidad Logística y Estructura Nacional</h2><div class="src">Fuente: Información pública corporativa · Perfil empresa</div></div>
+        <div class="sig-meta"><span class="pri">Alta</span><span class="chv">▾</span></div>
+      </div>
+      <div class="sig-bd"><div class="g7">
+        <div class="blk"><h3>📊 Dato público</h3><p>Ecodeli Industrial posicionada como empresa con <strong>cobertura nacional, estructura operativa amplia y múltiples líneas de producto</strong>.</p></div>
+        <div class="blk"><h3>💡 Significado comercial</h3><p>Capacidad de atender <strong>cadenas multi-sede, corporativos grandes y operaciones distribuidas</strong> desde un solo contrato marco.</p></div>
+        <div class="blk wn"><h3>⚠️ Problema para ventas</h3><ul><li>No se ofrecen contratos nacionales</li><li>Se vende por sucursal, no por empresa</li><li>Capacidad nacional sub-explotada</li></ul></div>
+        <div class="blk ac"><h3>⚙️ Solución concreta</h3><p>Diseñar <strong>contratos marco multi-sede</strong> con incentivos por volumen y SLA estandarizados.</p></div>
+        <div class="blk full"><h3>📁 Entregable hoy</h3>
+          <div class="dlv"><div class="dt">Propuesta: "Modelo contrato nacional Ecodeli"</div><ul><li>Precios escalonados por volumen / sedes</li><li>SLA definido por tipo de operación</li><li>Cobertura geográfica documentada</li></ul></div>
+          <div class="ps">En lugar de gestionar proveedores por sucursal, centralizamos operación, estandarizamos servicio y reducimos costos administrativos del cliente.</div>
+          <div class="dr"><span class="rc">Dirección comercial</span><span class="dc">⏱ 48h</span></div>
+        </div>
+      </div></div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ── MATRIZ ── -->
+<section class="view" id="view-matrix">
+  <div class="stats" style="margin-bottom:24px">
+    <div class="sc"><div class="n">1</div><div class="l">Acción para hoy</div></div>
+    <div class="sc a"><div class="n">2</div><div class="l">Acciones en 24h</div></div>
+    <div class="sc t"><div class="n">2</div><div class="l">Acciones en 48h</div></div>
+  </div>
+  <div class="mwrap">
+    <table>
+      <thead><tr><th>#</th><th>Acción</th><th>Entregable</th><th>Impacto</th><th>Responsable</th><th>Plazo</th></tr></thead>
+      <tbody>
+        <tr><td style="color:var(--muted);font-weight:700">01</td><td style="font-weight:600;color:#fff">One-page ejecutivo</td><td style="color:#94a3b8">3 iniciativas para escalar cuentas</td><td><div class="ibar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="rc">Marilú</span></td><td class="tn">🔴 Hoy</td></tr>
+        <tr><td style="color:var(--muted);font-weight:700">02</td><td style="font-weight:600;color:#fff">Modelo operación total</td><td style="color:#94a3b8">Documento comercial Operación Total</td><td><div class="ibar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="rc">Dir. Comercial</span></td><td class="t2">🟡 24h</td></tr>
+        <tr><td style="color:var(--muted);font-weight:700">03</td><td style="font-weight:600;color:#fff">Calculadora de ahorro</td><td style="color:#94a3b8">Herramienta consumo vs control</td><td><div class="ibar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="rc">Comercial + Análisis</span></td><td class="t2">🟡 24h</td></tr>
+        <tr><td style="color:var(--muted);font-weight:700">04</td><td style="font-weight:600;color:#fff">Casos institucionales</td><td style="color:#94a3b8">Carpeta ventas con casos por vertical</td><td><div class="ibar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="rc">Licitaciones</span></td><td class="t4">🔵 48h</td></tr>
+        <tr><td style="color:var(--muted);font-weight:700">05</td><td style="font-weight:600;color:#fff">Contrato multi-sede</td><td style="color:#94a3b8">Modelo contrato nacional con SLA</td><td><div class="ibar"><div class="bar"></div><span style="font-size:11px;color:var(--green)">Alto</span></div></td><td><span class="rc">Dirección</span></td><td class="t4">🔵 48h</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ── ESTRATEGIA ── -->
+<section class="view" id="view-strategy">
+  <div class="sgrid">
+    <div class="scard">
+      <h2>🏢 Propuesta Ecodeli — Nivel Estratégico</h2>
+      <div class="at">
+        <div class="tf"><div class="lb">De</div><p>Venta por producto aislado</p></div>
+        <div class="ai-icon">→</div>
+        <div class="to"><div class="lb">A</div><p>Venta por solución operativa integral</p></div>
+      </div>
+      <div class="axl">
+        <div class="ax"><div class="axn">1</div><div class="axt">Paquetización por industria</div></div>
+        <div class="ax"><div class="axn">2</div><div class="axt">Control de consumo medible</div></div>
+        <div class="ax"><div class="axn">3</div><div class="axt">Operación integral en sitio</div></div>
+        <div class="ax"><div class="axn">4</div><div class="axt">Contratos multi-sede nacionales</div></div>
+      </div>
+      <div class="rcs">
+        <div class="rc2"><span>↑</span> Ticket promedio</div>
+        <div class="rc2"><span>↑</span> Contratos grandes</div>
+        <div class="rc2"><span>↑</span> Diferenciación</div>
+      </div>
+    </div>
+    <div class="scard">
+      <h2>👤 Propuesta para Marilú</h2>
+      <div class="at">
+        <div class="tf"><div class="lb">De</div><p>Ejecutora de ventas</p></div>
+        <div class="ai-icon">→</div>
+        <div class="to"><div class="lb">A</div><p>Arquitecta de soluciones estratégicas</p></div>
+      </div>
+      <div class="axl">
+        <div class="ax" style="border-color:var(--teal)"><div class="axn" style="background:var(--teal)">1</div><div class="axt">Usar paquetes por industria en cada cotización</div></div>
+        <div class="ax" style="border-color:var(--teal)"><div class="axn" style="background:var(--teal)">2</div><div class="axt">Vender ahorro cuantificado, no producto</div></div>
+        <div class="ax" style="border-color:var(--teal)"><div class="axn" style="background:var(--teal)">3</div><div class="axt">Proponer pilotos de 30 días con KPI</div></div>
+        <div class="ax" style="border-color:var(--teal)"><div class="axn" style="background:var(--teal)">4</div><div class="axt">Escalar cuentas a contrato multi-sede</div></div>
+      </div>
+    </div>
+  </div>
+  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:14px">
+    <div class="blk hl"><h3>🎯 Pitch señal 1</h3><p>Hoy no competimos contra proveedores de insumos, competimos contra operadores. Ecodeli controla operación, consumo y continuidad.</p></div>
+    <div class="blk hl"><h3>🏥 Pitch señal 2</h3><p>Ya operamos donde el error no es opción. Trasladamos ese estándar a tu operación con control total y cumplimiento documentado.</p></div>
+    <div class="blk hl"><h3>📈 Pitch señal 3</h3><p>Tres palancas claras: paquetización por industria, control de consumo y modelo de operación integral.</p></div>
+    <div class="blk hl"><h3>💰 Pitch señal 4</h3><p>No es un cambio de producto, es una optimización de consumo con impacto directo en tu costo operativo mensual.</p></div>
+    <div class="blk hl"><h3>🗺️ Pitch señal 5</h3><p>Centralizamos operación, estandarizamos servicio y reducimos costos administrativos. Un contrato para toda la empresa.</p></div>
+  </div>
+</section>
+
+<!-- ── CORREO ── -->
+<section class="view" id="view-email">
+  <div class="ecard">
+    <div class="etb">
+      <span>Correo Reenviable — Listo para enviar</span>
+      <button class="bcopy" id="bcopy" onclick="copyMail()">📋 Copiar correo</button>
+    </div>
+    <div class="ef"><span class="fl">Asunto</span><span class="fv" style="color:#fff;font-weight:600">Propuesta para acelerar cuentas estratégicas Ecodeli</span></div>
+    <div class="ef"><span class="fl">Para</span><span class="fv">[Dirección / Responsable]</span></div>
+    <div class="ef"><span class="fl">De</span><span class="fv">Marilú</span></div>
+    <div class="eb" id="mailBody">Hola,
+
+Identifiqué una oportunidad clara para fortalecer el posicionamiento comercial de Ecodeli.
+
+Hoy tenemos capacidades para competir en cuentas grandes, pero el enfoque sigue centrado en producto. La propuesta es evolucionar hacia soluciones integrales que incluyan operación, control de consumo y continuidad.
+
+Las acciones inmediatas son:
+
+  • Paquetes por industria
+  • Calculadora de ahorro
+  • Casos institucionales
+  • Contratos multi-sede
+
+Esto permitirá aumentar el ticket promedio, acelerar cierres y posicionar a Ecodeli como socio operativo, no solo proveedor.
+
+Quedo disponible para avanzar con una implementación inmediata.
+
+Saludos.</div>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  Reporte generado para <strong>Ecodeli Industrial</strong> · Inteligencia Comercial Accionable · Mayo 2026
+</footer>
+
+<!-- ═══ AI FLOATING BUTTON ═══ -->
+<button id="aiBtn" onclick="toggleAI()" title="Asistente Ecodeli IA">
+  <div class="ai-pulse"></div>
+  <svg viewBox="0 0 24 24"><path d="M12 2a2 2 0 0 1 2 2c0 .74-.4 1.39-1 1.73V7h1a7 7 0 0 1 7 7h1a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1h-1a7 7 0 0 1-7 7H9a7 7 0 0 1-7-7H1a1 1 0 0 1-1-1v-3a1 1 0 0 1 1-1h1a7 7 0 0 1 7-7h1V5.73A2 2 0 0 1 10 4a2 2 0 0 1 2-2z" style="stroke:none;fill:#000"/><circle cx="9" cy="14" r="1.5" fill="#00c47a"/><circle cx="15" cy="14" r="1.5" fill="#00c47a"/></svg>
+</button>
+
+<!-- ═══ AI PANEL ═══ -->
+<div id="aiPanel">
+
+  <div class="ai-hd">
+    <div class="ai-hd-icon">
+      <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+    </div>
+    <div class="ai-hd-text">
+      <strong>Asistente Ecodeli IA</strong>
+      <span id="aiStatus">Listo para asistirte</span>
+    </div>
+    <button class="ai-hd-close" onclick="toggleAI()">✕</button>
+  </div>
+
+  <!-- API KEY SETUP -->
+  <div id="apiSetup">
+    <div class="ai-setup-icon">🤖</div>
+    <h3>Activa tu asistente IA</h3>
+    <p>Genera entregables completos, correos personalizados y pitches listos para usar. Solo necesitas tu API Key de Anthropic.</p>
+    <div class="api-input-wrap">
+      <input type="password" id="apiKeyIn" placeholder="sk-ant-api03-..." autocomplete="off" />
+      <button class="btn-activate" onclick="activateAI()">⚡ Activar Asistente</button>
+    </div>
+    <p class="api-note">Tu clave se guarda solo en esta sesión del navegador y se usa únicamente para llamadas a Anthropic.</p>
+  </div>
+
+  <!-- CHAT INTERFACE -->
+  <div id="chatIface" style="display:none;flex:1;flex-direction:column;overflow:hidden;display:none">
+
+    <div class="quick-wrap">
+      <div class="quick-label">Acciones rápidas</div>
+      <div class="quick-pills">
+        <button class="qp" onclick="quick('Genera el Entregable 1 completo: Documento Modelo Ecodeli Operación Total versión comercial. Inclúyelo listo para presentar.')">📄 Entregable 1</button>
+        <button class="qp" onclick="quick('Genera el Entregable 3 completo: documento de 1 página con las 3 iniciativas para escalar cuentas estratégicas Ecodeli. Listo para imprimir.')">📄 One-pager ejecutivo</button>
+        <button class="qp" onclick="quick('Escribe un correo completo personalizado para el director de operaciones de un hospital privado, ofreciendo el servicio integral de Ecodeli.')">🏥 Correo hospital</button>
+        <button class="qp" onclick="quick('Genera la Calculadora de Ahorro Ecodeli: crea una tabla con estimaciones de ahorro para una empresa con 50 empleados, 100 y 500 empleados respectivamente.')">💰 Calcular ahorro</button>
+        <button class="qp" onclick="quick('Dame un pitch de 2 minutos para una reunión con el director de compras de una cadena de supermercados. Debe ser persuasivo y enfocado en ROI.')">🎯 Pitch reunión</button>
+        <button class="qp" onclick="quick('¿Cuáles son las 3 objeciones más comunes que puede tener un cliente y cómo responderlas de forma contundente usando las fortalezas de Ecodeli?')">💬 Objeciones</button>
+      </div>
+    </div>
+
+    <div id="msgs"></div>
+
+    <div class="chat-bar">
+      <textarea id="chatIn" placeholder="Escribe aquí o usa las acciones rápidas…" rows="1"
+        onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendMsg()}"
+        oninput="autoResize(this)"></textarea>
+      <button id="sendBtn" onclick="sendMsg()">
+        <svg viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </button>
+    </div>
+
+    <div class="ai-footer">
+      <span>Powered by Claude · Haiku 4.5</span>
+      <button onclick="clearChat()">Limpiar chat</button>
+      <button onclick="changeKey()">Cambiar clave</button>
+    </div>
+
+  </div><!-- /chatIface -->
+
+</div><!-- /aiPanel -->
+
+<script>
+// ── STATE ──
+let apiKey = sessionStorage.getItem('eco_k') || '';
+let history = [];
+let streaming = false;
+
+const SYSTEM = `Eres el Asistente Estratégico IA de Ecodeli Industrial, empresa mexicana líder en productos ecológicos y servicios integrales de limpieza profesional.
+
+CONTEXTO DE ECODELI:
+- Modelo: Producto ecológico + Servicio integral (operación, sanitización, supervisión, KPI)
+- Posicionamiento: operador completo, NO proveedor tradicional
+- Validación: sector salud, institucional, gobierno (licitaciones ganadas)
+- Alianzas: Tork y otras marcas globales de eficiencia
+- Capacidad: cobertura nacional, estructura multi-sede
+- Liderazgo: Agustín Bujaidar Solís (enfocado en expansión, eficiencia y alianzas)
+
+TRANSFORMACIÓN COMERCIAL:
+- De: venta por producto aislado
+- A: venta por solución operativa integral (operación + suministro + control de consumo)
+
+5 SEÑALES DETECTADAS:
+1. Modelo híbrido → posicionarse como operador, no proveedor
+2. Cuentas institucionales → explotar casos de éxito en licitaciones
+3. Liderazgo activo → alinear propuestas con visión expansión
+4. Alianza Tork → convertir en ROI cuantificado para el cliente
+5. Estructura nacional → contratos marco multi-sede
+
+5 ENTREGABLES PENDIENTES:
+1. "Modelo Ecodeli Operación Total" (24h, Dir. Comercial): esquema servicio+insumos, comparativo vs proveedor tradicional, impacto en costos
+2. "Casos institucionales Ecodeli" (48h, Licitaciones): carpeta por vertical con tipo cliente, problema, solución, resultado
+3. "3 iniciativas para escalar cuentas" (HOY, Marilú): one-pager ejecutivo
+4. "Calculadora de ahorro Ecodeli" (24h, Comercial): herramienta consumo actual vs modelo Ecodeli
+5. "Modelo contrato nacional" (48h, Dirección): precios escalonados, SLA, cobertura
+
+TU ROL:
+- Generar documentos COMPLETOS y listos para usar (no esquemas, el documento real)
+- Escribir correos, propuestas y pitches personalizados listos para enviar
+- Calcular/estimar ahorros con números concretos
+- Preparar respuestas a objeciones
+- Responder preguntas estratégicas
+
+TONO: Ejecutivo, directo, accionable. Siempre en español.
+Cuando generes un documento hazlo COMPLETO. Cuando escribas un correo, escríbelo completo. Usa formato markdown para estructura.`;
+
+// ── UI HELPERS ──
+function showV(name, el) {
+  document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('view-' + name).classList.add('active');
+  el.classList.add('active');
+}
+
+function toggleC(n) {
+  document.getElementById('c' + n).classList.toggle('open');
+}
+
+function copyMail() {
+  const txt = 'Asunto: Propuesta para acelerar cuentas estratégicas Ecodeli\n\n' + document.getElementById('mailBody').innerText;
+  navigator.clipboard.writeText(txt).then(() => {
+    const b = document.getElementById('bcopy');
+    b.textContent = '✓ Copiado';
+    b.classList.add('ok');
+    setTimeout(() => { b.textContent = '📋 Copiar correo'; b.classList.remove('ok'); }, 2000);
+  });
+}
+
+// ── AI PANEL ──
+function toggleAI() {
+  const panel = document.getElementById('aiPanel');
+  panel.classList.toggle('open');
+  if (panel.classList.contains('open') && !apiKey) showSetup();
+  else if (panel.classList.contains('open') && apiKey) showChat();
+}
+
+function showSetup() {
+  document.getElementById('apiSetup').style.display = 'flex';
+  document.getElementById('chatIface').style.display = 'none';
+  document.getElementById('aiStatus').textContent = 'Configuración requerida';
+}
+
+function showChat() {
+  document.getElementById('apiSetup').style.display = 'none';
+  const ci = document.getElementById('chatIface');
+  ci.style.display = 'flex';
+  ci.style.flexDirection = 'column';
+  ci.style.overflow = 'hidden';
+  ci.style.flex = '1';
+  document.getElementById('aiStatus').textContent = 'Listo · Claude Haiku 4.5';
+  if (!document.getElementById('msgs').children.length) {
+    addMsg('ai', '¡Hola! Soy tu asistente estratégico de **Ecodeli**. \n\nPuedo generar todos los entregables pendientes, escribir correos personalizados, preparar pitches para reuniones o calcular ahorros para tus clientes. \n\n**¿Por dónde empezamos?** Usa los botones de arriba o escríbeme directamente.');
+  }
+}
+
+function activateAI() {
+  const k = document.getElementById('apiKeyIn').value.trim();
+  if (!k.startsWith('sk-ant')) {
+    document.getElementById('apiKeyIn').style.borderColor = 'var(--red)';
+    setTimeout(() => document.getElementById('apiKeyIn').style.borderColor = '', 1500);
+    return;
+  }
+  apiKey = k;
+  sessionStorage.setItem('eco_k', k);
+  showChat();
+}
+
+function changeKey() {
+  apiKey = '';
+  sessionStorage.removeItem('eco_k');
+  history = [];
+  document.getElementById('apiKeyIn').value = '';
+  showSetup();
+}
+
+function clearChat() {
+  history = [];
+  document.getElementById('msgs').innerHTML = '';
+  addMsg('ai', 'Chat limpiado. ¿En qué te ayudo ahora?');
+}
+
+// ── CHAT ──
+function addMsg(role, text) {
+  const msgs = document.getElementById('msgs');
+  const el = document.createElement('div');
+  el.className = 'msg ' + role;
+  const av = document.createElement('div');
+  av.className = 'msg-av';
+  av.textContent = role === 'ai' ? '🤖' : 'M';
+  const bubble = document.createElement('div');
+  bubble.className = 'msg-bubble';
+  if (role === 'ai') {
+    bubble.innerHTML = renderMd(text);
+  } else {
+    bubble.textContent = text;
+  }
+  el.appendChild(av);
+  el.appendChild(bubble);
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+  return bubble;
+}
+
+function addTyping() {
+  const msgs = document.getElementById('msgs');
+  const el = document.createElement('div');
+  el.className = 'msg ai';
+  el.id = 'typing';
+  el.innerHTML = '<div class="msg-av">🤖</div><div class="msg-bubble"><div class="typing-ind"><span></span><span></span><span></span></div></div>';
+  msgs.appendChild(el);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function removeTyping() {
+  const t = document.getElementById('typing');
+  if (t) t.remove();
+}
+
+function renderMd(text) {
+  return text
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+    .replace(/```([\s\S]*?)```/g, '<pre><code>$1</code></pre>')
+    .replace(/`([^`]+)`/g, '<code>$1</code>')
+    .replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>')
+    .replace(/\*([^*]+)\*/g, '<em>$1</em>')
+    .replace(/^### (.+)$/gm, '<h3>$1</h3>')
+    .replace(/^## (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^# (.+)$/gm, '<h2>$1</h2>')
+    .replace(/^---$/gm, '<hr>')
+    .replace(/^\d+\. (.+)$/gm, '<li>$1</li>')
+    .replace(/^[-*] (.+)$/gm, '<li>$1</li>')
+    .replace(/(<li>.*<\/li>\n?)+/g, s => '<ul>' + s + '</ul>')
+    .replace(/\n\n/g, '</p><p>')
+    .replace(/\n/g, '<br>')
+    .replace(/^(?!<[a-z])(.+)$/gm, '<p>$1</p>')
+    .replace(/<p><\/p>/g, '');
+}
+
+function autoResize(el) {
+  el.style.height = 'auto';
+  el.style.height = Math.min(el.scrollHeight, 120) + 'px';
+}
+
+function quick(prompt) {
+  document.getElementById('chatIn').value = prompt;
+  sendMsg();
+}
+
+async function sendMsg() {
+  if (streaming) return;
+  const input = document.getElementById('chatIn');
+  const text = input.value.trim();
+  if (!text) return;
+  input.value = '';
+  input.style.height = 'auto';
+
+  addMsg('user', text);
+  history.push({ role: 'user', content: text });
+  if (history.length > 20) history = history.slice(-20);
+
+  streaming = true;
+  document.getElementById('sendBtn').disabled = true;
+  document.getElementById('aiStatus').textContent = 'Generando…';
+
+  addTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'x-api-key': apiKey,
+        'anthropic-version': '2023-06-01',
+        'anthropic-dangerous-direct-browser-access': 'true'
+      },
+      body: JSON.stringify({
+        model: 'claude-haiku-4-5-20251001',
+        max_tokens: 2048,
+        stream: true,
+        system: SYSTEM,
+        messages: history
+      })
+    });
+
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      throw new Error(err.error?.message || `Error ${res.status}`);
+    }
+
+    removeTyping();
+    const msgs = document.getElementById('msgs');
+    const el = document.createElement('div');
+    el.className = 'msg ai';
+    const av = document.createElement('div');
+    av.className = 'msg-av';
+    av.textContent = '🤖';
+    const bubble = document.createElement('div');
+    bubble.className = 'msg-bubble';
+    bubble.innerHTML = '<span class="cursor"></span>';
+    el.appendChild(av);
+    el.appendChild(bubble);
+    msgs.appendChild(el);
+
+    const reader = res.body.getReader();
+    const decoder = new TextDecoder();
+    let buf = '';
+    let fullText = '';
+
+    while (true) {
+      const { done, value } = await reader.read();
+      if (done) break;
+      buf += decoder.decode(value, { stream: true });
+      const lines = buf.split('\n');
+      buf = lines.pop();
+      for (const line of lines) {
+        if (!line.startsWith('data: ')) continue;
+        const data = line.slice(6).trim();
+        if (data === '[DONE]' || data === '') continue;
+        try {
+          const j = JSON.parse(data);
+          if (j.type === 'content_block_delta' && j.delta?.type === 'text_delta') {
+            fullText += j.delta.text;
+            bubble.innerHTML = renderMd(fullText) + '<span class="cursor"></span>';
+            msgs.scrollTop = msgs.scrollHeight;
+          }
+        } catch (_) {}
+      }
+    }
+
+    bubble.innerHTML = renderMd(fullText);
+    history.push({ role: 'assistant', content: fullText });
+
+  } catch (e) {
+    removeTyping();
+    addMsg('ai', `**Error:** ${e.message}\n\nVerifica que tu API key sea válida y tenga créditos disponibles.`);
+  }
+
+  streaming = false;
+  document.getElementById('sendBtn').disabled = false;
+  document.getElementById('aiStatus').textContent = 'Listo · Claude Haiku 4.5';
+  document.getElementById('msgs').scrollTop = document.getElementById('msgs').scrollHeight;
+}
+
+// ── INIT ──
+document.getElementById('c1').classList.add('open');
+if (apiKey) {
+  // Auto-open chat if key exists
+}
+</script>
+</body>
+</html>
