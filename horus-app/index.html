@@ -8,523 +8,243 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Space+Grotesk:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ══════════════════════════════════════════
-   HORUS — SPECTRUM VISION  ·  Design System
-══════════════════════════════════════════ */
 :root{
-  --gold:#ffd700; --gold2:#ffaa00; --gold-dim:rgba(255,215,0,.18);
-  --cyan:#00e5ff; --purple:#9d4edd;
-  --bg:#020208; --bg2:#06060f; --bg3:#0a0a1a;
-  --glass:rgba(8,8,28,.82); --glass2:rgba(12,12,36,.92);
-  --border:rgba(255,215,0,.14); --border2:rgba(255,215,0,.28);
-  --txt:#d8dbff; --txt2:#8890bb; --txt3:#545880;
-  --accent:var(--gold);
-  --acc-rgb:255,215,0;
-  --r:12px;
+  --gold:#ffd700;--gold2:#ffaa00;--gold-dim:rgba(255,215,0,.18);
+  --cyan:#00e5ff;--purple:#9d4edd;
+  --bg:#020208;--bg2:#06060f;--bg3:#0a0a1a;
+  --glass:rgba(8,8,28,.82);--glass2:rgba(12,12,36,.92);
+  --border:rgba(255,215,0,.14);--border2:rgba(255,215,0,.28);
+  --txt:#d8dbff;--txt2:#8890bb;--txt3:#545880;
+  --accent:var(--gold);--acc-rgb:255,215,0;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden}
-body{
-  font-family:'Space Grotesk',sans-serif;
-  background:var(--bg);color:var(--txt);
-  -webkit-font-smoothing:antialiased;
-}
-
-/* ── PARTICLE BG ── */
+body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased}
 #bg{position:fixed;inset:0;z-index:0;pointer-events:none}
 
-/* ── APP SHELL ── */
+/* ── APP GRID ── */
 #app{
-  position:relative;z-index:1;
-  display:grid;
+  position:relative;z-index:1;display:grid;
   grid-template-rows:52px 1fr;
   grid-template-columns:1fr 340px;
   grid-template-areas:"hdr hdr" "cam panel";
   height:100dvh;
 }
 
-/* ══ HEADER ══ */
+/* ── HEADER ── */
 #hdr{
-  grid-area:hdr;
-  display:flex;align-items:center;justify-content:space-between;
-  padding:0 18px;
-  background:rgba(2,2,8,.95);
-  border-bottom:1px solid var(--border2);
-  backdrop-filter:blur(16px);
-  gap:12px;
-  z-index:10;
+  grid-area:hdr;display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;background:rgba(2,2,8,.95);
+  border-bottom:1px solid var(--border2);backdrop-filter:blur(16px);gap:10px;z-index:10;
 }
-#logo{display:flex;align-items:center;gap:10px;flex-shrink:0}
-.eye-svg{filter:drop-shadow(0 0 6px var(--accent));animation:eyepulse 3.5s ease-in-out infinite}
-@keyframes eyepulse{
-  0%,100%{filter:drop-shadow(0 0 5px var(--accent))}
-  50%{filter:drop-shadow(0 0 14px var(--accent)) drop-shadow(0 0 28px rgba(var(--acc-rgb),.35))}
+#logo{display:flex;align-items:center;gap:9px;flex-shrink:0}
+.eye-svg{filter:drop-shadow(0 0 6px var(--accent));animation:eyepulse 3.5s ease-in-out infinite;transition:filter .4s}
+@keyframes eyepulse{0%,100%{filter:drop-shadow(0 0 5px var(--accent))}50%{filter:drop-shadow(0 0 14px var(--accent)) drop-shadow(0 0 28px rgba(var(--acc-rgb),.35))}}
+#hdr-title{font-family:'Orbitron',monospace;font-size:1.3rem;font-weight:900;letter-spacing:.3em;background:linear-gradient(135deg,var(--gold),var(--gold2),var(--cyan));-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+#hdr-sub{font-size:.55rem;color:var(--txt3);letter-spacing:.16em;text-transform:uppercase;margin-top:1px}
+#hdr-badge{
+  display:flex;align-items:center;gap:6px;padding:4px 12px 4px 8px;
+  background:rgba(var(--acc-rgb),.08);border:1px solid rgba(var(--acc-rgb),.25);
+  border-radius:20px;font-size:.67rem;font-weight:600;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--accent);transition:all .35s;flex-shrink:0;
 }
-#hdr-title{
-  font-family:'Orbitron',monospace;
-  font-size:1.35rem;font-weight:900;
-  letter-spacing:.3em;
-  background:linear-gradient(135deg,var(--gold),var(--gold2),var(--cyan));
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  text-shadow:none;
-}
-#hdr-sub{font-size:.55rem;color:var(--txt3);letter-spacing:.18em;text-transform:uppercase;margin-top:1px}
+#hdr-badge .bi{font-size:.9rem}
+#hdr-right{display:flex;align-items:center;gap:5px}
 
-/* Filter badge in header */
-#hdr-filter-badge{
-  display:flex;align-items:center;gap:6px;
-  padding:4px 12px 4px 8px;
-  background:rgba(var(--acc-rgb),.08);
-  border:1px solid rgba(var(--acc-rgb),.25);
-  border-radius:20px;
-  font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--accent);
-  transition:all .3s;
-  flex-shrink:0;
-}
-#hdr-filter-badge .badge-icon{font-size:.9rem}
-
-#hdr-right{display:flex;align-items:center;gap:6px}
-
-/* ══ CAMERA SECTION ══ */
-#cam-sec{
-  grid-area:cam;
-  display:flex;flex-direction:column;
-  background:#000;
-  overflow:hidden;
-  position:relative;
-}
-
-#cam-wrap{
-  position:relative;flex:1;min-height:0;
-  display:flex;align-items:center;justify-content:center;
-  overflow:hidden;background:#000;
-}
+/* ── CAMERA ── */
+#cam-sec{grid-area:cam;display:flex;flex-direction:column;background:#000;overflow:hidden;position:relative}
+#cam-wrap{position:relative;flex:1;min-height:0;display:flex;align-items:center;justify-content:center;overflow:hidden;background:#000}
 #video{display:none}
-#canvas{
-  max-width:100%;max-height:100%;
-  object-fit:contain;
-  display:block;
-  transition:opacity .2s;
-}
+#canvas{max-width:100%;max-height:100%;object-fit:contain;display:block;transition:opacity .2s}
 #canvas.sw{opacity:0}
 
-/* Corner decorations */
-#cam-corners{position:absolute;inset:10px;pointer-events:none}
-.corner{position:absolute;width:22px;height:22px;border-color:var(--accent);border-style:solid;opacity:.7;transition:border-color .4s,opacity .4s}
-.corner:hover{opacity:1}
+/* Corners */
+#corners{position:absolute;inset:10px;pointer-events:none}
+.corn{position:absolute;width:22px;height:22px;border-color:var(--accent);border-style:solid;opacity:.65;transition:border-color .4s}
 .c-tl{top:0;left:0;border-width:2px 0 0 2px;border-radius:3px 0 0 0}
 .c-tr{top:0;right:0;border-width:2px 2px 0 0;border-radius:0 3px 0 0}
 .c-bl{bottom:0;left:0;border-width:0 0 2px 2px;border-radius:0 0 0 3px}
 .c-br{bottom:0;right:0;border-width:0 2px 2px 0;border-radius:0 0 3px 0}
 
-/* Scan line overlay */
-#scan-line{
-  position:absolute;left:0;right:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(var(--acc-rgb),.5),transparent);
-  animation:scan 3s linear infinite;
-  pointer-events:none;
-  opacity:.4;
-}
-@keyframes scan{0%{top:0%}100%{top:100%}}
+/* Scan line */
+#scan{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(var(--acc-rgb),.5),transparent);animation:scan 3s linear infinite;pointer-events:none;opacity:.4}
+@keyframes scan{0%{top:0}100%{top:100%}}
 
-/* Filter overlay info */
-#fov{
-  position:absolute;bottom:0;left:0;right:0;
-  padding:50px 18px 14px;
-  background:linear-gradient(transparent,rgba(2,2,8,.9));
-  pointer-events:none;
+/* Overlay */
+#fov{position:absolute;bottom:0;left:0;right:0;padding:50px 16px 12px;background:linear-gradient(transparent,rgba(2,2,8,.9));pointer-events:none}
+#fov-name{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;color:var(--accent);letter-spacing:.12em;text-shadow:0 0 10px rgba(var(--acc-rgb),.55);transition:color .4s}
+#fov-wl{font-size:.67rem;color:var(--cyan);letter-spacing:.07em;margin-top:2px}
+#fov-tip{font-size:.61rem;color:var(--txt3);margin-top:3px}
+
+/* Cam buttons */
+#cam-btns{position:absolute;top:10px;right:10px;display:flex;flex-direction:column;gap:7px;z-index:5}
+.cbtn{width:36px;height:36px;border-radius:50%;background:rgba(2,2,8,.75);border:1px solid rgba(255,255,255,.14);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.88rem;backdrop-filter:blur(8px);transition:all .18s}
+.cbtn:hover{background:rgba(var(--acc-rgb),.18);border-color:var(--accent);color:#fff}
+
+/* No cam */
+#nocam{position:absolute;inset:0;display:none;flex-direction:column;align-items:center;justify-content:center;gap:14px;color:var(--txt3);font-size:.82rem;text-align:center;padding:32px;background:rgba(2,2,8,.95)}
+#nocam.vis{display:flex}
+
+/* Histogram */
+#histogram{position:absolute;top:10px;left:10px;width:88px;height:44px;background:rgba(0,0,0,.55);border:1px solid rgba(var(--acc-rgb),.18);border-radius:6px;overflow:hidden;pointer-events:none;transition:border-color .4s}
+#hist-canvas{width:100%;height:100%}
+#hist-label{position:absolute;bottom:2px;left:4px;font-size:.5rem;color:rgba(var(--acc-rgb),.6);letter-spacing:.05em;text-transform:uppercase;font-family:'Orbitron',monospace;transition:color .4s}
+
+/* Intensity strip */
+#intensity-row{
+  display:flex;align-items:center;gap:8px;padding:5px 12px;
+  background:rgba(2,2,8,.95);border-top:1px solid rgba(255,255,255,.05);
+  flex-shrink:0;
 }
-#fov-name{
-  font-family:'Orbitron',monospace;
-  font-size:.95rem;font-weight:700;
-  color:var(--accent);letter-spacing:.14em;
-  text-shadow:0 0 12px rgba(var(--acc-rgb),.6);
-  transition:color .4s;
+#int-label{font-size:.6rem;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase;white-space:nowrap;flex-shrink:0}
+#int-slider{
+  flex:1;-webkit-appearance:none;appearance:none;height:3px;
+  background:linear-gradient(90deg,rgba(var(--acc-rgb),.8) var(--pct,100%),rgba(255,255,255,.1) var(--pct,100%));
+  border-radius:3px;outline:none;cursor:pointer;transition:background .4s;
 }
-#fov-wl{font-size:.68rem;color:var(--cyan);letter-spacing:.08em;margin-top:2px}
-#fov-tip{font-size:.62rem;color:var(--txt3);margin-top:3px}
+#int-slider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);cursor:pointer;box-shadow:0 0 6px rgba(var(--acc-rgb),.6);transition:background .4s,box-shadow .4s}
+#int-val{font-size:.6rem;color:var(--accent);width:30px;text-align:right;flex-shrink:0;font-weight:600;transition:color .4s}
 
 /* EM Spectrum bar */
-#spectrum-strip{
-  height:28px;flex-shrink:0;
-  position:relative;overflow:hidden;
-  background:linear-gradient(90deg,
-    #6600ff 0%,#4400ff 8%,
-    #0044ff 16%,#0088ff 22%,
-    #00aaff 28%,#00cccc 33%,
-    #00cc44 38%,#88cc00 44%,
-    #cccc00 50%,#ffaa00 55%,
-    #ff6600 60%,#ff2200 65%,
-    #cc0000 72%,#880000 80%,
-    #440000 88%,#220000 95%,#000 100%
-  );
-}
-#spectrum-cursor{
-  position:absolute;top:0;bottom:0;
-  width:3px;
-  background:white;
-  box-shadow:0 0 8px white;
-  border-radius:1px;
-  transition:left .5s cubic-bezier(.4,0,.2,1);
-}
-#spectrum-labels{
-  position:absolute;inset:0;
-  display:flex;align-items:center;
-  padding:0 6px;
-  gap:0;
-  pointer-events:none;
-}
-.sl{flex:1;text-align:center;font-size:.45rem;color:rgba(255,255,255,.55);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
+#spec-strip{height:26px;flex-shrink:0;position:relative;overflow:hidden;background:linear-gradient(90deg,#6600ff 0%,#4400ff 8%,#0044ff 16%,#0088ff 22%,#00aaff 28%,#00cccc 33%,#00cc44 38%,#88cc00 44%,#cccc00 50%,#ffaa00 55%,#ff6600 60%,#ff2200 65%,#cc0000 72%,#880000 80%,#440000 88%,#220000 95%,#000 100%)}
+#spec-cursor{position:absolute;top:0;bottom:0;width:3px;background:white;box-shadow:0 0 8px white;border-radius:1px;transition:left .5s cubic-bezier(.4,0,.2,1)}
+#spec-labels{position:absolute;inset:0;display:flex;align-items:center;padding:0 4px;pointer-events:none}
+.sl{flex:1;text-align:center;font-size:.45rem;color:rgba(255,255,255,.5);letter-spacing:.04em;text-transform:uppercase;font-weight:600}
 
 /* ── FILTER BAR ── */
-#fbar{
-  display:flex;gap:4px;overflow-x:auto;
-  padding:8px 10px;
-  background:rgba(2,2,8,.97);
-  border-top:1px solid var(--border);
-  flex-shrink:0;
-  scrollbar-width:none;
-}
+#fbar{display:flex;gap:4px;overflow-x:auto;padding:7px 9px;background:rgba(2,2,8,.98);border-top:1px solid var(--border);flex-shrink:0;scrollbar-width:none}
 #fbar::-webkit-scrollbar{display:none}
-.fb{
-  display:flex;flex-direction:column;align-items:center;gap:2px;
-  padding:6px 10px;
-  background:rgba(255,255,255,.04);
-  border:1px solid rgba(255,255,255,.08);
-  border-radius:10px;
-  cursor:pointer;
-  color:var(--txt3);
-  font-size:.58rem;font-weight:600;white-space:nowrap;
-  transition:all .2s;
-  min-width:52px;letter-spacing:.04em;text-transform:uppercase;
-  position:relative;
-  font-family:'Space Grotesk',sans-serif;
-}
-.fb .fi{font-size:1.1rem;line-height:1.2}
-.fb:hover{
-  background:rgba(255,255,255,.09);
-  border-color:rgba(255,255,255,.2);
-  color:var(--txt);
-  transform:translateY(-1px);
-}
-.fb.on{
-  color:#fff;
-  transform:translateY(-1px);
-}
+.fb{display:flex;flex-direction:column;align-items:center;gap:2px;padding:5px 8px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:9px;cursor:pointer;color:var(--txt3);font-size:.57rem;font-weight:600;white-space:nowrap;transition:all .2s;min-width:50px;letter-spacing:.04em;text-transform:uppercase;font-family:'Space Grotesk',sans-serif}
+.fb .fi{font-size:1.05rem;line-height:1.25}
+.fb:hover{background:rgba(255,255,255,.09);border-color:rgba(255,255,255,.18);color:var(--txt);transform:translateY(-1px)}
+.fb.on{color:#fff;transform:translateY(-1px)}
+.fb[data-id="normal"].on{background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.5);box-shadow:0 0 10px rgba(255,255,255,.14)}
+.fb[data-id="infrared"].on{background:rgba(255,68,0,.1);border-color:rgba(255,68,0,.55);box-shadow:0 0 10px rgba(255,68,0,.18)}
+.fb[data-id="thermal"].on{background:rgba(255,136,0,.1);border-color:rgba(255,136,0,.55);box-shadow:0 0 10px rgba(255,136,0,.18)}
+.fb[data-id="aura"].on{background:rgba(170,68,255,.1);border-color:rgba(170,68,255,.55);box-shadow:0 0 10px rgba(170,68,255,.18)}
+.fb[data-id="uv"].on{background:rgba(120,0,255,.1);border-color:rgba(120,0,255,.55);box-shadow:0 0 10px rgba(120,0,255,.18)}
+.fb[data-id="nightvision"].on{background:rgba(0,220,80,.08);border-color:rgba(0,220,80,.5);box-shadow:0 0 10px rgba(0,220,80,.15)}
+.fb[data-id="kirlian"].on{background:rgba(60,150,255,.1);border-color:rgba(60,150,255,.55);box-shadow:0 0 10px rgba(60,150,255,.18)}
+.fb[data-id="xray"].on{background:rgba(180,200,255,.08);border-color:rgba(180,200,255,.45);box-shadow:0 0 10px rgba(180,200,255,.15)}
+.fb[data-id="radio"].on{background:rgba(0,200,255,.08);border-color:rgba(0,200,255,.45);box-shadow:0 0 10px rgba(0,200,255,.15)}
+.fb[data-id="chakra"].on{background:rgba(255,60,160,.08);border-color:rgba(255,60,160,.45);box-shadow:0 0 10px rgba(255,60,160,.14)}
+.fb[data-id="sacred"].on{background:rgba(255,200,80,.1);border-color:rgba(255,200,80,.55);box-shadow:0 0 10px rgba(255,200,80,.18)}
+.fb[data-id="magnetic"].on{background:rgba(0,180,255,.1);border-color:rgba(0,180,255,.55);box-shadow:0 0 10px rgba(0,180,255,.18)}
+.fb[data-id="quantum"].on{background:rgba(160,0,255,.1);border-color:rgba(160,0,255,.55);box-shadow:0 0 10px rgba(160,0,255,.18)}
 
-/* Dynamic filter button colors */
-.fb[data-id="normal"].on      {background:rgba(255,255,255,.12);border-color:rgba(255,255,255,.5);box-shadow:0 0 12px rgba(255,255,255,.15)}
-.fb[data-id="infrared"].on    {background:rgba(255,68,0,.12);border-color:rgba(255,68,0,.6);box-shadow:0 0 12px rgba(255,68,0,.2)}
-.fb[data-id="thermal"].on     {background:rgba(255,136,0,.12);border-color:rgba(255,136,0,.6);box-shadow:0 0 12px rgba(255,136,0,.2)}
-.fb[data-id="aura"].on        {background:rgba(170,68,255,.12);border-color:rgba(170,68,255,.6);box-shadow:0 0 12px rgba(170,68,255,.2)}
-.fb[data-id="uv"].on          {background:rgba(120,0,255,.12);border-color:rgba(120,0,255,.6);box-shadow:0 0 12px rgba(120,0,255,.2)}
-.fb[data-id="nightvision"].on {background:rgba(0,255,80,.1);border-color:rgba(0,255,80,.5);box-shadow:0 0 12px rgba(0,255,80,.18)}
-.fb[data-id="kirlian"].on     {background:rgba(60,140,255,.12);border-color:rgba(60,140,255,.6);box-shadow:0 0 12px rgba(60,140,255,.2)}
-.fb[data-id="xray"].on        {background:rgba(160,180,255,.1);border-color:rgba(160,180,255,.5);box-shadow:0 0 12px rgba(160,180,255,.18)}
-.fb[data-id="radio"].on       {background:rgba(0,200,255,.1);border-color:rgba(0,200,255,.5);box-shadow:0 0 12px rgba(0,200,255,.18)}
-.fb[data-id="chakra"].on      {background:rgba(255,60,160,.1);border-color:rgba(255,60,160,.5);box-shadow:0 0 12px rgba(255,60,160,.18)}
-
-/* ══ HORUS PANEL ══ */
-#panel{
-  grid-area:panel;
-  display:flex;flex-direction:column;
-  background:var(--glass2);
-  border-left:1px solid var(--border2);
-  overflow:hidden;
-  backdrop-filter:blur(20px);
-}
-
-/* Avatar row */
-#pav{
-  display:flex;align-items:center;gap:12px;
-  padding:14px 16px;
-  background:linear-gradient(135deg,rgba(var(--acc-rgb),.06),rgba(0,229,255,.03));
-  border-bottom:1px solid var(--border);
-  flex-shrink:0;
-  transition:background .4s;
-}
-#pav-eye{width:52px;height:37px;flex-shrink:0}
-.pav-eye-svg{filter:drop-shadow(0 0 8px var(--accent));animation:eyepulse 3.5s ease-in-out infinite}
+/* ── HORUS PANEL ── */
+#panel{grid-area:panel;display:flex;flex-direction:column;background:var(--glass2);border-left:1px solid var(--border2);overflow:hidden;backdrop-filter:blur(20px)}
+#pav{display:flex;align-items:center;gap:11px;padding:12px 14px;background:linear-gradient(135deg,rgba(var(--acc-rgb),.06),rgba(0,229,255,.03));border-bottom:1px solid var(--border);flex-shrink:0;transition:background .4s}
+#pav svg{width:50px;height:32px;flex-shrink:0;filter:drop-shadow(0 0 8px var(--accent));animation:eyepulse 3.5s ease-in-out infinite;transition:filter .4s}
 #pav-info{flex:1;min-width:0}
-#pav-name{
-  font-family:'Orbitron',monospace;
-  font-size:.82rem;font-weight:700;letter-spacing:.18em;
-  color:var(--accent);transition:color .4s;
-}
-#pav-status{font-size:.64rem;color:var(--cyan);margin-top:3px;opacity:.85}
+#pav-name{font-family:'Orbitron',monospace;font-size:.8rem;font-weight:700;letter-spacing:.18em;color:var(--accent);transition:color .4s}
+#pav-stat{font-size:.63rem;color:var(--cyan);margin-top:3px}
+#pav-actions{display:flex;gap:5px;flex-shrink:0}
 
 /* Tabs */
 #ptabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
-.ptab{
-  flex:1;padding:9px 4px;
-  background:none;border:none;cursor:pointer;
-  font-family:'Space Grotesk',sans-serif;
-  font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
-  color:var(--txt3);transition:color .18s;position:relative;
-}
+.ptab{flex:1;padding:8px 3px;background:none;border:none;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:.67rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);transition:color .18s;position:relative}
 .ptab.on{color:var(--accent)}
-.ptab.on::after{
-  content:'';position:absolute;bottom:-1px;left:10%;right:10%;height:2px;
-  background:var(--accent);border-radius:2px;
-  box-shadow:0 0 6px rgba(var(--acc-rgb),.5);
-  transition:background .4s,box-shadow .4s;
-}
+.ptab.on::after{content:'';position:absolute;bottom:-1px;left:10%;right:10%;height:2px;background:var(--accent);border-radius:2px;box-shadow:0 0 6px rgba(var(--acc-rgb),.5);transition:background .4s,box-shadow .4s}
 
-/* Info area */
+/* Info */
 #pinfo{flex:1;display:flex;flex-direction:column;overflow:hidden}
-#ptitle{
-  padding:13px 16px 4px;
-  font-family:'Orbitron',monospace;
-  font-size:.78rem;font-weight:700;letter-spacing:.1em;
-  color:var(--cyan);flex-shrink:0;
-}
-#pwys{
-  padding:0 16px 10px;
-  font-size:.68rem;color:var(--txt3);font-style:italic;
-  line-height:1.5;flex-shrink:0;
-}
-#pcontent{
-  flex:1;overflow-y:auto;padding:0 16px 16px;
-  font-size:.72rem;line-height:1.7;color:var(--txt);
-  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
-}
-#pcontent p{margin-bottom:10px}
+#ptitle{padding:12px 15px 4px;font-family:'Orbitron',monospace;font-size:.76rem;font-weight:700;letter-spacing:.1em;color:var(--cyan);flex-shrink:0}
+#pwys{padding:0 15px 8px;font-size:.67rem;color:var(--txt3);font-style:italic;line-height:1.5;flex-shrink:0}
+#pcontent{flex:1;overflow-y:auto;padding:0 15px 15px;font-size:.71rem;line-height:1.7;color:var(--txt);scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+#pcontent p{margin-bottom:9px}
 #pcontent strong{color:var(--gold);font-weight:600}
 #pcontent em{color:var(--cyan)}
-#pcontent br{display:block;content:'';margin-bottom:4px}
-
-.fact-card{
-  background:rgba(var(--acc-rgb),.05);
-  border:1px solid rgba(var(--acc-rgb),.14);
-  border-left:3px solid rgba(var(--acc-rgb),.5);
-  border-radius:0 6px 6px 0;
-  padding:7px 10px;margin:6px 0;
-  font-size:.67rem;color:var(--txt2);
-  transition:border-color .4s,background .4s;
-}
-.facts-label{
-  font-size:.6rem;color:var(--txt3);letter-spacing:.1em;
-  text-transform:uppercase;margin:12px 0 4px;
-  border-top:1px solid var(--border);padding-top:10px;
-}
+.fact-card{background:rgba(var(--acc-rgb),.05);border:1px solid rgba(var(--acc-rgb),.14);border-left:3px solid rgba(var(--acc-rgb),.45);border-radius:0 6px 6px 0;padding:6px 9px;margin:5px 0;font-size:.66rem;color:var(--txt2);transition:border-color .4s,background .4s}
+.facts-lbl{font-size:.58rem;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase;margin:11px 0 4px;border-top:1px solid var(--border);padding-top:9px}
 
 /* Chat */
-#chat{
-  border-top:1px solid var(--border);
-  display:flex;flex-direction:column;
-  max-height:218px;flex-shrink:0;
-}
-#chat-hdr{
-  display:flex;align-items:center;gap:6px;
-  padding:7px 14px;flex-shrink:0;
-}
-#chat-hdr-dot{width:7px;height:7px;border-radius:50%;background:#06ffa5;box-shadow:0 0 6px #06ffa5;animation:blink 2s ease-in-out infinite}
+#chat{border-top:1px solid var(--border);display:flex;flex-direction:column;max-height:215px;flex-shrink:0}
+#chat-hdr{display:flex;align-items:center;gap:6px;padding:6px 13px;flex-shrink:0}
+#chat-dot{width:7px;height:7px;border-radius:50%;background:#06ffa5;box-shadow:0 0 6px #06ffa5;animation:blink 2s ease-in-out infinite}
 @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
-#chat-hdr-txt{font-size:.64rem;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase}
-
-#msgs{
-  flex:1;overflow-y:auto;padding:4px 12px 6px;
-  display:flex;flex-direction:column;gap:6px;
-  scrollbar-width:thin;scrollbar-color:var(--border) transparent;
-}
-.msg{
-  padding:7px 11px;border-radius:10px;
-  font-size:.7rem;line-height:1.5;max-width:88%;
-  animation:msgin .25s ease;
-}
-@keyframes msgin{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-.msg.h{
-  background:rgba(var(--acc-rgb),.07);
-  border:1px solid rgba(var(--acc-rgb),.15);
-  border-bottom-left-radius:2px;align-self:flex-start;
-}
-.msg.h::before{content:'⊙ ';color:var(--accent);font-weight:700;font-family:'Orbitron',monospace;font-size:.65rem}
-.msg.u{
-  background:rgba(0,229,255,.07);
-  border:1px solid rgba(0,229,255,.15);
-  border-bottom-right-radius:2px;align-self:flex-end;text-align:right;
-}
-.typing{display:flex;gap:3px;align-items:center;padding:8px 12px}
-.typing span{width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.5;animation:tdot 1.2s ease-in-out infinite}
+#chat-lbl{font-size:.62rem;color:var(--txt3);letter-spacing:.1em;text-transform:uppercase}
+#msgs{flex:1;overflow-y:auto;padding:4px 11px 5px;display:flex;flex-direction:column;gap:5px;scrollbar-width:thin;scrollbar-color:var(--border) transparent}
+.msg{padding:6px 10px;border-radius:9px;font-size:.69rem;line-height:1.48;max-width:90%;animation:msgin .25s ease}
+@keyframes msgin{from{opacity:0;transform:translateY(5px)}to{opacity:1;transform:none}}
+.msg.h{background:rgba(var(--acc-rgb),.07);border:1px solid rgba(var(--acc-rgb),.15);border-bottom-left-radius:2px;align-self:flex-start}
+.msg.h::before{content:'⊙ ';color:var(--accent);font-weight:700;font-family:'Orbitron',monospace;font-size:.62rem;transition:color .4s}
+.msg.u{background:rgba(0,229,255,.07);border:1px solid rgba(0,229,255,.15);border-bottom-right-radius:2px;align-self:flex-end;text-align:right}
+.typing{display:flex;gap:3px;align-items:center;padding:7px 10px}
+.typing span{width:5px;height:5px;border-radius:50%;background:var(--accent);opacity:.5;animation:tdot 1.2s ease-in-out infinite;transition:background .4s}
 .typing span:nth-child(2){animation-delay:.2s}
 .typing span:nth-child(3){animation-delay:.4s}
 @keyframes tdot{0%,100%{opacity:.3;transform:scale(1)}50%{opacity:1;transform:scale(1.3)}}
-
-#cinp{display:flex;gap:6px;padding:8px 12px;border-top:1px solid var(--border);flex-shrink:0}
-#ctxt{
-  flex:1;
-  background:rgba(255,255,255,.05);
-  border:1px solid rgba(255,255,255,.1);
-  border-radius:20px;padding:7px 14px;
-  color:var(--txt);font-size:.72rem;outline:none;
-  font-family:'Space Grotesk',sans-serif;
-  transition:border-color .2s,box-shadow .2s;
-}
+#cinp{display:flex;gap:5px;padding:7px 11px;border-top:1px solid var(--border);flex-shrink:0;align-items:center}
+#ctxt{flex:1;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.1);border-radius:18px;padding:6px 13px;color:var(--txt);font-size:.71rem;outline:none;font-family:'Space Grotesk',sans-serif;transition:border-color .2s,box-shadow .2s}
 #ctxt:focus{border-color:rgba(var(--acc-rgb),.45);box-shadow:0 0 0 3px rgba(var(--acc-rgb),.08)}
 #ctxt::placeholder{color:var(--txt3)}
-#sbtn{
-  width:34px;height:34px;border-radius:50%;
-  background:var(--accent);border:none;
-  color:#000;cursor:pointer;font-size:.85rem;font-weight:700;
-  display:flex;align-items:center;justify-content:center;flex-shrink:0;
-  transition:all .2s;box-shadow:0 0 10px rgba(var(--acc-rgb),.3);
-}
+#sbtn{width:32px;height:32px;border-radius:50%;background:var(--accent);border:none;color:#000;cursor:pointer;font-size:.82rem;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .2s;box-shadow:0 0 10px rgba(var(--acc-rgb),.3)}
 #sbtn:hover{transform:scale(1.1);box-shadow:0 0 18px rgba(var(--acc-rgb),.5)}
 
-/* ── ICON BUTTONS ── */
-.ibtn{
-  width:34px;height:34px;border-radius:50%;
-  background:rgba(255,255,255,.07);
-  border:1px solid rgba(255,255,255,.12);
-  color:var(--txt2);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.88rem;transition:all .18s;
-  flex-shrink:0;
-}
+/* Buttons */
+.ibtn{width:33px;height:33px;border-radius:50%;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12);color:var(--txt2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:.85rem;transition:all .18s;flex-shrink:0}
 .ibtn:hover{background:rgba(var(--acc-rgb),.14);border-color:rgba(var(--acc-rgb),.4);color:#fff}
+.ibtn.active{background:rgba(var(--acc-rgb),.2);border-color:var(--accent);color:var(--accent)}
 
-/* Floating cam buttons */
-#cam-btns{position:absolute;top:12px;right:12px;display:flex;flex-direction:column;gap:7px;z-index:5}
-.cam-btn{
-  width:36px;height:36px;border-radius:50%;
-  background:rgba(2,2,8,.75);
-  border:1px solid rgba(255,255,255,.14);
-  color:var(--txt2);cursor:pointer;
-  display:flex;align-items:center;justify-content:center;
-  font-size:.88rem;backdrop-filter:blur(8px);
-  transition:all .18s;
-}
-.cam-btn:hover{background:rgba(var(--acc-rgb),.2);border-color:var(--accent);color:#fff}
-
-/* No camera */
-#nocam{
-  position:absolute;inset:0;
-  display:none;flex-direction:column;align-items:center;justify-content:center;
-  gap:14px;color:var(--txt3);font-size:.82rem;text-align:center;padding:32px;
-  background:rgba(2,2,8,.95);
-}
-#nocam.vis{display:flex}
-#nocam-icon{font-size:3.5rem;opacity:.3}
-#nocam-title{font-family:'Orbitron',monospace;font-size:.9rem;color:var(--gold);letter-spacing:.1em}
-
-/* ══ WELCOME SCREEN ══ */
-#welcome{
-  position:fixed;inset:0;z-index:200;
-  background:radial-gradient(ellipse at 50% 40%,#0c0c2e 0%,#020208 60%);
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  text-align:center;padding:32px;
-  transition:opacity .8s ease;
-}
+/* ── WELCOME ── */
+#welcome{position:fixed;inset:0;z-index:200;background:radial-gradient(ellipse at 50% 40%,#0c0c2e 0%,#020208 60%);display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:32px;transition:opacity .8s}
 #welcome.out{opacity:0;pointer-events:none}
-
-#w-eye{width:130px;height:92px;margin-bottom:28px;animation:weye 2.5s ease-in-out infinite}
-@keyframes weye{
-  0%,100%{filter:drop-shadow(0 0 18px var(--gold)) drop-shadow(0 0 36px rgba(255,215,0,.3))}
-  50%{filter:drop-shadow(0 0 36px var(--gold)) drop-shadow(0 0 60px rgba(255,215,0,.5)) drop-shadow(0 0 80px rgba(0,229,255,.3))}
-}
-
-#w-title{
-  font-family:'Orbitron',monospace;
-  font-size:clamp(2.5rem,8vw,5rem);
-  font-weight:900;letter-spacing:.4em;
-  background:linear-gradient(135deg,var(--gold),#ff9900,var(--gold),var(--cyan));
-  background-size:300% 300%;
-  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
-  animation:gtxt 4s ease-in-out infinite;
-  margin-bottom:8px;
-}
+#w-eye{width:130px;height:92px;margin-bottom:26px;animation:weye 2.5s ease-in-out infinite}
+@keyframes weye{0%,100%{filter:drop-shadow(0 0 18px var(--gold)) drop-shadow(0 0 36px rgba(255,215,0,.3))}50%{filter:drop-shadow(0 0 36px var(--gold)) drop-shadow(0 0 60px rgba(255,215,0,.5)) drop-shadow(0 0 80px rgba(0,229,255,.3))}}
+#w-title{font-family:'Orbitron',monospace;font-size:clamp(2.4rem,8vw,4.8rem);font-weight:900;letter-spacing:.4em;background:linear-gradient(135deg,var(--gold),#ff9900,var(--gold),var(--cyan));background-size:300% 300%;-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;animation:gtxt 4s ease-in-out infinite;margin-bottom:8px}
 @keyframes gtxt{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
-
-#w-sub{
-  font-size:.82rem;color:var(--cyan);letter-spacing:.22em;
-  text-transform:uppercase;margin-bottom:28px;opacity:.8;
-}
-#w-msg{
-  font-size:.85rem;color:var(--txt2);max-width:440px;line-height:1.8;
-  margin-bottom:36px;
-}
+#w-sub{font-size:.8rem;color:var(--cyan);letter-spacing:.2em;text-transform:uppercase;margin-bottom:24px;opacity:.8}
+#w-msg{font-size:.83rem;color:var(--txt2);max-width:420px;line-height:1.8;margin-bottom:32px}
 #w-msg span{color:var(--gold)}
-#w-btn{
-  padding:15px 40px;
-  background:linear-gradient(135deg,var(--gold),#ff9900);
-  border:none;border-radius:32px;
-  color:#000;font-family:'Orbitron',monospace;
-  font-size:.88rem;font-weight:700;letter-spacing:.18em;
-  cursor:pointer;text-transform:uppercase;
-  transition:all .28s;
-  box-shadow:0 0 36px rgba(255,215,0,.3),inset 0 1px 0 rgba(255,255,255,.3);
-}
-#w-btn:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 8px 48px rgba(255,215,0,.45)}
+#w-btn{padding:14px 38px;background:linear-gradient(135deg,var(--gold),#ff9900);border:none;border-radius:30px;color:#000;font-family:'Orbitron',monospace;font-size:.86rem;font-weight:700;letter-spacing:.18em;cursor:pointer;text-transform:uppercase;transition:all .28s;box-shadow:0 0 32px rgba(255,215,0,.3),inset 0 1px 0 rgba(255,255,255,.3)}
+#w-btn:hover{transform:scale(1.06) translateY(-2px);box-shadow:0 8px 44px rgba(255,215,0,.45)}
 
-/* Eye SVG inside welcome — size override */
-#w-eye .eye-svg{width:130px;height:92px}
-
-/* ── MOBILE ── */
+/* Mobile */
 #mob-toggle{display:none}
 @media(max-width:800px){
-  #app{
-    grid-template-columns:1fr;
-    grid-template-rows:48px 1fr;
-    grid-template-areas:"hdr" "cam";
-  }
-  #panel{
-    position:fixed;bottom:0;left:0;right:0;
-    width:100%;max-height:65dvh;
-    border-left:none;border-top:1px solid var(--border2);
-    border-radius:20px 20px 0 0;
-    transform:translateY(100%);
-    transition:transform .32s cubic-bezier(.4,0,.2,1);
-    z-index:100;
-  }
+  #app{grid-template-columns:1fr;grid-template-rows:48px 1fr;grid-template-areas:"hdr" "cam"}
+  #panel{position:fixed;bottom:0;left:0;right:0;width:100%;max-height:65dvh;border-left:none;border-top:1px solid var(--border2);border-radius:20px 20px 0 0;transform:translateY(100%);transition:transform .32s cubic-bezier(.4,0,.2,1);z-index:100}
   #panel.open{transform:translateY(0)}
   #mob-toggle{display:flex}
   #hdr-sub{display:none}
 }
-
-/* ── Scrollbars ── */
 ::-webkit-scrollbar{width:3px;height:3px}
 ::-webkit-scrollbar-thumb{background:var(--border2);border-radius:2px}
+
+/* Voice mic animation */
+#mic-btn.listening{animation:micpulse .8s ease-in-out infinite;border-color:rgba(255,80,80,.6)!important;color:#f55!important}
+@keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,80,80,.4)}50%{box-shadow:0 0 0 8px rgba(255,80,80,0)}}
 </style>
 </head>
 <body>
 
-<!-- Star background -->
 <canvas id="bg"></canvas>
 
 <!-- ═══ WELCOME ═══ -->
 <div id="welcome">
-  <div id="w-eye">
-    <svg class="eye-svg" viewBox="0 0 180 110" fill="none" width="130" height="92">
-      <path d="M8 55 Q90 8 172 55 Q90 102 8 55Z" stroke="#ffd700" stroke-width="3" fill="rgba(0,229,255,.04)"/>
-      <ellipse cx="90" cy="55" rx="22" ry="22" stroke="#ffd700" stroke-width="2.5" fill="rgba(0,229,255,.1)"/>
-      <ellipse cx="90" cy="55" rx="10" ry="10" fill="#00e5ff"/>
-      <circle cx="90" cy="55" r="4" fill="#ffd700"/>
-      <line x1="90" y1="77" x2="78" y2="100" stroke="#ffd700" stroke-width="2.5"/>
-      <line x1="90" y1="77" x2="100" y2="100" stroke="#ffd700" stroke-width="2.5"/>
-      <line x1="8" y1="55" x2="2" y2="68" stroke="#ffd700" stroke-width="2.2"/>
-      <path d="M66 42 Q72 34 78 42" stroke="#ffd700" stroke-width="1.8" fill="none"/>
-      <path d="M102 42 Q108 34 114 42" stroke="#ffd700" stroke-width="1.8" fill="none"/>
-      <circle cx="83" cy="50" r="2" fill="rgba(255,215,0,.4)"/>
-    </svg>
-  </div>
+  <svg id="w-eye" viewBox="0 0 180 110" fill="none" width="130" height="92">
+    <path d="M8 55 Q90 8 172 55 Q90 102 8 55Z" stroke="#ffd700" stroke-width="3" fill="rgba(0,229,255,.04)"/>
+    <ellipse cx="90" cy="55" rx="22" ry="22" stroke="#ffd700" stroke-width="2.5" fill="rgba(0,229,255,.1)"/>
+    <ellipse cx="90" cy="55" rx="10" ry="10" fill="#00e5ff"/>
+    <circle cx="90" cy="55" r="4" fill="#ffd700"/>
+    <line x1="90" y1="77" x2="78" y2="100" stroke="#ffd700" stroke-width="2.5"/>
+    <line x1="90" y1="77" x2="100" y2="100" stroke="#ffd700" stroke-width="2.5"/>
+    <line x1="8" y1="55" x2="2" y2="68" stroke="#ffd700" stroke-width="2.2"/>
+    <path d="M66 42 Q72 34 78 42" stroke="#ffd700" stroke-width="1.8" fill="none"/>
+    <path d="M102 42 Q108 34 114 42" stroke="#ffd700" stroke-width="1.8" fill="none"/>
+  </svg>
   <div id="w-title">HORUS</div>
   <div id="w-sub">Vision del Espectro Electromagnético</div>
-  <div id="w-msg">
-    Soy <span>HORUS</span>, el Ojo que Todo lo Ve.<br>
-    Activa tu cámara y explora las dimensiones invisibles del universo —<br>
-    desde la física cuántica hasta la sabiduría ancestral.
-  </div>
+  <div id="w-msg">Soy <span>HORUS</span>, el Ojo que Todo lo Ve.<br>Activa tu cámara y explora las dimensiones invisibles del universo —<br>desde la física cuántica hasta la sabiduría ancestral.</div>
   <button id="w-btn" onclick="startApp()">⊙ &nbsp;ABRIR EL OJO</button>
 </div>
 
 <!-- ═══ APP ═══ -->
 <div id="app">
-
-  <!-- HEADER -->
   <header id="hdr">
     <div id="logo">
-      <svg class="eye-svg" viewBox="0 0 120 75" fill="none" width="38" height="24">
+      <svg class="eye-svg" viewBox="0 0 120 75" fill="none" width="36" height="23">
         <path d="M5 37.5 Q60 5 115 37.5 Q60 70 5 37.5Z" stroke="#ffd700" stroke-width="2.5" fill="rgba(0,229,255,.04)"/>
         <ellipse cx="60" cy="37.5" rx="15" ry="15" stroke="#ffd700" stroke-width="2" fill="rgba(0,229,255,.08)"/>
         <ellipse cx="60" cy="37.5" rx="7" ry="7" fill="#00e5ff"/>
@@ -538,220 +258,165 @@ body{
         <div id="hdr-sub">Spectrum Vision · IA Educativa</div>
       </div>
     </div>
-
-    <div id="hdr-filter-badge">
-      <span class="badge-icon" id="badge-icon">🌈</span>
-      <span id="badge-name">Luz Visible</span>
-    </div>
-
+    <div id="hdr-badge"><span class="bi" id="badge-icon">🌈</span><span id="badge-name">Luz Visible</span></div>
     <div id="hdr-right">
       <button class="ibtn" id="mob-toggle" onclick="togglePanel()" title="HORUS AI">🤖</button>
-      <button class="ibtn" onclick="switchCamera()" title="Cambiar cámara">🔄</button>
-      <button class="ibtn" onclick="capturePhoto()" title="Capturar foto">📸</button>
+      <button class="ibtn" onclick="switchCamera()">🔄</button>
+      <button class="ibtn" onclick="capturePhoto()">📸</button>
     </div>
   </header>
 
-  <!-- CAMERA -->
   <section id="cam-sec">
     <div id="cam-wrap">
       <video id="video" autoplay playsinline muted></video>
       <canvas id="canvas"></canvas>
-
-      <!-- Corner decorations -->
-      <div id="cam-corners">
-        <div class="corner c-tl"></div>
-        <div class="corner c-tr"></div>
-        <div class="corner c-bl"></div>
-        <div class="corner c-br"></div>
+      <!-- Histogram -->
+      <div id="histogram">
+        <canvas id="hist-canvas"></canvas>
+        <div id="hist-label">Histograma</div>
       </div>
-
-      <!-- Scan line -->
-      <div id="scan-line"></div>
-
-      <!-- Overlay info -->
+      <div id="corners"><div class="corn c-tl"></div><div class="corn c-tr"></div><div class="corn c-bl"></div><div class="corn c-br"></div></div>
+      <div id="scan"></div>
       <div id="fov">
         <div id="fov-name">Luz Visible</div>
         <div id="fov-wl">380 – 700 nm</div>
         <div id="fov-tip">El 0.0035% del espectro electromagnético total</div>
       </div>
-
-      <!-- Floating cam buttons -->
       <div id="cam-btns">
-        <button class="cam-btn" onclick="switchCamera()" title="Cambiar cámara">🔄</button>
-        <button class="cam-btn" onclick="capturePhoto()" title="Capturar">📸</button>
+        <button class="cbtn" onclick="switchCamera()">🔄</button>
+        <button class="cbtn" onclick="capturePhoto()">📸</button>
       </div>
-
-      <!-- No camera message -->
       <div id="nocam">
-        <div id="nocam-icon">👁️</div>
-        <div id="nocam-title">Cámara no disponible</div>
+        <div style="font-size:3rem;opacity:.3">👁️</div>
+        <div style="font-family:'Orbitron',monospace;font-size:.88rem;color:var(--gold);letter-spacing:.1em">Cámara no disponible</div>
         <div>Permite el acceso en tu navegador.<br>Necesita HTTPS o localhost.</div>
       </div>
     </div>
 
-    <!-- EM Spectrum strip -->
-    <div id="spectrum-strip">
-      <div id="spectrum-cursor" style="left:35%"></div>
-      <div id="spectrum-labels">
+    <div id="spec-strip">
+      <div id="spec-cursor" style="left:35%"></div>
+      <div id="spec-labels">
         <div class="sl">Radio</div><div class="sl">Micro</div><div class="sl">IR</div>
-        <div class="sl">Visible</div><div class="sl">UV</div>
-        <div class="sl">X-Ray</div><div class="sl">Gamma</div>
+        <div class="sl">Visible</div><div class="sl">UV</div><div class="sl">X-Ray</div><div class="sl">Gamma</div>
       </div>
     </div>
 
-    <!-- Filter bar -->
+    <div id="intensity-row">
+      <span id="int-label">⚡ Intensidad</span>
+      <input type="range" id="int-slider" min="0" max="100" value="100" oninput="setIntensity(this.value)">
+      <span id="int-val">100%</span>
+    </div>
+
     <div id="fbar"></div>
   </section>
 
-  <!-- HORUS PANEL -->
   <aside id="panel">
     <div id="pav">
-      <div id="pav-eye">
-        <svg class="pav-eye-svg eye-svg" viewBox="0 0 120 75" fill="none" width="52" height="33">
-          <path d="M5 37.5 Q60 5 115 37.5 Q60 70 5 37.5Z" stroke="#ffd700" stroke-width="2.5" fill="rgba(0,229,255,.05)"/>
-          <ellipse cx="60" cy="37.5" rx="15" ry="15" stroke="#ffd700" stroke-width="2" fill="rgba(0,229,255,.1)"/>
-          <ellipse cx="60" cy="37.5" rx="7" ry="7" fill="#00e5ff"/>
-          <circle cx="60" cy="37.5" r="3" fill="#ffd700"/>
-          <line x1="60" y1="52.5" x2="51" y2="67" stroke="#ffd700" stroke-width="2"/>
-          <line x1="60" y1="52.5" x2="68" y2="67" stroke="#ffd700" stroke-width="2"/>
-          <path d="M44 28 Q50 20 56 28" stroke="#ffd700" stroke-width="1.5" fill="none"/>
-          <path d="M64 28 Q70 20 76 28" stroke="#ffd700" stroke-width="1.5" fill="none"/>
-        </svg>
-      </div>
+      <svg viewBox="0 0 120 75" fill="none">
+        <path d="M5 37.5 Q60 5 115 37.5 Q60 70 5 37.5Z" stroke="#ffd700" stroke-width="2.5" fill="rgba(0,229,255,.05)"/>
+        <ellipse cx="60" cy="37.5" rx="15" ry="15" stroke="#ffd700" stroke-width="2" fill="rgba(0,229,255,.1)"/>
+        <ellipse cx="60" cy="37.5" rx="7" ry="7" fill="#00e5ff"/>
+        <circle cx="60" cy="37.5" r="3" fill="#ffd700"/>
+        <line x1="60" y1="52.5" x2="51" y2="67" stroke="#ffd700" stroke-width="2"/>
+        <line x1="60" y1="52.5" x2="68" y2="67" stroke="#ffd700" stroke-width="2"/>
+        <path d="M44 28 Q50 20 56 28" stroke="#ffd700" stroke-width="1.5" fill="none"/>
+        <path d="M64 28 Q70 20 76 28" stroke="#ffd700" stroke-width="1.5" fill="none"/>
+      </svg>
       <div id="pav-info">
         <div id="pav-name">HORUS</div>
-        <div id="pav-status">⊙ Observando el espectro...</div>
+        <div id="pav-stat">⊙ Observando el espectro...</div>
+      </div>
+      <div id="pav-actions">
+        <button class="ibtn" id="voice-btn" onclick="toggleVoice()" title="Voz de HORUS">🔊</button>
       </div>
     </div>
 
-    <!-- Tabs -->
     <div id="ptabs">
       <button class="ptab on" data-tab="science" onclick="switchTab('science')">⚗️ Ciencia</button>
       <button class="ptab" data-tab="holistic" onclick="switchTab('holistic')">🌀 Holístico</button>
       <button class="ptab" data-tab="history" onclick="switchTab('history')">📜 Historia</button>
     </div>
 
-    <!-- Info -->
     <div id="pinfo">
       <div id="ptitle">Espectro Visible</div>
       <div id="pwys">Viendo el 0.0035% del universo electromagnético</div>
       <div id="pcontent"></div>
     </div>
 
-    <!-- Chat -->
     <div id="chat">
-      <div id="chat-hdr">
-        <div id="chat-hdr-dot"></div>
-        <div id="chat-hdr-txt">Pregunta a HORUS</div>
-      </div>
+      <div id="chat-hdr"><div id="chat-dot"></div><div id="chat-lbl">Pregunta a HORUS</div></div>
       <div id="msgs"></div>
       <div id="cinp">
-        <input id="ctxt" type="text" placeholder="¿Qué quieres descubrir?" maxlength="200">
+        <button class="ibtn" id="mic-btn" onclick="toggleMic()" title="Voz">🎤</button>
+        <input id="ctxt" type="text" placeholder="¿Qué quieres descubrir?" maxlength="220">
         <button id="sbtn" onclick="sendMsg()">▶</button>
       </div>
     </div>
   </aside>
-
-</div><!-- #app -->
+</div>
 
 <script>
-/* ═══════════════════════════════════════════════
-   HORUS — CORE JS
-═══════════════════════════════════════════════ */
+/* ═══════════════════════════════════════════
+   HORUS v2 · Spectrum Vision
+═══════════════════════════════════════════ */
 
-// ── Filter meta ──────────────────────────────
+// ── Filter definitions ────────────────────
 const FILTERS=[
-  {id:'normal',     name:'Luz Visible', icon:'🌈', wl:'380 – 700 nm',       tip:'El 0.0035% del espectro total',       spectrum:35, acc:'255,255,255'},
-  {id:'infrared',   name:'Infrarrojo',  icon:'🔴', wl:'700 nm – 1 mm',      tip:'Calor · Vida · Prana',                spectrum:20, acc:'255,80,0'},
-  {id:'thermal',    name:'Térmica',     icon:'🌡️', wl:'8 – 14 μm',          tip:'Mapa de calor · Emociones',           spectrum:18, acc:'255,140,0'},
-  {id:'aura',       name:'Aura',        icon:'✨', wl:'Bio-campo EM',        tip:'Borde energético · Chakras',          spectrum:35, acc:'180,80,255'},
-  {id:'uv',         name:'UV',          icon:'💜', wl:'10 – 400 nm',         tip:'Purificación · Tercer Ojo',           spectrum:58, acc:'130,0,255'},
-  {id:'nightvision',name:'Nocturna',    icon:'🌿', wl:'Amp. fotónica',       tip:'Ver en la oscuridad · Ojo interno',   spectrum:35, acc:'0,220,80'},
-  {id:'kirlian',    name:'Kirlian',     icon:'⚡', wl:'Corona · Plasma',     tip:'Aura eléctrica · Descarga',           spectrum:55, acc:'60,160,255'},
-  {id:'xray',       name:'Rayos X',     icon:'🦴', wl:'0.01 – 10 nm',        tip:'Ver a través · Estructura',           spectrum:72, acc:'180,200,255'},
-  {id:'radio',      name:'Radio',       icon:'📡', wl:'> 1 mm hasta km',     tip:'El mar invisible de señales',         spectrum:4,  acc:'0,210,255'},
-  {id:'chakra',     name:'Chakras',     icon:'🌀', wl:'Espectro EM del cuerpo',tip:'Los 7 centros · Kundalini',         spectrum:35, acc:'255,60,160'},
+  {id:'normal',     name:'Luz Visible',        icon:'🌈', wl:'380 – 700 nm',          tip:'El 0.0035% del espectro total',           spec:35, acc:'255,255,255'},
+  {id:'infrared',   name:'Infrarrojo',          icon:'🔴', wl:'700 nm – 1 mm',         tip:'Calor · Vida · Prana',                    spec:20, acc:'255,80,0'},
+  {id:'thermal',    name:'Térmica',             icon:'🌡️', wl:'8 – 14 μm',             tip:'Mapa de calor · Emociones',               spec:18, acc:'255,140,0'},
+  {id:'aura',       name:'Aura',                icon:'✨', wl:'Bio-campo EM',           tip:'Borde energético · Chakras',              spec:35, acc:'180,80,255'},
+  {id:'uv',         name:'UV',                  icon:'💜', wl:'10 – 400 nm',            tip:'Purificación · Tercer Ojo',               spec:58, acc:'130,0,255'},
+  {id:'nightvision',name:'Nocturna',            icon:'🌿', wl:'Amp. fotónica',          tip:'Ver en la oscuridad · Ojo interno',       spec:35, acc:'0,220,80'},
+  {id:'kirlian',    name:'Kirlian',             icon:'⚡', wl:'Corona · Plasma',        tip:'Aura eléctrica · Descarga',               spec:55, acc:'60,160,255'},
+  {id:'xray',       name:'Rayos X',             icon:'🦴', wl:'0.01 – 10 nm',           tip:'Ver a través · Estructura',               spec:72, acc:'180,200,255'},
+  {id:'radio',      name:'Radio',               icon:'📡', wl:'> 1 mm hasta km',        tip:'El mar invisible de señales',             spec:4,  acc:'0,210,255'},
+  {id:'chakra',     name:'Chakras',             icon:'🌀', wl:'Espectro EM corporal',   tip:'Los 7 centros · Kundalini',               spec:35, acc:'255,60,160'},
+  {id:'sacred',     name:'Geometría Sagrada',   icon:'🔯', wl:'Visible + Patrón',       tip:'Flor de la Vida · Proporción áurea',      spec:35, acc:'255,200,80'},
+  {id:'magnetic',   name:'Campo Magnético',     icon:'🧲', wl:'Ondas ELF 3-3000 Hz',   tip:'Líneas de campo · Maxwell',               spec:3,  acc:'0,180,255'},
+  {id:'quantum',    name:'Cuántico',            icon:'⚛️', wl:'<0.01 nm (quantum)',     tip:'Función de onda · Dualidad',              spec:85, acc:'160,0,255'},
 ];
 
-// ── Knowledge base ───────────────────────────
+// ── Knowledge Base ─────────────────────────
 const KB={
-  normal:{
-    science:`El espectro visible ocupa apenas el 0.0035% del espectro electromagnético total. Nuestros ojos detectan fotones entre <strong>380 nm (violeta)</strong> y <strong>700 nm (rojo)</strong>.\n\nLos conos de la retina son sensibles a tres rangos: rojo (~560 nm), verde (~530 nm) y azul (~420 nm). Esta tríada nos permite ver millones de colores por mezcla aditiva.\n\n<strong>La luz visible existe</strong> porque el Sol emite principalmente en ese rango, y la evolución optimizó nuestros ojos para ello.`,
-    holistic:`En la tradición budista y vedántica, la luz visible representa el <em>"velo de Maya"</em> — la ilusión de la realidad material. Lo que percibimos es una construcción del sistema nervioso.\n\nEl sabio Hermes Trismegisto escribió: <em>"Lo que está arriba es como lo que está abajo."</em> Los 7 colores del espectro reflejan la estructura de la conciencia: de lo denso (rojo/tierra) a lo sutil (violeta/espíritu).\n\nEn la Cábala, los 7 colores corresponden a los 7 sefirot del Árbol de la Vida.`,
-    history:`• <strong>1666:</strong> Isaac Newton descompone la luz solar con un prisma, revelando el espectro.\n• <strong>1801:</strong> Thomas Young demuestra la naturaleza ondulatoria (experimento doble rendija).\n• <strong>1865:</strong> James Maxwell — la luz es onda electromagnética.\n• <strong>1905:</strong> Einstein explica el efecto fotoeléctrico: la luz también son cuantos (fotones).\n• <strong>Hoy:</strong> wave-particle duality — la luz es ambas cosas simultáneamente.`,
-    facts:['Los humanos perciben solo el 0.0035% del espectro EM total','Un camarón mantis tiene 16 tipos de receptores de color (humanos: solo 3)','El ojo humano puede detectar un único fotón en oscuridad perfecta','La velocidad de la luz: 299,792,458 m/s — constante universal']
-  },
-  infrared:{
-    science:`El infrarrojo fue descubierto por <strong>William Herschel en 1800</strong> al medir temperaturas más allá del rojo visible.\n\n<strong>Divisiones:</strong>\n• NIR (700-1400nm): Control remoto, fotografía IR\n• MIR (1.4-8μm): Espectroscopía molecular\n• FIR (8-15μm): Imagen térmica, cámaras FLIR\n\nLas plantas reflejan fuertemente el NIR (efecto chlorophyll). En fotografía IR real, la vegetación aparece blanca brillante y el cielo negro.\n\n<em>Esta simulación</em> usa el canal verde como proxy del NIR para crear false-color IR.`,
-    holistic:`El infrarrojo es el calor: el pulso de la vida misma. Toda forma de vida emite radiación IR — es la <em>"firma térmica"</em> del alma encarnada.\n\nEn la medicina tradicional china, el Qi/Chi es la energía vital que fluye por meridianos. Los sanadores del Qigong emiten calor medible con sensores IR de sus palmas durante la práctica.\n\nLos chamanes siberianos describen <em>"ver el calor de los espíritus"</em> — una forma de visión IR intuitiva que practican en estados alterados.`,
-    history:`• <strong>1800:</strong> Herschel descubre el IR midiendo temperatura más allá del rojo solar.\n• <strong>1910:</strong> Robert Wood crea la "fotografía Wood" con película sensible al IR.\n• <strong>1960s:</strong> FLIR (Forward-Looking Infrared) en aviación militar.\n• <strong>Hoy:</strong> Cámaras IR en medicina, construcción, búsqueda y rescate, astronomía.`,
-    facts:['Las serpientes pit viper tienen órganos IR para cazar en la oscuridad','El mando de tu TV emite pulsos IR a 38 kHz','La fotografía IR hace que los árboles parezcan nevados en verano','Los mosquitos te detectan por tu firma IR a varios metros']
-  },
-  thermal:{
-    science:`La termografía detecta radiación IR de onda larga (8-14μm) emitida por todos los objetos. Sigue la <strong>Ley de Stefan-Boltzmann: P = εσT⁴</strong>.\n\nLas cámaras FLIR usan detectores de microbolómetro. Pueden detectar diferencias de <strong>0.1°C</strong>.\n\n<strong>Aplicaciones médicas:</strong> diagnóstico de inflamaciones, tumores superficiales, circulación, lesiones deportivas.\n\n<em>Paleta iron-bow:</em> negro→azul→violeta→rojo→naranja→amarillo→blanco. Azul=frío, blanco=caliente.`,
-    holistic:`Un estudio de la <strong>Universidad de Aalto (2013, PNAS)</strong> mapeó las emociones como patrones térmicos reproducibles: la ira calienta pecho y cabeza; la depresión enfría extremidades; el amor activa el pecho.\n\n<em>La termografía es la "fotografía del aura" más científicamente validada.</em>\n\nLos meridianos de acupuntura muestran temperatura ligeramente diferente al tejido circundante. Los meditadores tibetanos pueden subir hasta 8°C la temperatura de sus manos (experimentos Harvard).`,
-    history:`• <strong>1960s:</strong> Primera termografía médica comercial.\n• <strong>1973:</strong> Evelyn Wood documenta correlaciones entre temperatura y estado mental.\n• <strong>2013:</strong> Estudio Aalto — mapa emocional térmico del cuerpo humano.\n• <strong>Hoy:</strong> Termografía en COVID-screening, PCB electrónica, veterinaria, arqueología.`,
-    facts:['El cerebro es el órgano más caliente del cuerpo (~37.6°C internamente)','La nariz es el punto más frío de la cara humana','Las emociones cambian el patrón térmico del cuerpo de forma medible','Los meditadores tibetanos pueden elevar 8°C la temperatura de sus manos']
-  },
-  aura:{
-    science:`El cuerpo humano es <strong>bioelectromagnético</strong>:\n\n• <strong>Corazón:</strong> campo EM detectable a 1-3 metros (Instituto HeartMath)\n• <strong>Cerebro:</strong> ondas EEG — delta (0.5-4Hz), theta, alfa, beta, gamma (>30Hz)\n• <strong>Bioluminiscencia:</strong> los cuerpos emiten fotones ultradébiles (UPE)\n• <strong>Piel:</strong> potenciales eléctricos medibles (GSR/EDA)\n\n<em>Este filtro</em> aplica detección de bordes Sobel al frame de video, coloreando los gradientes según ángulo y magnitud — revelando la estructura energética de los objetos.`,
-    holistic:`El Aura es el campo de luz que rodea todo ser viviente:\n\n🔴 <strong>Rojo:</strong> vitalidad, pasión, ira, supervivencia\n🟠 <strong>Naranja:</strong> creatividad, sensualidad, entusiasmo\n🟡 <strong>Amarillo:</strong> intelecto, claridad, optimismo\n🟢 <strong>Verde:</strong> amor, sanación, equilibrio\n🔵 <strong>Azul:</strong> comunicación, verdad, paz\n💜 <strong>Violeta:</strong> espiritualidad, intuición, transformación\n⚪ <strong>Blanco:</strong> pureza, conexión divina, maestría`,
-    history:`• <strong>1911:</strong> Walter Kilner — pantallas de dicianina que supuestamente revelan el aura.\n• <strong>1939:</strong> Semyon Kirlian fotografía corona de descarga eléctrica.\n• <strong>1966:</strong> Cleve Backster — plantas responden al campo EM humano.\n• <strong>Hoy:</strong> Instituto HeartMath documenta el campo toroidal del corazón como "aura" medible.`,
-    facts:['El campo magnético del corazón es 100x más fuerte que el del cerebro','El corazón genera un campo toroidal que se extiende ~3 metros','La meditación sincroniza los campos EM de personas cercanas','La bioluminiscencia humana tiene ciclos de 24h relacionados con el metabolismo']
-  },
-  uv:{
-    science:`El ultravioleta se divide en:\n• <strong>UV-A (315-400nm):</strong> bronceado, fluorescencia, envejecimiento\n• <strong>UV-B (280-315nm):</strong> síntesis vitamina D, quemaduras\n• <strong>UV-C (100-280nm):</strong> germicida, bloqueado por la atmósfera\n\nLas cámaras estándar tienen filtros de corte UV, pero algunos sensores detectan UV-A cercano.\n\n<strong>Fluorescencia:</strong> muchos materiales absorben UV y re-emiten luz visible — escorpiones, billetes, blanqueadores ópticos, orina.\n\n<em>Esta simulación</em> amplifica canal azul, añade tinte violeta, simula iluminación UV-A.`,
-    holistic:`El ultravioleta es la frecuencia de la <em>purificación y activación del tercer ojo</em> (Ajna Chakra).\n\nEn la tradición esotérica, la "Llama Violeta" de Saint Germain transmuta energías densas. El violeta-UV corresponde a la frecuencia más alta del espectro visible — el puente hacia lo invisible.\n\nLas tradiciones megalíticas (Stonehenge, Karnak) orientaban templos para filtrar longitudes de onda específicas. La calcita de muchos templos fluoresce en UV.\n\nLa glándula pineal contiene <strong>microcristales de calcita piezoeléctricas</strong> que algunos investigadores relacionan con la transducción de señales electromagnéticas sutiles.`,
-    history:`• <strong>1801:</strong> Johann Ritter descubre el UV días después del IR de Herschel.\n• <strong>1903:</strong> Robert Wood crea la "Lámpara de Wood" (UV-A 365nm).\n• <strong>1928:</strong> Primera lámpara UV germicida comercial.\n• <strong>Hoy:</strong> esterilización, autenticación, dermatología, astronomía UV.`,
-    facts:['Los escorpiones fluorescentan azul-verde bajo luz UV — detectables de noche','Las abejas ven patrones UV en flores que guían al néctar','La orina animal brilla bajo luz UV — herramienta forense','El 95% del UV solar que llega a tierra es UV-A (bronceado)']
-  },
-  nightvision:{
-    science:`Los sistemas de visión nocturna funcionan por <strong>amplificación fotónica</strong>:\n\n• <strong>Gen 1:</strong> ~1,000x (años 60, consumer)\n• <strong>Gen 2:</strong> Microchannel Plate ~25,000x (militar)\n• <strong>Gen 3:</strong> Fotocátodo GaAs ~50,000x (élite militar)\n\nEl color verde existe porque: el ojo humano es más sensible al verde en condiciones mesópicas, y los primeros tubos emitían en fósforo verde.\n\nEl ojo humano tiene ~120M bastones (visión escotópica). En oscuridad total, los bastones dominan.`,
-    holistic:`El verde de la visión nocturna es el color del <em>plano astral</em> en las tradiciones chamánicas. Ver en la oscuridad es la habilidad del chamán, el sacerdote, el místico.\n\nLas tradiciones tibetanas practican <strong>"Thögal"</strong> — meditación en oscuridad absoluta días para activar visiones internas. La pineal produce DMT en oscuridad profunda.\n\nEl horario <strong>3:00-5:00 AM</strong> es llamado "la hora del velo fino" — cuando la frontera entre mundos es más permeable según la tradición esotérica.`,
-    history:`• <strong>1935:</strong> Primeros experimentos de visión nocturna activa (IR) en Alemania.\n• <strong>1945:</strong> WWII — NV activo en tanques y artillería alemana.\n• <strong>1991:</strong> Guerra del Golfo — superioridad nocturna con Gen 2/3.\n• <strong>Hoy:</strong> NV en teléfonos (Sony IMX sensors), drones, seguridad, caza.`,
-    facts:['El ojo humano puede detectar un único fotón en oscuridad perfecta','Los gatos ven con 1/6 de la luz que necesitan los humanos','Los búhos tienen ojos tubulares fijos — compensan con 270° de rotación de cuello','La pupila humana se dilata 16x para captar más luz en oscuridad']
-  },
-  kirlian:{
-    science:`La fotografía Kirlian captura la <strong>descarga corona</strong>: cuando un objeto es sometido a alto voltaje (5-100kV) y alta frecuencia, el gas circundante se ioniza creando plasma visible.\n\n<strong>El fenómeno físico:</strong> campo eléctrico ioniza el aire → avalancha de electrones → plasma luminoso en bordes (donde el campo eléctrico es máximo).\n\n<strong>GDV moderno</strong> (Gas Discharge Visualization, Korotkov): digitaliza el proceso, permite análisis estadístico.\n\n<em>Este filtro:</em> detección de bordes + glow azul-blanco + ramificaciones de descarga animadas.`,
-    holistic:`La fotografía Kirlian abrió debates fascinantes entre ciencia y espiritualidad.\n\nInvestigadores soviéticos (1970s) reportaron:\n• Sanadores tienen coronas más grandes y brillantes\n• La corona cambia con estados emocionales\n• Puntos de acupuntura muestran coronas distintas\n• La meditación aumenta la intensidad de la corona\n\nKonstantin <strong>Korotkov (GDV)</strong> trabaja en correlaciones entre corona y estados de salud/conciencia. Sus estudios con atletas olímpicos y pacientes terminales muestran patrones reproducibles.`,
-    history:`• <strong>1939:</strong> Semyon y Valentina Kirlian desarrollan la técnica en la URSS.\n• <strong>1970:</strong> Ostrander & Schroeder llevan Kirlian a Occidente.\n• <strong>1974:</strong> Thelma Moss (UCLA) reporta variaciones en estados mentales.\n• <strong>1995:</strong> Korotkov desarrolla GDV — versión digital cuantificable.`,
-    facts:['Las puntas de los dedos tienen la mayor corona Kirlian del cuerpo','La corona varía con: humedad, presión, temperatura y estrés','Hojas frescas tienen mayor corona que las marchitas','Sanadores en práctica muestran patrones de corona distintos (GDV)']
-  },
-  xray:{
-    science:`Los rayos X son fotones de alta energía (<strong>0.01-10 nm, 100eV-100keV</strong>) que penetran materia blanda pero son absorbidos por tejido denso según el número atómico.\n\n<strong>Tipos:</strong>\n• X blandos (0.1-10nm): astronomía, XPS\n• X duros (0.001-0.1nm): medicina, cristalografía\n\n<strong>Dosis:</strong> RX dental = 0.005 mSv (equivale a 3h de radiación natural de fondo).\n\n<em>Este filtro:</em> escala de grises invertida + alto contraste, simulando transparencia de tejidos blandos.`,
-    holistic:`Los rayos X son la visión que penetra la ilusión de lo sólido.\n\nRepresentan la capacidad de ver la <em>estructura subyacente</em>: el esqueleto que sostiene la carne, el karma que sostiene el destino, el patrón que sostiene la forma.\n\nLa meditación Vipassana enseña a ver la impermanencia — como los RX revelan que lo "sólido" es mayormente espacio vacío. <strong>Un átomo es 99.9999% vacío.</strong>\n\nEl "Ojo Divino" en tradiciones místicas ve a través de las apariencias hasta la estructura esencial.`,
-    history:`• <strong>8 Nov 1895:</strong> Röntgen descubre los RX accidentalmente en Würzburg.\n• <strong>Primera imagen:</strong> la mano de su esposa (anillo de bodas visible).\n• <strong>1953:</strong> Rosalind Franklin — fotografía RX 51 revela la doble hélice del ADN.\n• <strong>1971:</strong> Primer escáner TAC (Hounsfield, Premio Nobel 1979).`,
-    facts:['Röntgen rechazó patentar los RX para que beneficiaran a todos','La estructura del ADN fue revelada por fotografía de RX (Rosalind Franklin)','Un átomo es 99.9999% espacio vacío — la materia "sólida" es casi vacío','Telescopios de RX espaciales revelan agujeros negros y pulsares invisibles']
-  },
-  radio:{
-    science:`Las ondas de radio <strong>llenan todo el espacio</strong> a tu alrededor en este momento:\n\n• WiFi: 2.4 GHz y 5 GHz\n• Celular 4G/5G: 700 MHz – 3.5 GHz\n• FM Radio: 87-108 MHz (λ = 2.8-3.4 m)\n• GPS: 1.575 GHz\n• Bluetooth: 2.4 GHz\n\nLas <strong>Resonancias de Schumann (7.83 Hz)</strong>: la cavidad Tierra-ionosfera resuena a frecuencias que coinciden con ondas cerebrales theta/alfa.\n\n<em>Esta visualización</em> es una abstracción artística del campo de radio invisible que te rodea.`,
-    holistic:`Las ondas de radio son el substrato de toda comunicación humana moderna — la manifestación tecnológica del <em>"Akasha"</em> (campo de información universal de la tradición vedántica).\n\nRupert Sheldrake propone los <strong>"campos morfogenéticos"</strong> — campos de información que conectan organismos y transmiten memoria, análogos a las ondas de radio.\n\nLas resonancias de Schumann (7.83 Hz) coinciden con ondas cerebrales alfa. Si pudieras ver las ondas de radio, estarías sumergido en un océano de luz multicolor, pulsante e invisible.`,
-    history:`• <strong>1886:</strong> Heinrich Hertz prueba las ondas EM predichas por Maxwell.\n• <strong>1895:</strong> Marconi — primera transmisión radio sin cables.\n• <strong>1938:</strong> "La Guerra de los Mundos" de Orson Welles causa pánico masivo en radio.\n• <strong>1964:</strong> Penzias y Wilson detectan el ECB — el "eco" del Big Bang en ondas de radio.`,
-    facts:['Hay más señales artificiales que naturales de radio llegando a la Tierra','Las resonancias Schumann (7.83 Hz) modulan las ondas cerebrales alfa','La señal más lejana detectada: quasars a >13 mil millones de años luz','Tu WiFi emite y recibe ~300 millones de ondas por segundo']
-  },
-  chakra:{
-    science:`Los chakras corresponden anatómicamente a <strong>plexos nerviosos y glándulas endocrinas</strong>:\n\n🔴 Muladhara (raíz): Plexo sacrocoxígeo, suprarrenales\n🟠 Svadhisthana (sacro): Plexo hipogástrico, gónadas\n🟡 Manipura (plexo solar): Plexo celiaco, páncreas\n🟢 Anahata (corazón): Plexo cardíaco, timo\n🔵 Vishuddha (garganta): Plexo faríngeo, tiroides\n💜 Ajna (tercer ojo): Ganglio cervical superior, hipófisis\n⚪ Sahasrara (corona): Corteza cerebral, glándula pineal`,
-    holistic:`El <strong>Kundalini</strong> — energía serpenteante dormida en la base de la columna — sube a través de los chakras durante la iluminación espiritual:\n\n🔴 Supervivencia → 🟠 Creatividad → 🟡 Poder personal → 🟢 Amor incondicional → 🔵 Expresión verdadera → 💜 Sabiduría → ⚪ Unidad\n\nCada chakra vibra en su propia frecuencia. Cuando todos están abiertos y equilibrados, el ser humano alcanza su potencial completo. El Yoga, meditación, mantras y color trabajan con estos centros.`,
-    history:`• <strong>~1000 AC:</strong> Primeras menciones de chakras en el Atharvaveda.\n• <strong>600-900 DC:</strong> Sistema completo en textos Tantras hindúes.\n• <strong>1919:</strong> Arthur Avalon traduce al inglés: "The Serpent Power".\n• <strong>1930s:</strong> Carl Jung estudia chakras como arquetipos psicológicos.\n• <strong>Hoy:</strong> HeartMath y neurociencia contemplativa validan correlaciones.`,
-    facts:['El corazón tiene ~40,000 neuronas: su propio "cerebro" pequeño','La glándula pineal contiene microcristales de calcita piezoeléctricas','El sonido Om (136.1 Hz) resuena con la frecuencia de rotación de la Tierra','El HRV mejora con meditación enfocada en el chakra del corazón']
-  }
+  normal:{science:`El espectro visible ocupa apenas el <strong>0.0035%</strong> del espectro electromagnético total. Nuestros ojos detectan fotones entre <strong>380 nm (violeta)</strong> y <strong>700 nm (rojo)</strong>.\n\nLos conos de la retina son sensibles a tres rangos: rojo (~560 nm), verde (~530 nm) y azul (~420 nm). Esta tríada permite ver millones de colores por mezcla aditiva.\n\n<strong>La luz visible existe</strong> porque el Sol emite principalmente en ese rango y la evolución optimizó nuestros ojos para ello.`,holistic:`En la tradición budista y vedántica, la luz visible representa el <em>"velo de Maya"</em> — la ilusión de la realidad material. Lo que percibimos es una construcción del sistema nervioso.\n\nEl sabio Hermes Trismegisto: <em>"Lo que está arriba es como lo que está abajo."</em> Los 7 colores del espectro reflejan la estructura de la conciencia: de lo denso (rojo/tierra) a lo sutil (violeta/espíritu).`,history:`• <strong>1666:</strong> Newton descompone la luz solar con un prisma, revelando el espectro.\n• <strong>1801:</strong> Young demuestra la naturaleza ondulatoria de la luz.\n• <strong>1865:</strong> Maxwell — la luz es onda electromagnética.\n• <strong>1905:</strong> Einstein — la luz también son cuantos (fotones).\n• <strong>Hoy:</strong> Dualidad onda-partícula confirmada experimentalmente.`,facts:['Percibimos solo el 0.0035% del espectro EM total','Un camarón mantis tiene 16 tipos de receptores de color (humanos: 3)','El ojo humano puede detectar un único fotón en oscuridad perfecta','La velocidad de la luz: 299,792,458 m/s']},
+  infrared:{science:`El infrarrojo fue descubierto por <strong>William Herschel en 1800</strong> al medir temperaturas más allá del rojo visible.\n\n• <strong>NIR (700-1400nm):</strong> Control remoto, fotografía IR\n• <strong>MIR (1.4-8μm):</strong> Espectroscopía molecular\n• <strong>FIR (8-15μm):</strong> Imagen térmica, FLIR\n\nLas plantas reflejan fuertemente el NIR (efecto chlorophyll). En fotografía IR real, la vegetación aparece blanca brillante y el cielo negro.`,holistic:`El infrarrojo es el calor: el pulso de la vida misma. Toda forma de vida emite radiación IR — es la <em>"firma térmica"</em> del alma encarnada.\n\nEn la medicina tradicional china, el Qi/Chi fluye por meridianos. Los sanadores del Qigong emiten calor medible desde sus palmas. Los chamanes siberianos describen <em>"ver el calor de los espíritus"</em>.`,history:`• <strong>1800:</strong> Herschel descubre el IR midiendo temperatura más allá del rojo solar.\n• <strong>1910:</strong> Robert Wood crea la "fotografía Wood" con película IR.\n• <strong>1960s:</strong> FLIR en aviación militar.\n• <strong>Hoy:</strong> IR en medicina, construcción, astronomía, agricultura.`,facts:['Las serpientes pit viper tienen órganos IR para cazar en la oscuridad','El mando de tu TV emite pulsos IR a 38 kHz','La fotografía IR hace que los árboles parezcan nevados','Los mosquitos te detectan por tu firma IR a metros']},
+  thermal:{science:`La termografía detecta IR de onda larga (8-14μm). Sigue la <strong>Ley de Stefan-Boltzmann: P = εσT⁴</strong>.\n\nLas cámaras FLIR usan microbolómetros. Detectan diferencias de <strong>0.1°C</strong>.\n\n<strong>Aplicaciones:</strong> diagnóstico de inflamaciones, tumores, circulación deficiente, lesiones deportivas.\n\n<em>Paleta iron-bow:</em> negro→azul→rojo→naranja→blanco. Frío=azul, caliente=blanco.`,holistic:`Un estudio de la <strong>Universidad de Aalto (2013, PNAS)</strong> mapeó las emociones como patrones térmicos reproducibles: ira=calor en pecho; depresión=extremidades frías; amor=calor en pecho y abdomen.\n\nLos meridianos de acupuntura muestran temperatura ligeramente diferente al tejido circundante. Meditadores tibetanos suben hasta 8°C la temperatura de sus manos (Harvard).`,history:`• <strong>1960s:</strong> Primera termografía médica comercial.\n• <strong>1973:</strong> Evelyn Wood — correlaciones temperatura-estado mental.\n• <strong>2013:</strong> Aalto University — mapa emocional térmico del cuerpo.\n• <strong>Hoy:</strong> COVID-screening, PCB electrónica, veterinaria.`,facts:['El cerebro es el órgano más caliente (~37.6°C internamente)','La nariz es el punto más frío de la cara','Las emociones cambian el patrón térmico del cuerpo','Meditadores tibetanos elevan 8°C la temperatura de sus manos']},
+  aura:{science:`El cuerpo humano es <strong>bioelectromagnético</strong>:\n\n• <strong>Corazón:</strong> campo EM detectable a 1-3 metros (HeartMath)\n• <strong>Cerebro:</strong> ondas EEG — delta, theta, alfa, beta, gamma\n• <strong>Bioluminiscencia:</strong> fotones ultradébiles (UPE)\n• <strong>Piel:</strong> potenciales eléctricos medibles (GSR/EDA)\n\n<em>Este filtro</em> aplica detección de bordes Sobel al frame, coloreando los gradientes según ángulo y magnitud.`,holistic:`El Aura es el campo de luz que rodea todo ser viviente:\n\n🔴 <strong>Rojo:</strong> vitalidad, pasión\n🟠 <strong>Naranja:</strong> creatividad, entusiasmo\n🟡 <strong>Amarillo:</strong> intelecto, claridad\n🟢 <strong>Verde:</strong> amor, sanación\n🔵 <strong>Azul:</strong> comunicación, verdad\n💜 <strong>Violeta:</strong> espiritualidad, intuición\n⚪ <strong>Blanco:</strong> pureza, maestría`,history:`• <strong>1911:</strong> Kilner — pantallas de dicianina que "revelan" el aura.\n• <strong>1939:</strong> Kirlian fotografía corona de descarga eléctrica.\n• <strong>1966:</strong> Backster — plantas responden al campo EM humano.\n• <strong>Hoy:</strong> HeartMath documenta el toroide cardíaco (campo "aura" medible).`,facts:['El campo magnético del corazón es 100x más fuerte que el del cerebro','El toroide cardíaco se extiende ~3 metros','La meditación sincroniza los campos EM de personas cercanas','La bioluminiscencia humana tiene ciclos de 24h']},
+  uv:{science:`El ultravioleta:\n• <strong>UV-A (315-400nm):</strong> bronceado, fluorescencia\n• <strong>UV-B (280-315nm):</strong> síntesis vitamina D\n• <strong>UV-C (100-280nm):</strong> germicida, bloqueado por la atmósfera\n\n<strong>Fluorescencia:</strong> muchos materiales absorben UV y re-emiten visible — escorpiones, billetes, blanqueadores ópticos.\n\n<em>Este filtro</em> amplifica canal azul y añade tinte violeta.`,holistic:`El UV es la frecuencia de la <em>purificación y del tercer ojo</em> (Ajna Chakra).\n\nLa "Llama Violeta" de la tradición esotérica transmuta energías densas. El violeta-UV corresponde a la frecuencia más alta del espectro visible — el puente hacia lo invisible.\n\nLa glándula pineal contiene <strong>microcristales de calcita piezoeléctricas</strong> que algunos investigadores relacionan con la transducción de señales sutiles.`,history:`• <strong>1801:</strong> Johann Ritter descubre el UV (días después del IR de Herschel).\n• <strong>1903:</strong> Robert Wood crea la "Lámpara de Wood" (UV-A 365nm).\n• <strong>Hoy:</strong> esterilización, autenticación, dermatología, astronomía UV.`,facts:['Los escorpiones fluorescentan azul-verde bajo UV','Las abejas ven patrones UV en flores que guían al néctar','La orina animal brilla bajo UV — herramienta forense','El 95% del UV solar que llega a tierra es UV-A']},
+  nightvision:{science:`Amplificación fotónica por generaciones:\n\n• <strong>Gen 1:</strong> ~1,000x (años 60)\n• <strong>Gen 2:</strong> Microchannel Plate ~25,000x (militar)\n• <strong>Gen 3:</strong> Fotocátodo GaAs ~50,000x (élite)\n\nEl color verde característico: el ojo humano es más sensible al verde en condiciones mesópicas. Los bastones (~120M) dominan en oscuridad.\n\n<em>Este filtro:</em> escala de grises + canal verde amplificado + grano fotónico.`,holistic:`El verde del NV es el color del <em>plano astral</em>. Ver en la oscuridad es la habilidad del chamán.\n\nLas tradiciones tibetanas practican <strong>Thögal</strong> — meditación en oscuridad absoluta para activar visiones internas. La pineal produce DMT en oscuridad profunda.\n\n<strong>3:00-5:00 AM</strong>: "hora del velo fino" — cuando la frontera entre mundos es más permeable.`,history:`• <strong>1935:</strong> Primeros experimentos de NV activo (Alemania).\n• <strong>1945:</strong> WWII — NV en tanques y artillería.\n• <strong>1991:</strong> Guerra del Golfo — superioridad nocturna Gen 2/3.\n• <strong>Hoy:</strong> NV en smartphones (Sony IMX), drones, caza.`,facts:['El ojo humano detecta un único fotón en oscuridad perfecta','Los gatos ven con 1/6 de la luz que necesitan los humanos','Los búhos compensan sus ojos fijos con 270° de rotación cervical','La pupila humana se dilata 16x en oscuridad']},
+  kirlian:{science:`La fotografía Kirlian captura la <strong>descarga corona</strong>: alto voltaje ioniza el gas circundante creando plasma visible en los bordes del objeto.\n\n<strong>Físicamente:</strong> campo eléctrico → ionización del aire → avalancha de electrones → plasma luminoso.\n\n<strong>GDV</strong> (Gas Discharge Visualization, Korotkov): versión digital cuantificable.\n\n<em>Este filtro:</em> detección de bordes Sobel + glow azul-blanco de plasma + parpadeo animado.`,holistic:`Investigadores soviéticos (1970s) reportaron:\n• Sanadores: coronas más grandes y brillantes\n• La corona cambia con estados emocionales\n• Puntos de acupuntura con coronas distintas\n• Meditación: intensidad de corona aumenta\n\nKonstantin <strong>Korotkov (GDV)</strong> trabaja en correlaciones entre corona y estados de salud/conciencia en atletas olímpicos.`,history:`• <strong>1939:</strong> Semyon y Valentina Kirlian desarrollan la técnica (URSS).\n• <strong>1970:</strong> Ostrander & Schroeder llevan Kirlian a Occidente.\n• <strong>1974:</strong> Thelma Moss (UCLA) — variaciones en estados mentales.\n• <strong>1995:</strong> Korotkov desarrolla GDV digital.`,facts:['Las puntas de los dedos tienen la mayor corona Kirlian','La corona varía con: humedad, presión y estrés','Hojas frescas tienen mayor corona que las marchitas','Sanadores en práctica muestran patrones de corona distintos']},
+  xray:{science:`Rayos X: fotones de alta energía (<strong>0.01-10 nm, 100eV-100keV</strong>) que penetran materia blanda pero son absorbidos por tejido denso.\n\n<strong>Dosis:</strong> RX dental = 0.005 mSv (equivale a 3h de radiación natural).\n\n<em>Este filtro:</em> escala de grises invertida + alto contraste, simulando transparencia de tejidos blandos.`,holistic:`Los RX representan la visión que penetra la ilusión de lo sólido — ver la <em>estructura subyacente</em>.\n\nLa meditación Vipassana enseña a ver la impermanencia — como los RX revelan que lo "sólido" es mayormente vacío. <strong>Un átomo es 99.9999% vacío.</strong>`,history:`• <strong>8 Nov 1895:</strong> Röntgen descubre los RX accidentalmente en Würzburg.\n• <strong>1953:</strong> Rosalind Franklin — fotografía RX 51 revela la doble hélice del ADN.\n• <strong>1971:</strong> Primer escáner TAC (Hounsfield, Nobel 1979).`,facts:['Röntgen rechazó patentar los RX para que beneficiaran a todos','La doble hélice del ADN fue revelada por fotografía de RX','Un átomo es 99.9999% espacio vacío','Telescopios RX espaciales revelan agujeros negros invisibles']},
+  radio:{science:`Ondas de radio que te rodean en este momento:\n\n• <strong>WiFi:</strong> 2.4 GHz y 5 GHz\n• <strong>Celular:</strong> 700 MHz – 3.5 GHz\n• <strong>FM:</strong> 87-108 MHz (λ = 2.8-3.4 m)\n• <strong>GPS:</strong> 1.575 GHz\n\n<strong>Resonancias de Schumann (7.83 Hz):</strong> la cavidad Tierra-ionosfera resuena a frecuencias que coinciden con ondas cerebrales theta/alfa.\n\n<em>Esta visualización</em> es una abstracción artística del campo de radio invisible.`,holistic:`Las ondas de radio son el substrato de toda comunicación moderna — la manifestación tecnológica del <em>"Akasha"</em> (campo de información universal vedántico).\n\nRupert Sheldrake propone los <strong>"campos morfogenéticos"</strong> — campos de información que conectan organismos, análogos a las ondas de radio.`,history:`• <strong>1886:</strong> Hertz prueba las ondas EM de Maxwell.\n• <strong>1895:</strong> Marconi — primera transmisión radio sin cables.\n• <strong>1964:</strong> Penzias y Wilson detectan el ECB — el "eco" del Big Bang.`,facts:['Hay más señales artificiales de radio que naturales llegando a la Tierra','Las resonancias Schumann (7.83 Hz) modulan ondas cerebrales alfa','La señal más lejana: quasars a >13 mil millones de años luz','Tu WiFi emite ~300 millones de ondas por segundo']},
+  chakra:{science:`Los chakras corresponden anatómicamente a <strong>plexos nerviosos y glándulas endocrinas</strong>:\n\n🔴 Muladhara (raíz): Plexo sacrocoxígeo, suprarrenales\n🟠 Svadhisthana (sacro): Plexo hipogástrico, gónadas\n🟡 Manipura (solar): Plexo celiaco, páncreas\n🟢 Anahata (corazón): Plexo cardíaco, timo\n🔵 Vishuddha (garganta): Plexo faríngeo, tiroides\n💜 Ajna (tercer ojo): Ganglio cervical superior, hipófisis\n⚪ Sahasrara (corona): Corteza cerebral, pineal`,holistic:`El <strong>Kundalini</strong> sube a través de los chakras transformando la conciencia:\n\n🔴 Supervivencia → 🟠 Creatividad → 🟡 Poder → 🟢 Amor → 🔵 Expresión → 💜 Sabiduría → ⚪ Unidad\n\nCada chakra vibra en su propia frecuencia. Yoga, meditación, mantras y color trabajan con estos centros.`,history:`• <strong>~1000 AC:</strong> Primeras menciones en el Atharvaveda.\n• <strong>600-900 DC:</strong> Sistema completo en textos Tantras.\n• <strong>1919:</strong> Arthur Avalon — "The Serpent Power" (traducción al inglés).\n• <strong>1930s:</strong> Carl Jung estudia chakras como arquetipos psicológicos.`,facts:['El corazón tiene ~40,000 neuronas: su propio "cerebro"','La pineal contiene microcristales de calcita piezoeléctricas','Om (136.1 Hz) resuena con la frecuencia de rotación de la Tierra','El HRV mejora con meditación enfocada en el corazón']},
+  sacred:{science:`La <strong>Geometría Sagrada</strong> estudia las propiedades matemáticas de formas consideradas fundamentales en el universo.\n\n<strong>Flor de la Vida:</strong> patrón de 7+ círculos solapados que contiene todas las formas platónicas. Aparece en el templo de Abidos (Egipto ~3000 AC) y en Da Vinci's "Uomo Vitruviano".\n\n<strong>Proporción áurea (φ = 1.618...):</strong> aparece en espirales de galaxias, conchas nautilus, ADN y la arquitectura del Partenón.\n\n<strong>Cubo de Metatrón:</strong> contiene los 5 sólidos platónicos — los únicos sólidos regulares en 3D.`,holistic:`La Geometría Sagrada es el <em>lenguaje del universo</em>.\n\nLos pitagóricos creían que los números y las formas geométricas son la base de toda la realidad. Platón decía que el universo fue construido con triángulos y sólidos geométricos.\n\n<strong>Flor de la Vida:</strong> contiene el Fruto de la Vida (13 círculos) que al conectarse forman el Cubo de Metatrón, que contiene todos los patrones de la creación.\n\nLa proporción áurea emerge naturalmente en crecimiento orgánico — un código matemático integrado en la vida misma.`,history:`• <strong>~3000 AC:</strong> Flor de la Vida en el templo de Abidos, Egipto.\n• <strong>~500 AC:</strong> Pitágoras — los números como base de la realidad.\n• <strong>~350 AC:</strong> Platón — Los 5 sólidos platónicos.\n• <strong>1509:</strong> Luca Pacioli — "De Divina Proportione" (con ilustraciones de Da Vinci).\n• <strong>Hoy:</strong> Geometría sagrada en arquitectura, arte, diseño y espiritualidad.`,facts:['La Flor de la Vida aparece en tradiciones de Egipto, India, China, Roma','El ADN tiene una estructura en doble hélice con proporción áurea','Las espirales de las galaxias siguen la secuencia de Fibonacci','Los cristales de nieve son geometría hexagonal — nunca hay dos iguales']},
+  magnetic:{science:`Los <strong>campos magnéticos</strong> son componentes del campo electromagnético, descrito por las ecuaciones de Maxwell (1865).\n\n<strong>Tipos de campos magnéticos en tu entorno:</strong>\n• Campo geomagnético terrestre: 25-65 μT\n• Campo del corazón humano: ~10 pT (detectable a 1m)\n• WiFi/Celular: campos EM de RF\n• ELF (Extremely Low Frequency): 3-3000 Hz\n\nLas <strong>líneas de campo</strong> van del polo norte al polo sur (convención). Las cargas eléctricas en movimiento generan campos magnéticos — eso eres tú también.`,holistic:`El campo magnético terrestre es el <em>escudo invisible</em> que protege la vida del viento solar. Los chamanes lo llaman "el abrazo de la Madre Tierra".\n\nLas aves migratorias, abejas, peces y ballenas navegan usando el campo geomagnético — un GPS biológico. Algunos humanos también podrían tener esta capacidad (investigaciones en curso).\n\nEl Instituto HeartMath documenta que el campo magnético del corazón (toroidal) forma patrones coherentes durante estados de amor y gratitud que se sincronizan con los campos de otras personas.`,history:`• <strong>1600:</strong> William Gilbert — primer mapa del campo magnético terrestre.\n• <strong>1820:</strong> Ørsted — conexión entre electricidad y magnetismo.\n• <strong>1865:</strong> Maxwell — unifica electricidad y magnetismo en las 4 ecuaciones.\n• <strong>1969:</strong> Apollo 11 — primeras mediciones magnéticas detalladas en la Luna.\n• <strong>Hoy:</strong> MRI usa campos magnéticos de 1.5-7 Tesla para imagen médica.`,facts:['La Tierra es como un gran imán de dipolo (polo N en Sur geográfico)','Las palomas mensajeras tienen magnetita en el pico — GPS biológico','La aurora boreal es campo magnético haciendo visible el viento solar','El MRI usa campos 100,000x más fuertes que el terrestre']},
+  quantum:{science:`La <strong>mecánica cuántica</strong> describe el comportamiento de la materia a escala subatómica.\n\n<strong>Principios clave:</strong>\n• <em>Dualidad onda-partícula:</em> la luz (y la materia) es onda Y partícula\n• <em>Principio de incertidumbre (Heisenberg):</em> no puedes conocer posición y momento simultáneamente\n• <em>Superposición:</em> las partículas existen en múltiples estados hasta ser observadas\n• <em>Entrelazamiento:</em> partículas correlacionadas a cualquier distancia\n\n<em>Este filtro</em> visualiza patrones de interferencia de función de onda con 4 fuentes.`,holistic:`La mecánica cuántica ha abierto puentes fascinantes con la filosofía espiritual:\n\n<strong>"El observador colapsa la función de onda"</strong> — la conciencia influye en la realidad a nivel cuántico. Esto resuena con la enseñanza budista de que el mundo no existe independientemente de la percepción.\n\nDavid Bohm propuso el <em>orden implicado</em> — una realidad subyacente donde todo está interconectado, similar al "Indra's Net" vedántico.\n\nEl entrelazamiento cuántico sugiere que la separación es una ilusión — partículas a millones de km se influyen instantáneamente.`,history:`• <strong>1900:</strong> Planck — los quanta de energía (inicio de la era cuántica).\n• <strong>1905:</strong> Einstein — fotones (efecto fotoeléctrico).\n• <strong>1925:</strong> Heisenberg y Schrödinger — mecánica cuántica moderna.\n• <strong>1964:</strong> Bell — desigualdades para probar el entrelazamiento.\n• <strong>2022:</strong> Nobel de Física a Aspect, Clauser y Zeilinger por experimentos de entrelazamiento.`,facts:['Un electrón puede estar en dos lugares a la vez hasta ser observado','El entrelazamiento cuántico es "acción fantasmal a distancia" (Einstein)','Los computadores cuánticos usan superposición para calcular en paralelo','La eficiencia de la fotosíntesis se explica por efectos cuánticos']}
 };
 
-/* ── State ─────────────────────────────────── */
+// ── State ─────────────────────────────────
 let stream=null, currentFilter='normal', currentTab='science';
 let currentCamera='environment', rafId=null;
+let filterIntensity=1.0;
+let voiceEnabled=false;
+let isListening=false;
+let recognition=null;
 
 const video=document.getElementById('video');
 const canvas=document.getElementById('canvas');
 const ctx=canvas.getContext('2d',{willReadFrequently:true});
-const PW=480,PH=360;
+const PW=480, PH=360;
 canvas.width=PW; canvas.height=PH;
+
+const histCanvas=document.getElementById('hist-canvas');
+const histCtx=histCanvas.getContext('2d');
+histCanvas.width=88; histCanvas.height=44;
 
 // Thermal palette (iron-bow)
 const THERMAL=new Uint8Array(256*3);
-(function(){
+(()=>{
   for(let i=0;i<256;i++){
-    const t=i/255; let r,g,b;
+    const t=i/255;let r,g,b;
     if(t<.25){r=0;g=0;b=Math.round(t*4*200);}
     else if(t<.4){const s=(t-.25)/.15;r=Math.round(s*80);g=0;b=Math.round(200*(1-s*.3));}
     else if(t<.6){const s=(t-.4)/.2;r=Math.round(80+s*175);g=Math.round(s*50);b=Math.round(140*(1-s));}
@@ -764,21 +429,19 @@ const THERMAL=new Uint8Array(256*3);
 const clamp=v=>v<0?0:v>255?255:Math.round(v);
 function hsl2rgb(h,s,l){
   let r,g,b;
-  if(!s){r=g=b=l;}
-  else{
+  if(!s){r=g=b=l;}else{
     const q=l<.5?l*(1+s):l+s-l*s,p=2*l-q;
-    const h2r=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<.5)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
-    r=h2r(p,q,h+1/3);g=h2r(p,q,h);b=h2r(p,q,h-1/3);
+    const f=(p,q,t)=>{if(t<0)t+=1;if(t>1)t-=1;if(t<1/6)return p+(q-p)*6*t;if(t<.5)return q;if(t<2/3)return p+(q-p)*(2/3-t)*6;return p;};
+    r=f(p,q,h+1/3);g=f(p,q,h);b=f(p,q,h-1/3);
   }
   return[r*255,g*255,b*255];
 }
 
-/* ── Filter functions ─────────────────────── */
+// ── Pixel Filters ─────────────────────────
 function fInfrared(d){
   for(let i=0;i<d.length;i+=4){
     const r=d[i],g=d[i+1],b=d[i+2];
-    const ir=clamp(g*1.9-b*.8+r*.15);
-    const t=ir/255;
+    const ir=clamp(g*1.9-b*.8+r*.15),t=ir/255;
     if(t<.3){d[i]=clamp(t/.3*100);d[i+1]=0;d[i+2]=clamp((1-t/.3)*90);}
     else if(t<.6){const s=(t-.3)/.3;d[i]=clamp(100+s*155);d[i+1]=clamp(s*60);d[i+2]=0;}
     else if(t<.85){const s=(t-.6)/.25;d[i]=255;d[i+1]=clamp(60+s*180);d[i+2]=clamp(s*80);}
@@ -786,366 +449,366 @@ function fInfrared(d){
   }
 }
 function fThermal(d){
-  for(let i=0;i<d.length;i+=4){
-    const l=clamp(d[i]*.299+d[i+1]*.587+d[i+2]*.114);
-    d[i]=THERMAL[l*3];d[i+1]=THERMAL[l*3+1];d[i+2]=THERMAL[l*3+2];
-  }
+  for(let i=0;i<d.length;i+=4){const l=clamp(d[i]*.299+d[i+1]*.587+d[i+2]*.114);d[i]=THERMAL[l*3];d[i+1]=THERMAL[l*3+1];d[i+2]=THERMAL[l*3+2];}
 }
 function fUV(d){
   for(let i=0;i<d.length;i+=4){
     const r=d[i],g=d[i+1],b=d[i+2];
     d[i]=clamp(r*.3+b*.1);d[i+1]=clamp(g*.4+b*.05);d[i+2]=clamp(b*1.4+r*.1+40);
-    const l=d[i]*.2+d[i+1]*.2+d[i+2]*.6;
-    if(l>200){d[i]=clamp(d[i]+30);d[i+2]=255;}
+    const l=d[i]*.2+d[i+1]*.2+d[i+2]*.6;if(l>200){d[i]=clamp(d[i]+30);d[i+2]=255;}
   }
 }
 function fNight(d,t){
   const ns=Math.sin(t*.001)*3;
-  for(let i=0;i<d.length;i+=4){
-    const g=d[i]*.299+d[i+1]*.587+d[i+2]*.114;
-    const a=clamp(g*1.4+ns*(Math.random()-.5)*6);
-    d[i]=clamp(a*.1);d[i+1]=clamp(a);d[i+2]=clamp(a*.08);
-  }
+  for(let i=0;i<d.length;i+=4){const g=d[i]*.299+d[i+1]*.587+d[i+2]*.114;const a=clamp(g*1.4+ns*(Math.random()-.5)*6);d[i]=clamp(a*.1);d[i+1]=clamp(a);d[i+2]=clamp(a*.08);}
 }
 function fXRay(d){
-  for(let i=0;i<d.length;i+=4){
-    const g=clamp(d[i]*.299+d[i+1]*.587+d[i+2]*.114);
-    const c=clamp((255-g-128)*1.6+128);
-    d[i]=clamp(c*.9);d[i+1]=clamp(c*.95);d[i+2]=c;
-  }
+  for(let i=0;i<d.length;i+=4){const g=clamp(d[i]*.299+d[i+1]*.587+d[i+2]*.114);const c=clamp((255-g-128)*1.6+128);d[i]=clamp(c*.9);d[i+1]=clamp(c*.95);d[i+2]=c;}
 }
 function sobel(d,w,h){
-  const gy=new Float32Array(w*h),mag=new Float32Array(w*h),ang=new Float32Array(w*h);
-  for(let i=0;i<w*h;i++)gy[i]=d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114;
+  const g=new Float32Array(w*h),mag=new Float32Array(w*h),ang=new Float32Array(w*h);
+  for(let i=0;i<w*h;i++)g[i]=d[i*4]*.299+d[i*4+1]*.587+d[i*4+2]*.114;
   for(let y=1;y<h-1;y++)for(let x=1;x<w-1;x++){
     const k=y*w+x;
-    const gx=-gy[k-w-1]+gy[k-w+1]-2*gy[k-1]+2*gy[k+1]-gy[k+w-1]+gy[k+w+1];
-    const gY=-gy[k-w-1]-2*gy[k-w]-gy[k-w+1]+gy[k+w-1]+2*gy[k+w]+gy[k+w+1];
-    mag[k]=Math.sqrt(gx*gx+gY*gY);ang[k]=Math.atan2(gY,gx);
+    const gx=-g[k-w-1]+g[k-w+1]-2*g[k-1]+2*g[k+1]-g[k+w-1]+g[k+w+1];
+    const gy=-g[k-w-1]-2*g[k-w]-g[k-w+1]+g[k+w-1]+2*g[k+w]+g[k+w+1];
+    mag[k]=Math.sqrt(gx*gx+gy*gy);ang[k]=Math.atan2(gy,gx);
   }
   return{mag,ang};
 }
 function fAura(d,w,h,t){
-  const{mag,ang}=sobel(d,w,h);
-  const mx=mag.reduce((a,b)=>Math.max(a,b),0)||1;
+  const{mag,ang}=sobel(d,w,h);const mx=mag.reduce((a,b)=>Math.max(a,b),0)||1;
   for(let i=0;i<d.length;i+=4){d[i]*=.35;d[i+1]*=.35;d[i+2]*=.35;}
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-    const k=y*w+x,i=k*4;
-    const m=mag[k]/mx;
-    if(m>.12){
-      const hue=(ang[k]/(2*Math.PI)+.5+t*.00012)%1;
-      const[r,g,b]=hsl2rgb(hue,.9,.55);
-      const s=Math.min(1,m*2.5);
-      d[i]=clamp(d[i]+r*s);d[i+1]=clamp(d[i+1]+g*s);d[i+2]=clamp(d[i+2]+b*s);
-    }
+    const k=y*w+x,i=k*4,m=mag[k]/mx;
+    if(m>.12){const hue=(ang[k]/(2*Math.PI)+.5+t*.00012)%1;const[r,g,b]=hsl2rgb(hue,.9,.55);const s=Math.min(1,m*2.5);d[i]=clamp(d[i]+r*s);d[i+1]=clamp(d[i+1]+g*s);d[i+2]=clamp(d[i+2]+b*s);}
   }
 }
 function fKirlian(d,w,h,t){
-  const{mag}=sobel(d,w,h);
-  const mx=mag.reduce((a,b)=>Math.max(a,b),0)||1;
+  const{mag}=sobel(d,w,h);const mx=mag.reduce((a,b)=>Math.max(a,b),0)||1;
   for(let i=0;i<d.length;i+=4){d[i]*=.22;d[i+1]*=.22;d[i+2]*=.28;}
   for(let y=0;y<h;y++)for(let x=0;x<w;x++){
-    const k=y*w+x,i=k*4;
-    const m=mag[k]/mx;
-    if(m>.15){
-      const f=.75+.25*Math.sin(t*.05+k*.001);
-      const s=Math.min(1,m*2)*f;
-      d[i]=clamp(d[i]+80*s+100*s*s);d[i+1]=clamp(d[i+1]+120*s*s);d[i+2]=clamp(d[i+2]+220*s+200*s*s);
-    }
+    const k=y*w+x,i=k*4,m=mag[k]/mx;
+    if(m>.15){const f=.75+.25*Math.sin(t*.05+k*.001);const s=Math.min(1,m*2)*f;d[i]=clamp(d[i]+80*s+100*s*s);d[i+1]=clamp(d[i+1]+120*s*s);d[i+2]=clamp(d[i+2]+220*s+200*s*s);}
   }
 }
 function fChakra(d,w,h,t){
   const CC=[[180,0,255],[75,0,200],[0,80,255],[0,180,60],[220,220,0],[255,130,0],[220,0,0]];
-  const rh=h/7;
-  const{mag}=sobel(d,w,h);
-  const mx=mag.reduce((a,b)=>Math.max(a,b),0)||1;
+  const{mag}=sobel(d,w,h);const mx=mag.reduce((a,b)=>Math.max(a,b),0)||1;
   for(let y=0;y<h;y++){
-    const ci=Math.min(6,Math.floor(y/rh));
-    const[cr,cg,cb]=CC[ci];
-    const p=.35+.1*Math.sin(t*.001+ci*.5);
-    for(let x=0;x<w;x++){
-      const k=y*w+x,i=k*4;
-      const l=(d[i]*.299+d[i+1]*.587+d[i+2]*.114)/255;
-      const m=Math.min(1,mag[k]/mx*3);
-      d[i]=clamp(d[i]*(1-p)+cr*p*l*2+cr*m*.8);
-      d[i+1]=clamp(d[i+1]*(1-p)+cg*p*l*2+cg*m*.8);
-      d[i+2]=clamp(d[i+2]*(1-p)+cb*p*l*2+cb*m*.8);
+    const ci=Math.min(6,Math.floor(y/(h/7)));const[cr,cg,cb]=CC[ci];const p=.35+.1*Math.sin(t*.001+ci*.5);
+    for(let x=0;x<w;x++){const k=y*w+x,i=k*4,l=(d[i]*.299+d[i+1]*.587+d[i+2]*.114)/255,m=Math.min(1,mag[k]/mx*3);d[i]=clamp(d[i]*(1-p)+cr*p*l*2+cr*m*.8);d[i+1]=clamp(d[i+1]*(1-p)+cg*p*l*2+cg*m*.8);d[i+2]=clamp(d[i+2]*(1-p)+cb*p*l*2+cb*m*.8);}
+  }
+}
+
+// NEW: Quantum pixel filter — wave interference
+function fQuantum(d,w,h,t){
+  const src=[{x:w*.3,y:h*.5,f:.05,ph:0},{x:w*.7,y:h*.5,f:.05,ph:Math.PI*.6},{x:w*.5,y:h*.2,f:.04,ph:Math.PI*1.2},{x:w*.5,y:h*.8,f:.04,ph:Math.PI*1.8}];
+  const n=src.length,T=t*.0025;
+  for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2){
+    let psi=0;for(const s of src){const dx=x-s.x,dy=y-s.y;psi+=Math.cos(Math.sqrt(dx*dx+dy*dy)*s.f-T+s.ph);}
+    const norm=(psi+n)/(n*2),hue=(norm*.75+t*.00005)%1;
+    const[qr,qg,qb]=hsl2rgb(hue,.95,.5+norm*.15);const mix=.65;
+    for(let dy=0;dy<2&&y+dy<h;dy++)for(let dx=0;dx<2&&x+dx<w;dx++){
+      const i=((y+dy)*w+(x+dx))*4;d[i]=clamp(d[i]*(1-mix)+qr*mix*1.6);d[i+1]=clamp(d[i+1]*(1-mix)+qg*mix*1.6);d[i+2]=clamp(d[i+2]*(1-mix)+qb*mix*1.6);
     }
   }
 }
+
+// ── Canvas Overlay Filters ─────────────────
+
+// Radio waves
 function renderRadio(cx,w,h,t){
   cx.fillStyle='rgba(0,4,14,.82)';cx.fillRect(0,0,w,h);
-  const src=[
-    {x:w*.12,y:h*.5,rgb:'0,200,255',s:1},{x:w*.88,y:h*.3,rgb:'255,100,30',s:.7},
-    {x:w*.5,y:h*.08,rgb:'80,255,80',s:1.4},{x:w*.3,y:h*.88,rgb:'200,50,255',s:.85},
-    {x:w*.75,y:h*.7,rgb:'255,200,0',s:1.15},
-  ];
+  const src=[{x:w*.12,y:h*.5,rgb:'0,200,255',s:1},{x:w*.88,y:h*.3,rgb:'255,100,30',s:.7},{x:w*.5,y:h*.08,rgb:'80,255,80',s:1.4},{x:w*.3,y:h*.88,rgb:'200,50,255',s:.85},{x:w*.75,y:h*.7,rgb:'255,200,0',s:1.15}];
   cx.save();cx.globalCompositeOperation='screen';
-  src.forEach(({x,y,rgb,s})=>{
-    for(let i=0;i<7;i++){
-      const ph=((t*.0007*s)+i/7)%1;
-      const rad=ph*Math.sqrt(w*w+h*h)*.65;
-      const al=Math.pow(1-ph,1.8)*.22;
-      cx.strokeStyle=`rgba(${rgb},${al})`;cx.lineWidth=2+(1-ph)*3;
-      cx.beginPath();cx.arc(x,y,rad,0,Math.PI*2);cx.stroke();
-    }
-  });
+  src.forEach(({x,y,rgb,s})=>{for(let i=0;i<7;i++){const ph=((t*.0007*s)+i/7)%1,rad=ph*Math.sqrt(w*w+h*h)*.65,al=Math.pow(1-ph,1.8)*.22;cx.strokeStyle=`rgba(${rgb},${al})`;cx.lineWidth=2+(1-ph)*3;cx.beginPath();cx.arc(x,y,rad,0,Math.PI*2);cx.stroke();}});
   cx.restore();
 }
 
-/* ── Render loop ─────────────────────────── */
+// Sacred Geometry — Flower of Life + Metatron + Golden Spiral
+function renderSacred(cx,w,h,t){
+  cx.fillStyle='rgba(0,0,16,.42)';cx.fillRect(0,0,w,h);
+  const cx0=w/2,cy0=h/2,breath=1+.05*Math.sin(t*.0015),R=Math.min(w,h)*.36*breath,rot=t*.0002;
+  const ga=.5+.18*Math.sin(t*.001);
+  cx.save();cx.translate(cx0,cy0);cx.globalCompositeOperation='screen';
+  const arc=(x,y,r)=>{cx.beginPath();cx.arc(x,y,r,0,Math.PI*2);cx.stroke();};
+  // Flower of Life
+  cx.strokeStyle=`rgba(255,210,50,${ga})`;cx.lineWidth=.85;
+  arc(0,0,R);
+  const hex=[];for(let i=0;i<6;i++){const a=i*Math.PI/3+rot;hex.push([Math.cos(a)*R,Math.sin(a)*R]);arc(...hex[i],R);}
+  cx.strokeStyle=`rgba(255,180,40,${ga*.55})`;
+  for(let i=0;i<6;i++){arc(hex[i][0]+hex[(i+1)%6][0],hex[i][1]+hex[(i+1)%6][1],R);}
+  // Hexagram (Star of David)
+  cx.strokeStyle=`rgba(0,229,255,${ga*.85})`;cx.lineWidth=1.2;
+  for(let t2=0;t2<2;t2++){
+    cx.beginPath();
+    for(let i=t2;i<6+t2;i+=2){const a=i*Math.PI/3+rot;const x=Math.cos(a)*R,y=Math.sin(a)*R;i===t2?cx.moveTo(x,y):cx.lineTo(x,y);}
+    cx.closePath();cx.stroke();
+  }
+  // Metatron lines
+  cx.strokeStyle=`rgba(200,100,255,${ga*.45})`;cx.lineWidth=.55;
+  const cts=[[0,0],...hex];
+  for(let i=0;i<cts.length;i++)for(let j=i+1;j<cts.length;j++){cx.beginPath();cx.moveTo(...cts[i]);cx.lineTo(...cts[j]);cx.stroke();}
+  // Golden spiral (2 directions)
+  cx.lineWidth=.8;const phi=(1+Math.sqrt(5))/2;
+  for(let dir=0;dir<2;dir++){
+    cx.strokeStyle=`rgba(255,200,100,${ga*.45})`;cx.beginPath();
+    const sign=dir?-1:1;let first=true;
+    for(let a=sign*rot;Math.abs(a)<Math.PI*8+Math.abs(rot);a+=sign*.08){
+      const r=R*.08*Math.pow(phi,Math.abs(a)/Math.PI);if(r>R*1.35)break;
+      const x=Math.cos(a)*r,y=Math.sin(a)*r;first?(cx.moveTo(x,y),first=false):cx.lineTo(x,y);
+    }
+    cx.stroke();
+  }
+  cx.restore();
+}
+
+// Magnetic field lines — dipole
+function renderMagnetic(cx,w,h,t){
+  const id=cx.getImageData(0,0,w,h);const d=id.data;
+  for(let i=0;i<d.length;i+=4){const g=d[i]*.2+d[i+1]*.5+d[i+2]*.3;d[i]=clamp(g*.25+d[i]*.15);d[i+1]=clamp(g*.25+d[i+1]*.15);d[i+2]=clamp(g*.5+d[i+2]*.45+25);}
+  cx.putImageData(id,0,0);
+  const poles=[{x:w*.5,y:h*.35,ch:1},{x:w*.5,y:h*.65,ch:-1}];
+  const field=(x,y)=>{let fx=0,fy=0;poles.forEach(({x:px,y:py,ch})=>{const dx=x-px,dy=y-py;const r2=dx*dx+dy*dy+120;const r3=Math.pow(r2,1.5);fx+=ch*dx/r3;fy+=ch*dy/r3;});const m=Math.sqrt(fx*fx+fy*fy)||1;return{x:fx/m,y:fy/m};};
+  cx.save();cx.globalCompositeOperation='screen';
+  const N=28;
+  for(let i=0;i<N;i++){
+    const a=i/N*Math.PI*2+t*.00025;const r0=9;
+    let x=poles[0].x+Math.cos(a)*r0,y=poles[0].y+Math.sin(a)*r0;
+    const al=.3+.12*Math.sin(t*.001+i*.4);
+    cx.strokeStyle=`rgba(0,200,255,${al})`;cx.lineWidth=1;cx.beginPath();cx.moveTo(x,y);
+    for(let s=0;s<100;s++){
+      const f=field(x,y);x+=f.x*4;y+=f.y*4;
+      if(x<0||x>w||y<0||y>h)break;cx.lineTo(x,y);
+      if((x-poles[1].x)**2+(y-poles[1].y)**2<180)break;
+    }
+    cx.stroke();
+  }
+  poles.forEach(({x,y,ch})=>{const g=cx.createRadialGradient(x,y,0,x,y,28);g.addColorStop(0,ch>0?'rgba(255,100,80,.75)':'rgba(80,100,255,.75)');g.addColorStop(1,'transparent');cx.fillStyle=g;cx.beginPath();cx.arc(x,y,28,0,Math.PI*2);cx.fill();});
+  cx.restore();
+}
+
+// Histogram
+function drawHistogram(d){
+  const bins=new Uint32Array(44);
+  const step=Math.max(1,Math.floor(d.length/4/500))*4;
+  for(let i=0;i<d.length-4;i+=step){const l=d[i]*.299+d[i+1]*.587+d[i+2]*.114;bins[Math.min(43,Math.floor(l*44/256))]++;}
+  const mx=Math.max(...bins)||1;
+  const[ar,ag,ab]=currentAcc();
+  histCtx.clearRect(0,0,88,44);
+  histCtx.fillStyle='rgba(0,0,0,.35)';histCtx.fillRect(0,0,88,44);
+  bins.forEach((v,i)=>{const bh=(v/mx)*38,bw=88/44;histCtx.fillStyle=`rgba(${ar},${ag},${ab},.7)`;histCtx.fillRect(i*bw,44-bh,bw-.5,bh);});
+}
+
+function currentAcc(){return FILTERS.find(f=>f.id===currentFilter)?.acc.split(',').map(Number)||[255,215,0];}
+
+// ── Render Loop ───────────────────────────
+let origBuffer=null;
 function renderLoop(t){
   if(video.readyState>=2){
     ctx.drawImage(video,0,0,PW,PH);
-    if(currentFilter==='radio'){
-      renderRadio(ctx,PW,PH,t);
-    }else if(currentFilter!=='normal'){
-      const id=ctx.getImageData(0,0,PW,PH);
-      const d=id.data;
+    const overlay=['radio','sacred','magnetic'];
+    if(currentFilter==='radio'){renderRadio(ctx,PW,PH,t);}
+    else if(currentFilter==='sacred'){renderSacred(ctx,PW,PH,t);}
+    else if(currentFilter==='magnetic'){renderMagnetic(ctx,PW,PH,t);}
+    else if(currentFilter!=='normal'){
+      const id=ctx.getImageData(0,0,PW,PH);const d=id.data;
+      const useBlend=filterIntensity<.99;
+      if(useBlend){if(!origBuffer||origBuffer.length!==d.length)origBuffer=new Uint8Array(d.length);origBuffer.set(d);}
       switch(currentFilter){
-        case'infrared':fInfrared(d);break;
-        case'thermal':fThermal(d);break;
-        case'uv':fUV(d);break;
-        case'nightvision':fNight(d,t);break;
-        case'xray':fXRay(d);break;
-        case'aura':fAura(d,PW,PH,t);break;
-        case'kirlian':fKirlian(d,PW,PH,t);break;
-        case'chakra':fChakra(d,PW,PH,t);break;
+        case'infrared':fInfrared(d);break;case'thermal':fThermal(d);break;
+        case'uv':fUV(d);break;case'nightvision':fNight(d,t);break;
+        case'xray':fXRay(d);break;case'aura':fAura(d,PW,PH,t);break;
+        case'kirlian':fKirlian(d,PW,PH,t);break;case'chakra':fChakra(d,PW,PH,t);break;
+        case'quantum':fQuantum(d,PW,PH,t);break;
       }
+      if(useBlend){const inv=1-filterIntensity;for(let i=0;i<d.length;i+=4){d[i]=origBuffer[i]*inv+d[i]*filterIntensity;d[i+1]=origBuffer[i+1]*inv+d[i+1]*filterIntensity;d[i+2]=origBuffer[i+2]*inv+d[i+2]*filterIntensity;}}
       ctx.putImageData(id,0,0);
+      // Draw histogram from filtered data
+      drawHistogram(d);
+    } else {
+      const id=ctx.getImageData(0,0,PW,PH);drawHistogram(id.data);
     }
   }
   rafId=requestAnimationFrame(renderLoop);
 }
 
-/* ── Camera ──────────────────────────────── */
+// ── Camera ─────────────────────────────────
 async function startCamera(){
   if(stream){stream.getTracks().forEach(t=>t.stop());stream=null;}
   try{
-    stream=await navigator.mediaDevices.getUserMedia({
-      video:{facingMode:currentCamera,width:{ideal:1280},height:{ideal:720}},audio:false
-    });
-    video.srcObject=stream;
-    await video.play();
-    document.getElementById('nocam').classList.remove('vis');
-    canvas.style.display='';
+    stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:currentCamera,width:{ideal:1280},height:{ideal:720}},audio:false});
+    video.srcObject=stream;await video.play();
+    document.getElementById('nocam').classList.remove('vis');canvas.style.display='';
     if(!rafId)rafId=requestAnimationFrame(renderLoop);
   }catch(e){
-    document.getElementById('nocam').classList.add('vis');
-    canvas.style.display='none';
+    document.getElementById('nocam').classList.add('vis');canvas.style.display='none';
     horusMsg('No pude abrir la cámara. Verifica los permisos en tu navegador. El sitio debe servirse desde HTTPS o localhost.');
   }
 }
-function switchCamera(){
-  currentCamera=currentCamera==='environment'?'user':'environment';
-  startCamera();
-}
-function capturePhoto(){
-  const a=document.createElement('a');
-  a.download=`horus-${currentFilter}-${Date.now()}.png`;
-  a.href=canvas.toDataURL('image/png');a.click();
-}
+function switchCamera(){currentCamera=currentCamera==='environment'?'user':'environment';startCamera();}
+function capturePhoto(){const a=document.createElement('a');a.download=`horus-${currentFilter}-${Date.now()}.png`;a.href=canvas.toDataURL('image/png');a.click();}
 
-/* ── Filter bar build ─────────────────────── */
+// ── Filter UI ──────────────────────────────
 function buildFilterBar(){
   const bar=document.getElementById('fbar');
   FILTERS.forEach(f=>{
-    const b=document.createElement('button');
-    b.className='fb'+(f.id==='normal'?' on':'');
-    b.setAttribute('data-id',f.id);
-    b.innerHTML=`<span class="fi">${f.icon}</span><span>${f.name}</span>`;
-    b.onclick=()=>setFilter(f.id);
-    bar.appendChild(b);
+    const b=document.createElement('button');b.className='fb'+(f.id==='normal'?' on':'');b.setAttribute('data-id',f.id);
+    b.innerHTML=`<span class="fi">${f.icon}</span><span>${f.name.split(' ')[0]}</span>`;
+    b.onclick=()=>setFilter(f.id);bar.appendChild(b);
   });
 }
 
-/* ── Set filter ──────────────────────────── */
 function setFilter(id){
   document.querySelectorAll('.fb').forEach(b=>b.classList.remove('on'));
   document.querySelector(`.fb[data-id="${id}"]`).classList.add('on');
-
-  canvas.classList.add('sw');
-  setTimeout(()=>{currentFilter=id;canvas.classList.remove('sw');},180);
-
+  canvas.classList.add('sw');setTimeout(()=>{currentFilter=id;canvas.classList.remove('sw');},170);
   const f=FILTERS.find(x=>x.id===id);
-  const kb=KB[id];
-
-  // Update CSS accent
   document.documentElement.style.setProperty('--acc-rgb',f.acc);
   document.documentElement.style.setProperty('--accent',`rgb(${f.acc})`);
-
-  // Header badge
   document.getElementById('badge-icon').textContent=f.icon;
   document.getElementById('badge-name').textContent=f.name;
-
-  // Overlay
   document.getElementById('fov-name').textContent=f.name;
   document.getElementById('fov-wl').textContent=f.wl;
   document.getElementById('fov-tip').textContent=f.tip;
-
-  // Panel
   document.getElementById('ptitle').textContent=f.name;
   document.getElementById('pwys').textContent=f.tip;
-  document.getElementById('pav-status').textContent='⊙ Analizando: '+f.name;
-
-  // Spectrum cursor
-  document.getElementById('spectrum-cursor').style.left=f.spectrum+'%';
-
+  document.getElementById('pav-stat').textContent='⊙ Analizando: '+f.name;
+  document.getElementById('spec-cursor').style.left=f.spec+'%';
+  // Intensity slider color
+  document.getElementById('int-slider').style.setProperty('--pct',Math.round(filterIntensity*100)+'%');
   updateInfoContent();
-
-  // Horus greeting for new filter
-  const lines=[
-    `Filtro ${f.name} activado. ${f.wl} — ${f.tip}.`,
-    `Observa bien. El filtro ${f.name} revela ${f.wl}.`,
-    `${f.name}: ${(kb[currentTab]||'').replace(/<[^>]*>/g,'').split('\n')[0].slice(0,90)}...`,
-  ];
+  const lines=[`Filtro ${f.name} activado — ${f.wl}. ${f.tip}.`,`El filtro ${f.name} revela ${f.wl}. Observa con atención.`,`${f.name}: ${(KB[id]?.science||'').replace(/<[^>]*>/g,'').split('\n')[0].slice(0,90)}...`];
   horusMsg(lines[Math.floor(Math.random()*lines.length)]);
 }
 
-/* ── Info tabs ───────────────────────────── */
+// ── Tabs ───────────────────────────────────
 function switchTab(tab){
-  currentTab=tab;
-  document.querySelectorAll('.ptab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));
-  updateInfoContent();
+  currentTab=tab;document.querySelectorAll('.ptab').forEach(b=>b.classList.toggle('on',b.dataset.tab===tab));updateInfoContent();
 }
 function updateInfoContent(){
-  const kb=KB[currentFilter];
-  const f=FILTERS.find(x=>x.id===currentFilter);
-  const raw=kb[currentTab]||'';
-  let html=raw
-    .replace(/\n\n/g,'</p><p>')
-    .replace(/\n/g,'<br>')
-    .replace(/^/,'<p>').replace(/$/,'</p>');
-  if(currentTab==='science'&&kb.facts){
-    html+='<div class="facts-label">Datos curiosos</div>';
-    kb.facts.forEach(fc=>{html+=`<div class="fact-card">${fc}</div>`;});
-  }
+  const kb=KB[currentFilter];if(!kb)return;
+  let html=(kb[currentTab]||'').replace(/\n\n/g,'</p><p>').replace(/\n/g,'<br>').replace(/^/,'<p>').replace(/$/,'</p>');
+  if(currentTab==='science'&&kb.facts){html+='<div class="facts-lbl">Datos curiosos</div>';kb.facts.forEach(fc=>{html+=`<div class="fact-card">${fc}</div>`;});}
   document.getElementById('pcontent').innerHTML=html;
 }
 
-/* ── HORUS chat ──────────────────────────── */
+// ── Intensity ──────────────────────────────
+function setIntensity(val){
+  filterIntensity=val/100;
+  document.getElementById('int-val').textContent=val+'%';
+  document.getElementById('int-slider').style.setProperty('--pct',val+'%');
+}
+
+// ── Voice Synthesis ────────────────────────
+function toggleVoice(){
+  voiceEnabled=!voiceEnabled;
+  const btn=document.getElementById('voice-btn');
+  btn.classList.toggle('active',voiceEnabled);
+  btn.textContent=voiceEnabled?'🔊':'🔇';
+  if(voiceEnabled)speak('HORUS activado. Listo para guiarte a través del espectro.');
+  else window.speechSynthesis?.cancel();
+}
+function speak(text){
+  if(!voiceEnabled||!('speechSynthesis' in window))return;
+  window.speechSynthesis.cancel();
+  const u=new SpeechSynthesisUtterance(text.replace(/<[^>]*>/g,'').replace(/[🔴🟠🟡🟢🔵💜⚪⚗️📜🌀🔯🧲⚛️]/gu,'').slice(0,200));
+  u.lang='es-ES';u.rate=.88;u.pitch=.82;u.volume=.85;
+  const voices=window.speechSynthesis.getVoices();
+  const v=voices.find(v=>v.lang.startsWith('es'))||voices[0];
+  if(v)u.voice=v;
+  window.speechSynthesis.speak(u);
+}
+
+// ── Voice Input (STT) ──────────────────────
+function initSpeech(){
+  if(recognition)return;
+  const R=window.SpeechRecognition||window.webkitSpeechRecognition;
+  if(!R)return;
+  recognition=new R();recognition.lang='es-ES';recognition.continuous=false;recognition.interimResults=false;
+  recognition.onresult=e=>{document.getElementById('ctxt').value=e.results[0][0].transcript;sendMsg();stopListening();};
+  recognition.onerror=()=>stopListening();recognition.onend=()=>stopListening();
+}
+function toggleMic(){
+  initSpeech();if(!recognition)return;
+  if(isListening){stopListening();}else{isListening=true;recognition.start();document.getElementById('mic-btn').classList.add('listening');}
+}
+function stopListening(){isListening=false;recognition?.stop();document.getElementById('mic-btn').classList.remove('listening');}
+
+// ── Chat ────────────────────────────────────
 function horusMsg(text){
   const m=document.getElementById('msgs');
-  const d=document.createElement('div');
-  d.className='msg h';d.textContent=text;
+  const d=document.createElement('div');d.className='msg h';d.textContent=text;
   m.appendChild(d);m.scrollTop=m.scrollHeight;
+  speak(text);
 }
-function userMsg(text){
-  const m=document.getElementById('msgs');
-  const d=document.createElement('div');
-  d.className='msg u';d.textContent=text;
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
-}
+function userMsg(text){const m=document.getElementById('msgs');const d=document.createElement('div');d.className='msg u';d.textContent=text;m.appendChild(d);m.scrollTop=m.scrollHeight;}
 function showTyping(){
-  const m=document.getElementById('msgs');
-  const d=document.createElement('div');
-  d.className='typing';d.id='typing-indicator';
-  d.innerHTML='<span></span><span></span><span></span>';
-  m.appendChild(d);m.scrollTop=m.scrollHeight;
-  return d;
+  const m=document.getElementById('msgs');const d=document.createElement('div');d.className='typing';d.id='typing-dot';
+  d.innerHTML='<span></span><span></span><span></span>';m.appendChild(d);m.scrollTop=m.scrollHeight;
 }
 function sendMsg(){
-  const inp=document.getElementById('ctxt');
-  const txt=inp.value.trim();if(!txt)return;
-  inp.value='';userMsg(txt);
-  const t=showTyping();
-  setTimeout(()=>{t.remove();horusRespond(txt);},700+Math.random()*600);
+  const inp=document.getElementById('ctxt');const txt=inp.value.trim();if(!txt)return;
+  inp.value='';userMsg(txt);showTyping();
+  setTimeout(()=>{document.getElementById('typing-dot')?.remove();horusRespond(txt);},650+Math.random()*550);
 }
 function horusRespond(q){
-  const lq=q.toLowerCase();
-  const f=FILTERS.find(x=>x.id===currentFilter);
-  const kb=KB[currentFilter];
-  const rs=[];
-  if(lq.match(/hola|buenos|saludos|hi\b/))
-    rs.push(`Saludos, buscador de la luz. Observas el espectro ${f.name}. Pregúntame lo que desees — ciencia, física, espiritualidad...`);
-  if(lq.match(/qu[eé] (es|significa|ves|veo|vemos)|explica|define/))
-    rs.push(kb.science.replace(/<[^>]*>/g,'').split('\n')[0]);
-  if(lq.match(/ver|viendo|puedo ver|qu[eé] muestra/))
-    rs.push(f.tip+'. '+kb.science.replace(/<[^>]*>/g,'').split('\n')[0]);
-  if(lq.match(/espiritual|hol[ií]stico|energ[ií]a|alma|aura|chakra|conciencia/))
-    rs.push(kb.holistic.replace(/<[^>]*>/g,'').split('\n')[0]);
-  if(lq.match(/historia|cu[aá]ndo|descubr|origen|qui[eé]n/))
-    rs.push(kb.history.replace(/<[^>]*>/g,'').split('•').slice(0,2).join(' ').replace(/\n/g,' '));
-  if(lq.match(/dato|curiosidad|sabias|interesante|fact/)){
-    const fa=kb.facts||[];if(fa.length)rs.push('Dato: '+fa[Math.floor(Math.random()*fa.length)]);
-  }
-  if(lq.match(/espectro|electrom/))
-    rs.push('El espectro electromagnético abarca desde ondas de radio (kilómetros de longitud de onda) hasta rayos gamma (0.000001 nm). La luz visible es una fracción minúscula. Cada filtro aquí simula una región diferente.');
-  if(lq.match(/filtro|cambia|otro|diferente|probar/)){
-    const ot=FILTERS.filter(x=>x.id!==currentFilter);
-    const sg=ot[Math.floor(Math.random()*ot.length)];
-    rs.push(`Prueba el filtro ${sg.name} ${sg.icon} — te mostrará una dimensión completamente diferente. ${sg.tip}.`);
-  }
+  const lq=q.toLowerCase();const f=FILTERS.find(x=>x.id===currentFilter);const kb=KB[currentFilter];const rs=[];
+  if(lq.match(/hola|buenos|saludos|hi\b/))rs.push(`Saludos, buscador de la luz. Observas el espectro ${f.name}. Pregúntame lo que desees.`);
+  if(lq.match(/qu[eé] (es|significa|ves|veo|muestra)|explica|define/))rs.push(kb?.science?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
+  if(lq.match(/ver|viendo|puedo ver|qu[eé] muestra/))rs.push(f.tip+'. '+kb?.science?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
+  if(lq.match(/espiritual|hol[ií]stico|energ[ií]a|alma|aura|chakra|conciencia/))rs.push(kb?.holistic?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
+  if(lq.match(/historia|cu[aá]ndo|descubr|origen|qui[eé]n/))rs.push((kb?.history?.replace(/<[^>]*>/g,'').split('•').slice(0,3).join('. ')||'').replace(/\n/g,' '));
+  if(lq.match(/dato|curiosidad|sabias|interesante/)){const fa=kb?.facts||[];if(fa.length)rs.push('Dato: '+fa[Math.floor(Math.random()*fa.length)]);}
+  if(lq.match(/geometr[ií]a sagrada|flor de la vida|metatr[oó]n|[aá]urea/))rs.push(KB.sacred?.holistic?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
+  if(lq.match(/magn[eé]tico|campo magn|maxwell|dipolo/))rs.push(KB.magnetic?.science?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
+  if(lq.match(/cu[aá]ntic|onda|part[ií]cula|heisenberg|schr[oö]dinger/))rs.push(KB.quantum?.science?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
+  if(lq.match(/espectro|electrom/))rs.push('El espectro electromagnético abarca desde ondas de radio (kilómetros) hasta rayos gamma (0.000001 nm). La luz visible es una fracción minúscula. Ahora tenemos 13 filtros para explorar diferentes regiones.');
+  if(lq.match(/filtro|cambia|otro|diferente|probar/)){const ot=FILTERS.filter(x=>x.id!==currentFilter);const sg=ot[Math.floor(Math.random()*ot.length)];rs.push(`Prueba el filtro ${sg.name} ${sg.icon} — revela ${sg.wl}. ${sg.tip}.`);}
+  if(lq.match(/intensidad|slider|m[aá]s fuerte|m[aá]s suave/))rs.push('Usa el slider de Intensidad debajo del espectro para mezclar el filtro con la imagen original. Al 50% ves ambas realidades superpuestas.');
+  if(lq.match(/voz|hablar|escuchar|audio/))rs.push('Toca el botón 🔊 junto a mi nombre para activar mi voz. También puedes usar el micrófono 🎤 para hablarme directamente.');
   if(lq.match(/gracias|thank/))rs.push('El conocimiento compartido es luz que se multiplica. Sigo aquí para guiarte.');
-  if(lq.match(/pineal|tercer ojo/))rs.push('La glándula pineal contiene microcristales de calcita piezoeléctricas y produce melatonina (oscuridad) y posiblemente DMT en estados alterados. El filtro UV y Aura son los que más se relacionan con esta área.');
-  if(lq.match(/meditaci[oó]n|meditar/))rs.push('La meditación reduce las ondas cerebrales de beta (pensamiento activo) a alfa y theta (estados contemplativos), sincronizando con las resonancias de Schumann a 7.83 Hz. El filtro de Chakras visualiza los centros que la meditación trabaja.');
-  if(!rs.length){
-    const d=[
-      `El filtro ${f.name} te muestra ${f.wl}. ¿Qué patrones observas en la imagen?`,
-      `En el espectro ${f.name}, la información está ahí. La percepción es el primer paso. ¿Sobre qué aspecto quieres profundizar — ciencia o espiritualidad?`,
-      `El universo habla en frecuencias. Cada filtro traduce una de ellas. ¿Qué te genera más curiosidad?`,
-    ];
+  if(!rs.length||rs.every(x=>!x)){
+    const d=[`El filtro ${f.name} te muestra ${f.wl}. ¿Qué patrones observas?`,`En el espectro ${f.name}, la información está ahí esperando ser descifrada. ¿Prefieres la perspectiva científica o la espiritual?`,`El universo habla en frecuencias. El filtro ${f.name} traduce una de ellas para ti.`,`Prueba los 13 filtros disponibles — cada uno revela una dimensión diferente. ¿Qué te genera más curiosidad?`];
     rs.push(d[Math.floor(Math.random()*d.length)]);
   }
-  horusMsg(rs[0]);
+  horusMsg(rs.find(x=>x)||'Sigo observando el espectro contigo.');
 }
 
-/* ── Mobile panel toggle ─────────────────── */
-function togglePanel(){
-  document.getElementById('panel').classList.toggle('open');
-}
+// ── Panel toggle (mobile) ──────────────────
+function togglePanel(){document.getElementById('panel').classList.toggle('open');}
 
-/* ── Background stars ────────────────────── */
+// ── Star background ────────────────────────
 function initBg(){
-  const c=document.getElementById('bg');
-  const x=c.getContext('2d');
-  const stars=Array.from({length:150},()=>({
-    px:Math.random(),py:Math.random(),
-    r:Math.random()*1.3+.2,
-    a:Math.random()*Math.PI*2,
-    da:(.3+Math.random())*.001
-  }));
-  const resize=()=>{c.width=innerWidth;c.height=innerHeight;};
-  resize();window.addEventListener('resize',resize);
-  // Nebula blobs
-  function drawBg(){
+  const c=document.getElementById('bg'),x=c.getContext('2d');
+  const stars=Array.from({length:160},()=>({px:Math.random(),py:Math.random(),r:Math.random()*1.3+.2,a:Math.random()*Math.PI*2,da:(.3+Math.random())*.001}));
+  const resize=()=>{c.width=innerWidth;c.height=innerHeight;};resize();window.addEventListener('resize',resize);
+  function draw(){
     x.clearRect(0,0,c.width,c.height);
-    // Subtle nebula
-    const g=x.createRadialGradient(c.width*.3,c.height*.4,.1,c.width*.3,c.height*.4,c.width*.4);
-    g.addColorStop(0,'rgba(80,0,120,.04)');g.addColorStop(1,'transparent');
-    x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
-    const g2=x.createRadialGradient(c.width*.7,c.height*.6,.1,c.width*.7,c.height*.6,c.width*.35);
-    g2.addColorStop(0,'rgba(0,60,120,.04)');g2.addColorStop(1,'transparent');
-    x.fillStyle=g2;x.fillRect(0,0,c.width,c.height);
-    // Stars
-    stars.forEach(s=>{
-      s.a+=s.da;
-      const al=(.2+.8*Math.abs(Math.sin(s.a)))*.65;
-      x.beginPath();x.arc(s.px*c.width,s.py*c.height,s.r,0,Math.PI*2);
-      x.fillStyle=`rgba(200,210,255,${al})`;x.fill();
+    [[.3,.4,80,0,120,.04],[.7,.6,120,60,120,.04]].forEach(([fx,fy,r,gr,gb,al])=>{
+      const g=x.createRadialGradient(c.width*fx,c.height*fy,.1,c.width*fx,c.height*fy,c.width*.38);
+      g.addColorStop(0,`rgba(${r},${gr},${gb},${al})`);g.addColorStop(1,'transparent');
+      x.fillStyle=g;x.fillRect(0,0,c.width,c.height);
     });
-    requestAnimationFrame(drawBg);
-  }
-  requestAnimationFrame(drawBg);
+    stars.forEach(s=>{s.a+=s.da;const al=(.2+.8*Math.abs(Math.sin(s.a)))*.6;x.beginPath();x.arc(s.px*c.width,s.py*c.height,s.r,0,Math.PI*2);x.fillStyle=`rgba(200,210,255,${al})`;x.fill();});
+    requestAnimationFrame(draw);
+  }requestAnimationFrame(draw);
 }
 
-/* ── Welcome → start ─────────────────────── */
+// ── Start ──────────────────────────────────
 async function startApp(){
   document.getElementById('welcome').classList.add('out');
-  setTimeout(()=>{document.getElementById('welcome').style.display='none';},800);
+  setTimeout(()=>document.getElementById('welcome').style.display='none',800);
   await startCamera();
 }
 
-/* ── Init ────────────────────────────────── */
-buildFilterBar();
-initBg();
-updateInfoContent();
+buildFilterBar();initBg();updateInfoContent();
 document.getElementById('ctxt').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
+// Load voices async
+if('speechSynthesis' in window)window.speechSynthesis.onvoiceschanged=()=>{};
 
-// Welcome chat message
-setTimeout(()=>{
-  horusMsg('Soy HORUS, el Ojo que Todo lo Ve. Activa tu cámara y explora el espectro. Cada filtro revela una dimensión diferente de la realidad. Pregúntame lo que quieras.');
-},600);
+setTimeout(()=>horusMsg('Soy HORUS, el Ojo que Todo lo Ve. Tengo 13 filtros del espectro EM para mostrarte. Activa la voz 🔊 y el micrófono 🎤 para una experiencia completa. Pregúntame lo que quieras.'),600);
 </script>
 </body>
 </html>
