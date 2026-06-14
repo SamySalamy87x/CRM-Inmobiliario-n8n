@@ -131,6 +131,8 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--txt
 .fb[data-id="sacred"].on{background:rgba(255,200,80,.1);border-color:rgba(255,200,80,.55);box-shadow:0 0 10px rgba(255,200,80,.18)}
 .fb[data-id="magnetic"].on{background:rgba(0,180,255,.1);border-color:rgba(0,180,255,.55);box-shadow:0 0 10px rgba(0,180,255,.18)}
 .fb[data-id="quantum"].on{background:rgba(160,0,255,.1);border-color:rgba(160,0,255,.55);box-shadow:0 0 10px rgba(160,0,255,.18)}
+.fb[data-id="plasma"].on{background:rgba(0,255,200,.1);border-color:rgba(0,255,200,.55);box-shadow:0 0 10px rgba(0,255,200,.18)}
+.fb[data-id="gamma"].on{background:rgba(255,255,160,.08);border-color:rgba(255,255,160,.5);box-shadow:0 0 10px rgba(255,255,160,.14)}
 
 /* ── HORUS PANEL ── */
 #panel{grid-area:panel;display:flex;flex-direction:column;background:var(--glass2);border-left:1px solid var(--border2);overflow:hidden;backdrop-filter:blur(20px)}
@@ -215,6 +217,37 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--txt
 /* Voice mic animation */
 #mic-btn.listening{animation:micpulse .8s ease-in-out infinite;border-color:rgba(255,80,80,.6)!important;color:#f55!important}
 @keyframes micpulse{0%,100%{box-shadow:0 0 0 0 rgba(255,80,80,.4)}50%{box-shadow:0 0 0 8px rgba(255,80,80,0)}}
+
+/* Gallery */
+#gallery{position:absolute;bottom:56px;right:8px;display:flex;flex-direction:column-reverse;gap:4px;z-index:5;max-height:calc(100% - 90px);overflow-y:auto;overflow-x:visible;scrollbar-width:none}
+#gallery::-webkit-scrollbar{display:none}
+.gthumb{width:52px;height:38px;object-fit:cover;border-radius:5px;border:1.5px solid rgba(255,215,0,.28);cursor:pointer;transition:all .18s;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.gthumb:hover{border-color:var(--accent);transform:scale(1.12) translateX(-4px);box-shadow:0 0 12px rgba(var(--acc-rgb),.5)}
+.gthumb.new-anim{animation:thumbin .3s ease}
+@keyframes thumbin{from{opacity:0;transform:scale(.7) translateX(14px)}to{opacity:1;transform:none}}
+
+/* Lightbox */
+#lightbox{position:fixed;inset:0;z-index:600;background:rgba(0,0,0,.93);display:none;flex-direction:column;align-items:center;justify-content:center;gap:16px;padding:20px}
+#lightbox.vis{display:flex}
+#lb-img{max-width:92vw;max-height:76vh;object-fit:contain;border-radius:8px;border:1px solid rgba(255,215,0,.2);box-shadow:0 0 60px rgba(0,0,0,.7)}
+#lb-bar{display:flex;gap:10px;align-items:center}
+#lb-close,#lb-dl{padding:8px 20px;border-radius:20px;cursor:pointer;font-family:'Space Grotesk',sans-serif;font-size:.78rem;letter-spacing:.06em;transition:all .18s;border:1px solid}
+#lb-close{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.18);color:#fff}
+#lb-close:hover{background:rgba(255,255,255,.16)}
+#lb-dl{background:rgba(var(--acc-rgb),.15);border-color:rgba(var(--acc-rgb),.4);color:var(--accent)}
+#lb-dl:hover{background:rgba(var(--acc-rgb),.28)}
+#lb-nav{display:flex;gap:8px}
+#lb-prev,#lb-next{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#fff;cursor:pointer;font-size:1rem;display:flex;align-items:center;justify-content:center;transition:all .18s}
+#lb-prev:hover,#lb-next:hover{background:rgba(255,255,255,.18)}
+#lb-info{font-size:.68rem;color:rgba(255,255,255,.4);letter-spacing:.06em;text-align:center}
+
+/* Comparison mode */
+#cmp-labels{position:absolute;top:0;left:0;right:0;pointer-events:none;display:none;z-index:4}
+#cmp-labels.vis{display:flex}
+.cmp-lbl{flex:1;text-align:center;font-size:.55rem;font-family:'Orbitron',monospace;letter-spacing:.12em;text-transform:uppercase;padding:4px;background:rgba(0,0,0,.55)}
+.cmp-left{color:rgba(255,255,255,.65)}
+.cmp-right{color:var(--accent)}
+.cbtn.active{background:rgba(var(--acc-rgb),.22)!important;border-color:rgba(var(--acc-rgb),.6)!important;color:var(--accent)!important}
 </style>
 </head>
 <body>
@@ -283,13 +316,22 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--txt
         <div id="fov-tip">El 0.0035% del espectro electromagnético total</div>
       </div>
       <div id="cam-btns">
-        <button class="cbtn" onclick="switchCamera()">🔄</button>
-        <button class="cbtn" onclick="capturePhoto()">📸</button>
+        <button class="cbtn" onclick="switchCamera()" title="Cambiar cámara">🔄</button>
+        <button class="cbtn" onclick="capturePhoto()" title="Capturar foto">📸</button>
+        <button class="cbtn" id="cmp-btn" onclick="toggleComparison()" title="Comparar Normal vs Filtro">↔</button>
+        <button class="cbtn" onclick="toggleFullscreen()" title="Pantalla completa">⛶</button>
       </div>
       <div id="nocam">
         <div style="font-size:3rem;opacity:.3">👁️</div>
         <div style="font-family:'Orbitron',monospace;font-size:.88rem;color:var(--gold);letter-spacing:.1em">Cámara no disponible</div>
         <div>Permite el acceso en tu navegador.<br>Necesita HTTPS o localhost.</div>
+      </div>
+      <!-- Gallery thumbnails -->
+      <div id="gallery"></div>
+      <!-- Comparison labels -->
+      <div id="cmp-labels">
+        <div class="cmp-lbl cmp-left">NORMAL</div>
+        <div class="cmp-lbl cmp-right" id="cmp-right-lbl">FILTRADO</div>
       </div>
     </div>
 
@@ -355,9 +397,23 @@ body{font-family:'Space Grotesk',sans-serif;background:var(--bg);color:var(--txt
   </aside>
 </div>
 
+<!-- ═══ LIGHTBOX ═══ -->
+<div id="lightbox" onclick="closeLightbox()">
+  <img id="lb-img" src="" alt="Captura HORUS" onclick="event.stopPropagation()">
+  <div id="lb-bar" onclick="event.stopPropagation()">
+    <div id="lb-nav">
+      <button id="lb-prev" onclick="lbNav(-1)">‹</button>
+      <button id="lb-next" onclick="lbNav(1)">›</button>
+    </div>
+    <button id="lb-dl" onclick="downloadLbImg()">⬇ Descargar</button>
+    <button id="lb-close" onclick="closeLightbox()">✕ Cerrar</button>
+  </div>
+  <div id="lb-info"></div>
+</div>
+
 <script>
 /* ═══════════════════════════════════════════
-   HORUS v2 · Spectrum Vision
+   HORUS v3 · Spectrum Vision
 ═══════════════════════════════════════════ */
 
 // ── Filter definitions ────────────────────
@@ -375,6 +431,8 @@ const FILTERS=[
   {id:'sacred',     name:'Geometría Sagrada',   icon:'🔯', wl:'Visible + Patrón',       tip:'Flor de la Vida · Proporción áurea',      spec:35, acc:'255,200,80'},
   {id:'magnetic',   name:'Campo Magnético',     icon:'🧲', wl:'Ondas ELF 3-3000 Hz',   tip:'Líneas de campo · Maxwell',               spec:3,  acc:'0,180,255'},
   {id:'quantum',    name:'Cuántico',            icon:'⚛️', wl:'<0.01 nm (quantum)',     tip:'Función de onda · Dualidad',              spec:85, acc:'160,0,255'},
+  {id:'plasma',     name:'Plasma/Aurora',       icon:'🌌', wl:'ELF + Plasma UV',        tip:'Aurora boreal · Plasma cósmico',          spec:62, acc:'0,255,200'},
+  {id:'gamma',      name:'Rayos Gamma',         icon:'☢️', wl:'<0.001 nm (γ)',          tip:'Energía extrema · Núcleo atómico',        spec:96, acc:'255,255,160'},
 ];
 
 // ── Knowledge Base ─────────────────────────
@@ -391,7 +449,9 @@ const KB={
   chakra:{science:`Los chakras corresponden anatómicamente a <strong>plexos nerviosos y glándulas endocrinas</strong>:\n\n🔴 Muladhara (raíz): Plexo sacrocoxígeo, suprarrenales\n🟠 Svadhisthana (sacro): Plexo hipogástrico, gónadas\n🟡 Manipura (solar): Plexo celiaco, páncreas\n🟢 Anahata (corazón): Plexo cardíaco, timo\n🔵 Vishuddha (garganta): Plexo faríngeo, tiroides\n💜 Ajna (tercer ojo): Ganglio cervical superior, hipófisis\n⚪ Sahasrara (corona): Corteza cerebral, pineal`,holistic:`El <strong>Kundalini</strong> sube a través de los chakras transformando la conciencia:\n\n🔴 Supervivencia → 🟠 Creatividad → 🟡 Poder → 🟢 Amor → 🔵 Expresión → 💜 Sabiduría → ⚪ Unidad\n\nCada chakra vibra en su propia frecuencia. Yoga, meditación, mantras y color trabajan con estos centros.`,history:`• <strong>~1000 AC:</strong> Primeras menciones en el Atharvaveda.\n• <strong>600-900 DC:</strong> Sistema completo en textos Tantras.\n• <strong>1919:</strong> Arthur Avalon — "The Serpent Power" (traducción al inglés).\n• <strong>1930s:</strong> Carl Jung estudia chakras como arquetipos psicológicos.`,facts:['El corazón tiene ~40,000 neuronas: su propio "cerebro"','La pineal contiene microcristales de calcita piezoeléctricas','Om (136.1 Hz) resuena con la frecuencia de rotación de la Tierra','El HRV mejora con meditación enfocada en el corazón']},
   sacred:{science:`La <strong>Geometría Sagrada</strong> estudia las propiedades matemáticas de formas consideradas fundamentales en el universo.\n\n<strong>Flor de la Vida:</strong> patrón de 7+ círculos solapados que contiene todas las formas platónicas. Aparece en el templo de Abidos (Egipto ~3000 AC) y en Da Vinci's "Uomo Vitruviano".\n\n<strong>Proporción áurea (φ = 1.618...):</strong> aparece en espirales de galaxias, conchas nautilus, ADN y la arquitectura del Partenón.\n\n<strong>Cubo de Metatrón:</strong> contiene los 5 sólidos platónicos — los únicos sólidos regulares en 3D.`,holistic:`La Geometría Sagrada es el <em>lenguaje del universo</em>.\n\nLos pitagóricos creían que los números y las formas geométricas son la base de toda la realidad. Platón decía que el universo fue construido con triángulos y sólidos geométricos.\n\n<strong>Flor de la Vida:</strong> contiene el Fruto de la Vida (13 círculos) que al conectarse forman el Cubo de Metatrón, que contiene todos los patrones de la creación.\n\nLa proporción áurea emerge naturalmente en crecimiento orgánico — un código matemático integrado en la vida misma.`,history:`• <strong>~3000 AC:</strong> Flor de la Vida en el templo de Abidos, Egipto.\n• <strong>~500 AC:</strong> Pitágoras — los números como base de la realidad.\n• <strong>~350 AC:</strong> Platón — Los 5 sólidos platónicos.\n• <strong>1509:</strong> Luca Pacioli — "De Divina Proportione" (con ilustraciones de Da Vinci).\n• <strong>Hoy:</strong> Geometría sagrada en arquitectura, arte, diseño y espiritualidad.`,facts:['La Flor de la Vida aparece en tradiciones de Egipto, India, China, Roma','El ADN tiene una estructura en doble hélice con proporción áurea','Las espirales de las galaxias siguen la secuencia de Fibonacci','Los cristales de nieve son geometría hexagonal — nunca hay dos iguales']},
   magnetic:{science:`Los <strong>campos magnéticos</strong> son componentes del campo electromagnético, descrito por las ecuaciones de Maxwell (1865).\n\n<strong>Tipos de campos magnéticos en tu entorno:</strong>\n• Campo geomagnético terrestre: 25-65 μT\n• Campo del corazón humano: ~10 pT (detectable a 1m)\n• WiFi/Celular: campos EM de RF\n• ELF (Extremely Low Frequency): 3-3000 Hz\n\nLas <strong>líneas de campo</strong> van del polo norte al polo sur (convención). Las cargas eléctricas en movimiento generan campos magnéticos — eso eres tú también.`,holistic:`El campo magnético terrestre es el <em>escudo invisible</em> que protege la vida del viento solar. Los chamanes lo llaman "el abrazo de la Madre Tierra".\n\nLas aves migratorias, abejas, peces y ballenas navegan usando el campo geomagnético — un GPS biológico. Algunos humanos también podrían tener esta capacidad (investigaciones en curso).\n\nEl Instituto HeartMath documenta que el campo magnético del corazón (toroidal) forma patrones coherentes durante estados de amor y gratitud que se sincronizan con los campos de otras personas.`,history:`• <strong>1600:</strong> William Gilbert — primer mapa del campo magnético terrestre.\n• <strong>1820:</strong> Ørsted — conexión entre electricidad y magnetismo.\n• <strong>1865:</strong> Maxwell — unifica electricidad y magnetismo en las 4 ecuaciones.\n• <strong>1969:</strong> Apollo 11 — primeras mediciones magnéticas detalladas en la Luna.\n• <strong>Hoy:</strong> MRI usa campos magnéticos de 1.5-7 Tesla para imagen médica.`,facts:['La Tierra es como un gran imán de dipolo (polo N en Sur geográfico)','Las palomas mensajeras tienen magnetita en el pico — GPS biológico','La aurora boreal es campo magnético haciendo visible el viento solar','El MRI usa campos 100,000x más fuertes que el terrestre']},
-  quantum:{science:`La <strong>mecánica cuántica</strong> describe el comportamiento de la materia a escala subatómica.\n\n<strong>Principios clave:</strong>\n• <em>Dualidad onda-partícula:</em> la luz (y la materia) es onda Y partícula\n• <em>Principio de incertidumbre (Heisenberg):</em> no puedes conocer posición y momento simultáneamente\n• <em>Superposición:</em> las partículas existen en múltiples estados hasta ser observadas\n• <em>Entrelazamiento:</em> partículas correlacionadas a cualquier distancia\n\n<em>Este filtro</em> visualiza patrones de interferencia de función de onda con 4 fuentes.`,holistic:`La mecánica cuántica ha abierto puentes fascinantes con la filosofía espiritual:\n\n<strong>"El observador colapsa la función de onda"</strong> — la conciencia influye en la realidad a nivel cuántico. Esto resuena con la enseñanza budista de que el mundo no existe independientemente de la percepción.\n\nDavid Bohm propuso el <em>orden implicado</em> — una realidad subyacente donde todo está interconectado, similar al "Indra's Net" vedántico.\n\nEl entrelazamiento cuántico sugiere que la separación es una ilusión — partículas a millones de km se influyen instantáneamente.`,history:`• <strong>1900:</strong> Planck — los quanta de energía (inicio de la era cuántica).\n• <strong>1905:</strong> Einstein — fotones (efecto fotoeléctrico).\n• <strong>1925:</strong> Heisenberg y Schrödinger — mecánica cuántica moderna.\n• <strong>1964:</strong> Bell — desigualdades para probar el entrelazamiento.\n• <strong>2022:</strong> Nobel de Física a Aspect, Clauser y Zeilinger por experimentos de entrelazamiento.`,facts:['Un electrón puede estar en dos lugares a la vez hasta ser observado','El entrelazamiento cuántico es "acción fantasmal a distancia" (Einstein)','Los computadores cuánticos usan superposición para calcular en paralelo','La eficiencia de la fotosíntesis se explica por efectos cuánticos']}
+  quantum:{science:`La <strong>mecánica cuántica</strong> describe el comportamiento de la materia a escala subatómica.\n\n<strong>Principios clave:</strong>\n• <em>Dualidad onda-partícula:</em> la luz (y la materia) es onda Y partícula\n• <em>Principio de incertidumbre (Heisenberg):</em> no puedes conocer posición y momento simultáneamente\n• <em>Superposición:</em> las partículas existen en múltiples estados hasta ser observadas\n• <em>Entrelazamiento:</em> partículas correlacionadas a cualquier distancia\n\n<em>Este filtro</em> visualiza patrones de interferencia de función de onda con 4 fuentes.`,holistic:`La mecánica cuántica ha abierto puentes fascinantes con la filosofía espiritual:\n\n<strong>"El observador colapsa la función de onda"</strong> — la conciencia influye en la realidad a nivel cuántico. Esto resuena con la enseñanza budista de que el mundo no existe independientemente de la percepción.\n\nDavid Bohm propuso el <em>orden implicado</em> — una realidad subyacente donde todo está interconectado, similar al "Indra's Net" vedántico.\n\nEl entrelazamiento cuántico sugiere que la separación es una ilusión — partículas a millones de km se influyen instantáneamente.`,history:`• <strong>1900:</strong> Planck — los quanta de energía (inicio de la era cuántica).\n• <strong>1905:</strong> Einstein — fotones (efecto fotoeléctrico).\n• <strong>1925:</strong> Heisenberg y Schrödinger — mecánica cuántica moderna.\n• <strong>1964:</strong> Bell — desigualdades para probar el entrelazamiento.\n• <strong>2022:</strong> Nobel de Física a Aspect, Clauser y Zeilinger por experimentos de entrelazamiento.`,facts:['Un electrón puede estar en dos lugares a la vez hasta ser observado','El entrelazamiento cuántico es "acción fantasmal a distancia" (Einstein)','Los computadores cuánticos usan superposición para calcular en paralelo','La eficiencia de la fotosíntesis se explica por efectos cuánticos']},
+  plasma:{science:`El plasma es el <strong>cuarto estado de la materia</strong> — el más abundante en el universo visible (>99% de la materia observable).\n\nLas <strong>auroras boreales</strong> son plasma solar ionizado guiado por el campo magnético terrestre hacia los polos, donde excita átomos atmosféricos que emiten luz visible en rangos específicos:\n• Verde 557.7 nm: oxígeno a 100-150 km\n• Rojo 630 nm: oxígeno a 200+ km\n• Azul/violeta: nitrógeno molecular\n\n<strong>Resonancias de Schumann (7.83 Hz):</strong> oscilaciones en la cavidad Tierra-ionosfera (ambas son plasma).\n\n<em>Este filtro</em> simula interferencia de ondas de plasma con 4 fuentes, mapeadas a los colores de las auroras (cian-verde-violeta).`,holistic:`Las auroras son el <em>lenguaje visual del cosmos</em> — la magnetosfera hablando con luz.\n\nEn la mitología nórdica, las auroras eran <strong>Bifrost</strong>: el puente entre Midgard (Tierra) y Asgard (reino divino). Los inuit creían que los espíritus de sus antepasados danzaban bajo las luces del norte.\n\nEl plasma es energía en su estado más libre y luminoso. Los sanadores describen el Prana/Chi como una energía fluida y luminosa — una descripción coherente con el concepto de bioelectromagnetismo.\n\nLas tradiciones chamánicas de zonas árticas usaban la aurora como oráculo: sus colores y movimientos eran mensajes del mundo espiritual.`,history:`• <strong>1879:</strong> Crookes — primeros tubos de descarga de plasma en laboratorio.\n• <strong>1928:</strong> Langmuir — acuña el término "plasma" para el gas ionizado.\n• <strong>1957:</strong> Alfvén — magnetohidrodinámica del plasma espacial (Nobel 1970).\n• <strong>1958:</strong> Van Allen — descubrimiento de los cinturones de radiación (plasma atrapado).\n• <strong>Hoy:</strong> Tokamak y fusión nuclear — replicando el plasma solar en la Tierra.`,facts:['El Sol es una bola de plasma de 1.4 millones de km de diámetro','Las auroras pueden extenderse hasta 1,000 km de altura','Un rayo es plasma a ~30,000°C — 5× más caliente que la superficie solar','El plasma interestelar conecta galaxias en filamentos cósmicos llamados "red cósmica"']},
+  gamma:{science:`Los rayos gamma son los fotones más energéticos del espectro: <strong>&lt;0.001 nm, &gt;1 MeV</strong>.\n\nFuentes naturales:\n• <strong>Decaimiento radiactivo:</strong> núcleos inestables emiten γ al estabilizarse\n• <strong>Pulsares y magnetares:</strong> estrellas de neutrones en rotación\n• <strong>GRB (Gamma Ray Bursts):</strong> explosiones de milisegundos más energéticas que el Sol en toda su vida\n• <strong>Aniquilación materia-antimateria:</strong> produce dos fotones γ de exactamente 511 keV\n\nEl telescopio Fermi (NASA) mapea el cielo gamma, revelando jets de agujeros negros supermásivos y nubes de positrones en el centro galáctico.\n\n<em>Este filtro</em> simula el contraste extremo del procesamiento de imágenes de alta energía.`,holistic:`Los rayos gamma representan la energía en su forma más pura e intensa — el umbral de la transmutación.\n\nLa alquimia medieval buscaba transformar el plomo en oro — una metáfora de la purificación de la conciencia. Los rayos gamma realizan literalmente transmutaciones nucleares.\n\nAlgunas tradiciones esotéricas describen momentos de iluminación como "luz cegadora" — estados donde la percepción ordinaria colapsa y surge una claridad radical. Los físicos cuánticos hablan del colapso de la función de onda: el observador y lo observado se funden.\n\n<strong>Materia desde energía pura:</strong> los rayos gamma pueden crear pares partícula-antipartícula de la "nada" — ex nihilo, la creación descrita en tradiciones cosmogónicas.`,history:`• <strong>1900:</strong> Villard descubre los rayos gamma estudiando el radio.\n• <strong>1913:</strong> Rutherford y Andrade — confirman que los RG son ondas EM de alta frecuencia.\n• <strong>1953:</strong> Rosalind Franklin — fotografía RX 51 revela la doble hélice del ADN.\n• <strong>1991:</strong> CGRO (Compton Gamma-Ray Observatory, NASA) — primer atlas gamma del cosmos.\n• <strong>2004:</strong> Descubrimiento de magnetares — erupciones gamma que alteraron la ionosfera terrestre desde 50,000 años luz.\n• <strong>Hoy:</strong> El PET scan usa rayos gamma de 511 keV para imagen metabólica del cerebro.`,facts:['Una GRB libera más energía en segundos que el Sol en toda su vida de 10 billones de años','La aniquilación de 1g de antimateria equivale a una bomba de 43 kilotones','Los rayos gamma del centro galáctico revelan nubes de antimateria (positrones)','El PET scan (resonancia por positrones) usa rayos gamma para ver el metabolismo cerebral en tiempo real']}
 };
 
 // ── State ─────────────────────────────────
@@ -401,6 +461,10 @@ let filterIntensity=1.0;
 let voiceEnabled=false;
 let isListening=false;
 let recognition=null;
+let comparisonMode=false;
+let lbIndex=0;
+const gallery=[];
+const MAX_GALLERY=10;
 
 const video=document.getElementById('video');
 const canvas=document.getElementById('canvas');
@@ -498,6 +562,36 @@ function fChakra(d,w,h,t){
   for(let y=0;y<h;y++){
     const ci=Math.min(6,Math.floor(y/(h/7)));const[cr,cg,cb]=CC[ci];const p=.35+.1*Math.sin(t*.001+ci*.5);
     for(let x=0;x<w;x++){const k=y*w+x,i=k*4,l=(d[i]*.299+d[i+1]*.587+d[i+2]*.114)/255,m=Math.min(1,mag[k]/mx*3);d[i]=clamp(d[i]*(1-p)+cr*p*l*2+cr*m*.8);d[i+1]=clamp(d[i+1]*(1-p)+cg*p*l*2+cg*m*.8);d[i+2]=clamp(d[i+2]*(1-p)+cb*p*l*2+cb*m*.8);}
+  }
+}
+
+// Plasma/Aurora — 4-source wave interference mapped to aurora spectrum
+function fPlasma(d,w,h,t){
+  const T=t*.002;
+  for(let y=0;y<h;y+=2)for(let x=0;x<w;x+=2){
+    const i0=(y*w+x)*4;
+    const l=(d[i0]*.299+d[i0+1]*.587+d[i0+2]*.114)/255;
+    const v1=Math.sin(x*.06+T*1.1),v2=Math.sin(y*.06+T*.9);
+    const v3=Math.sin((x+y)*.04+T*1.3);
+    const v4=Math.sin(Math.sqrt((x-w*.5)**2+(y-h*.5)**2)*.05+T*.7);
+    const plasma=(v1+v2+v3+v4+4)/8;
+    const hue=(plasma*.55+.42+l*.1)%1;
+    const[pr,pg,pb]=hsl2rgb(hue,.92,.32+l*.3+plasma*.15);
+    const mix=.78;
+    for(let dy=0;dy<2&&y+dy<h;dy++)for(let dx=0;dx<2&&x+dx<w;dx++){
+      const i=((y+dy)*w+(x+dx))*4;
+      d[i]=clamp(d[i]*(1-mix)+pr*mix);d[i+1]=clamp(d[i+1]*(1-mix)+pg*mix);d[i+2]=clamp(d[i+2]*(1-mix)+pb*mix);
+    }
+  }
+}
+
+// Gamma Ray — extreme contrast with blue-white ionization tint
+function fGamma(d){
+  for(let i=0;i<d.length;i+=4){
+    const l=d[i]*.299+d[i+1]*.587+d[i+2]*.114;
+    const g=l>145?Math.min(255,145+(l-145)*2.7):Math.max(0,l*.32);
+    const edge=g>210?25:0;
+    d[i]=clamp(g*.87+edge);d[i+1]=clamp(g*.92+edge);d[i+2]=clamp(g+edge+18);
   }
 }
 
@@ -605,30 +699,68 @@ function currentAcc(){return FILTERS.find(f=>f.id===currentFilter)?.acc.split(',
 
 // ── Render Loop ───────────────────────────
 let origBuffer=null;
+const OVERLAY_FILTERS=new Set(['radio','sacred','magnetic']);
+
+function applyPixelFilter(d,t){
+  switch(currentFilter){
+    case'infrared':fInfrared(d);break;case'thermal':fThermal(d);break;
+    case'uv':fUV(d);break;case'nightvision':fNight(d,t);break;
+    case'xray':fXRay(d);break;case'aura':fAura(d,PW,PH,t);break;
+    case'kirlian':fKirlian(d,PW,PH,t);break;case'chakra':fChakra(d,PW,PH,t);break;
+    case'quantum':fQuantum(d,PW,PH,t);break;
+    case'plasma':fPlasma(d,PW,PH,t);break;case'gamma':fGamma(d);break;
+  }
+}
+
 function renderLoop(t){
   if(video.readyState>=2){
     ctx.drawImage(video,0,0,PW,PH);
-    const overlay=['radio','sacred','magnetic'];
-    if(currentFilter==='radio'){renderRadio(ctx,PW,PH,t);}
-    else if(currentFilter==='sacred'){renderSacred(ctx,PW,PH,t);}
-    else if(currentFilter==='magnetic'){renderMagnetic(ctx,PW,PH,t);}
-    else if(currentFilter!=='normal'){
-      const id=ctx.getImageData(0,0,PW,PH);const d=id.data;
-      const useBlend=filterIntensity<.99;
-      if(useBlend){if(!origBuffer||origBuffer.length!==d.length)origBuffer=new Uint8Array(d.length);origBuffer.set(d);}
-      switch(currentFilter){
-        case'infrared':fInfrared(d);break;case'thermal':fThermal(d);break;
-        case'uv':fUV(d);break;case'nightvision':fNight(d,t);break;
-        case'xray':fXRay(d);break;case'aura':fAura(d,PW,PH,t);break;
-        case'kirlian':fKirlian(d,PW,PH,t);break;case'chakra':fChakra(d,PW,PH,t);break;
-        case'quantum':fQuantum(d,PW,PH,t);break;
+    const isOverlay=OVERLAY_FILTERS.has(currentFilter);
+    const active=currentFilter!=='normal';
+
+    if(comparisonMode&&active){
+      // Save original frame for left-half restoration
+      const origId=ctx.getImageData(0,0,PW,PH);
+
+      if(isOverlay){
+        // Clip overlay to right half only
+        ctx.save();ctx.beginPath();ctx.rect(PW/2,0,PW/2,PH);ctx.clip();
+        if(currentFilter==='radio')renderRadio(ctx,PW,PH,t);
+        else if(currentFilter==='sacred')renderSacred(ctx,PW,PH,t);
+        else renderMagnetic(ctx,PW,PH,t);
+        ctx.restore();
+      } else {
+        const id=ctx.getImageData(0,0,PW,PH);const d=id.data;
+        const useBlend=filterIntensity<.99;
+        if(useBlend){if(!origBuffer||origBuffer.length!==d.length)origBuffer=new Uint8Array(d.length);origBuffer.set(d);}
+        applyPixelFilter(d,t);
+        if(useBlend){const inv=1-filterIntensity;for(let i=0;i<d.length;i+=4){d[i]=origBuffer[i]*inv+d[i]*filterIntensity;d[i+1]=origBuffer[i+1]*inv+d[i+1]*filterIntensity;d[i+2]=origBuffer[i+2]*inv+d[i+2]*filterIntensity;}}
+        // Only paint right half of filtered data
+        ctx.putImageData(id,0,0,PW/2,0,PW/2,PH);
+        drawHistogram(d);
       }
-      if(useBlend){const inv=1-filterIntensity;for(let i=0;i<d.length;i+=4){d[i]=origBuffer[i]*inv+d[i]*filterIntensity;d[i+1]=origBuffer[i+1]*inv+d[i+1]*filterIntensity;d[i+2]=origBuffer[i+2]*inv+d[i+2]*filterIntensity;}}
-      ctx.putImageData(id,0,0);
-      // Draw histogram from filtered data
-      drawHistogram(d);
+      // Restore left half to original video frame
+      ctx.putImageData(origId,0,0,0,0,PW/2,PH);
+      // Divider line
+      const[ar,ag,ab]=currentAcc();
+      ctx.fillStyle=`rgba(${ar},${ag},${ab},.9)`;ctx.fillRect(PW/2-1,0,2,PH);
+
     } else {
-      const id=ctx.getImageData(0,0,PW,PH);drawHistogram(id.data);
+      // Standard (non-comparison) rendering
+      if(currentFilter==='radio')renderRadio(ctx,PW,PH,t);
+      else if(currentFilter==='sacred')renderSacred(ctx,PW,PH,t);
+      else if(currentFilter==='magnetic')renderMagnetic(ctx,PW,PH,t);
+      else if(active){
+        const id=ctx.getImageData(0,0,PW,PH);const d=id.data;
+        const useBlend=filterIntensity<.99;
+        if(useBlend){if(!origBuffer||origBuffer.length!==d.length)origBuffer=new Uint8Array(d.length);origBuffer.set(d);}
+        applyPixelFilter(d,t);
+        if(useBlend){const inv=1-filterIntensity;for(let i=0;i<d.length;i+=4){d[i]=origBuffer[i]*inv+d[i]*filterIntensity;d[i+1]=origBuffer[i+1]*inv+d[i+1]*filterIntensity;d[i+2]=origBuffer[i+2]*inv+d[i+2]*filterIntensity;}}
+        ctx.putImageData(id,0,0);
+        drawHistogram(d);
+      } else {
+        const id=ctx.getImageData(0,0,PW,PH);drawHistogram(id.data);
+      }
     }
   }
   rafId=requestAnimationFrame(renderLoop);
@@ -648,7 +780,59 @@ async function startCamera(){
   }
 }
 function switchCamera(){currentCamera=currentCamera==='environment'?'user':'environment';startCamera();}
-function capturePhoto(){const a=document.createElement('a');a.download=`horus-${currentFilter}-${Date.now()}.png`;a.href=canvas.toDataURL('image/png');a.click();}
+function capturePhoto(){
+  const src=canvas.toDataURL('image/png');
+  const f=FILTERS.find(x=>x.id===currentFilter);
+  const entry={src,filter:f.name,icon:f.icon,ts:Date.now()};
+  gallery.unshift(entry);
+  if(gallery.length>MAX_GALLERY)gallery.pop();
+  renderGallery(true);
+  horusMsg(`📸 Captura guardada — ${f.icon} ${f.name}. Toca la miniatura para verla.`);
+}
+
+// ── Gallery ────────────────────────────────
+function renderGallery(fresh){
+  const g=document.getElementById('gallery');g.innerHTML='';
+  gallery.forEach((item,i)=>{
+    const img=document.createElement('img');img.className='gthumb'+(fresh&&i===0?' new-anim':'');
+    img.src=item.src;img.title=`${item.icon} ${item.filter}`;
+    img.onclick=()=>openLightbox(i);g.appendChild(img);
+  });
+}
+
+// ── Lightbox ───────────────────────────────
+function openLightbox(i){
+  lbIndex=i;const item=gallery[i];
+  document.getElementById('lb-img').src=item.src;
+  document.getElementById('lb-info').textContent=`${item.icon} ${item.filter} · ${new Date(item.ts).toLocaleTimeString('es-ES')} · ${i+1}/${gallery.length}`;
+  document.getElementById('lightbox').classList.add('vis');
+  document.getElementById('lb-prev').style.opacity=i>0?.9:.3;
+  document.getElementById('lb-next').style.opacity=i<gallery.length-1?.9:.3;
+}
+function closeLightbox(){document.getElementById('lightbox').classList.remove('vis');}
+function lbNav(dir){const n=lbIndex+dir;if(n>=0&&n<gallery.length)openLightbox(n);}
+function downloadLbImg(){
+  const item=gallery[lbIndex];const a=document.createElement('a');
+  a.download=`horus-${item.filter.replace(/[\s\/]+/g,'-')}-${item.ts}.png`;
+  a.href=item.src;a.click();
+}
+
+// ── Comparison mode ────────────────────────
+function toggleComparison(){
+  comparisonMode=!comparisonMode;
+  document.getElementById('cmp-btn').classList.toggle('active',comparisonMode);
+  document.getElementById('cmp-labels').classList.toggle('vis',comparisonMode);
+  document.getElementById('cmp-right-lbl').textContent=FILTERS.find(x=>x.id===currentFilter)?.name||'FILTRADO';
+  if(comparisonMode)horusMsg('Modo comparación activado — izquierda: Normal · derecha: '+FILTERS.find(x=>x.id===currentFilter)?.name);
+  else horusMsg('Modo comparación desactivado.');
+}
+
+// ── Fullscreen ─────────────────────────────
+function toggleFullscreen(){
+  const el=document.getElementById('cam-sec');
+  if(!document.fullscreenElement)el.requestFullscreen?.()??el.webkitRequestFullscreen?.();
+  else document.exitFullscreen?.()??document.webkitExitFullscreen?.();
+}
 
 // ── Filter UI ──────────────────────────────
 function buildFilterBar(){
@@ -676,6 +860,7 @@ function setFilter(id){
   document.getElementById('pwys').textContent=f.tip;
   document.getElementById('pav-stat').textContent='⊙ Analizando: '+f.name;
   document.getElementById('spec-cursor').style.left=f.spec+'%';
+  document.getElementById('cmp-right-lbl').textContent=f.name;
   // Intensity slider color
   document.getElementById('int-slider').style.setProperty('--pct',Math.round(filterIntensity*100)+'%');
   updateInfoContent();
@@ -764,8 +949,13 @@ function horusRespond(q){
   if(lq.match(/geometr[ií]a sagrada|flor de la vida|metatr[oó]n|[aá]urea/))rs.push(KB.sacred?.holistic?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
   if(lq.match(/magn[eé]tico|campo magn|maxwell|dipolo/))rs.push(KB.magnetic?.science?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
   if(lq.match(/cu[aá]ntic|onda|part[ií]cula|heisenberg|schr[oö]dinger/))rs.push(KB.quantum?.science?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
-  if(lq.match(/espectro|electrom/))rs.push('El espectro electromagnético abarca desde ondas de radio (kilómetros) hasta rayos gamma (0.000001 nm). La luz visible es una fracción minúscula. Ahora tenemos 13 filtros para explorar diferentes regiones.');
+  if(lq.match(/plasma|aurora|borealis|ionos/))rs.push(KB.plasma?.science?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
+  if(lq.match(/gamma|radioactiv|nuclear|giga|energia extrema/))rs.push(KB.gamma?.science?.replace(/<[^>]*>/g,'').split('\n')[0]||'');
+  if(lq.match(/espectro|electrom/))rs.push('El espectro electromagnético abarca desde ondas de radio (kilómetros) hasta rayos gamma (0.000001 nm). La luz visible es una fracción minúscula. Ahora tenemos 15 filtros para explorar diferentes regiones.');
   if(lq.match(/filtro|cambia|otro|diferente|probar/)){const ot=FILTERS.filter(x=>x.id!==currentFilter);const sg=ot[Math.floor(Math.random()*ot.length)];rs.push(`Prueba el filtro ${sg.name} ${sg.icon} — revela ${sg.wl}. ${sg.tip}.`);}
+  if(lq.match(/comparar|comparaci[oó]n|split|lado/))rs.push('Toca el botón ↔ en la cámara para activar el modo comparación — izquierda muestra la imagen normal y derecha el filtro activo, divididos por una línea.');
+  if(lq.match(/galeria|foto|captura|guardar|imagen/))rs.push('Toca 📸 para capturar. Tus fotos aparecen como miniaturas en la esquina derecha — tócalas para ver en grande y descargar.');
+  if(lq.match(/pantalla|fullscreen|completa/))rs.push('Toca el botón ⛶ en la cámara para ver en pantalla completa.');
   if(lq.match(/intensidad|slider|m[aá]s fuerte|m[aá]s suave/))rs.push('Usa el slider de Intensidad debajo del espectro para mezclar el filtro con la imagen original. Al 50% ves ambas realidades superpuestas.');
   if(lq.match(/voz|hablar|escuchar|audio/))rs.push('Toca el botón 🔊 junto a mi nombre para activar mi voz. También puedes usar el micrófono 🎤 para hablarme directamente.');
   if(lq.match(/gracias|thank/))rs.push('El conocimiento compartido es luz que se multiplica. Sigo aquí para guiarte.');
@@ -805,10 +995,18 @@ async function startApp(){
 
 buildFilterBar();initBg();updateInfoContent();
 document.getElementById('ctxt').addEventListener('keydown',e=>{if(e.key==='Enter')sendMsg();});
+// Keyboard shortcuts
+document.addEventListener('keydown',e=>{
+  if(e.target.tagName==='INPUT')return;
+  if(e.key==='Escape')closeLightbox();
+  if(e.key==='ArrowLeft')lbNav(-1);
+  if(e.key==='ArrowRight')lbNav(1);
+  if(e.key===' '&&!document.getElementById('lightbox').classList.contains('vis')){e.preventDefault();capturePhoto();}
+});
 // Load voices async
 if('speechSynthesis' in window)window.speechSynthesis.onvoiceschanged=()=>{};
 
-setTimeout(()=>horusMsg('Soy HORUS, el Ojo que Todo lo Ve. Tengo 13 filtros del espectro EM para mostrarte. Activa la voz 🔊 y el micrófono 🎤 para una experiencia completa. Pregúntame lo que quieras.'),600);
+setTimeout(()=>horusMsg('Soy HORUS, el Ojo que Todo lo Ve. Tengo 15 filtros del espectro EM. Nuevos: Plasma/Aurora 🌌 y Rayos Gamma ☢️. Activa 📸 para capturar — tus fotos se guardan en la galería. Pregúntame lo que quieras.'),600);
 </script>
 </body>
 </html>
