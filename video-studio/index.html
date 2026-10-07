@@ -732,16 +732,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
           </select>
         </div>
         <div class="s-group">
-          <div class="s-label">🎙 Voz ElevenLabs</div>
+          <div class="s-label">🎙 Voz <span style="font-size:.6rem;color:var(--green2);font-weight:600">GRATIS</span></div>
           <select class="s-select" id="vid-voice">
-            <option value="69MPtsbmUppiEyKo3zhT">🌌 Joan — Documental / Espacio</option>
-            <option value="tbFPXYL9YuPVdXNrQVGj">🎙 Christian L — Narrador Storyteller</option>
-            <option value="hLWSpwRIXvafYWP2GPET">📚 Diego — Educativo / Calmo</option>
-            <option value="OPOVZvoMdH3Lfn5KgEiE">🇲🇽 Helel Petrov — Autoridad Estratégica MX</option>
-            <option value="kDzST3FMx0eYtPSCuBKd">⚡ Ricardo — Joven / Energético MX</option>
-            <option value="SzatlCk7ZMTGly6rtgt4">🎤 Gil — Natural MX</option>
-            <option value="OMWmRY8slGlr6mHJSqwy">🇪🇸 Gonzalo — Narrador Documental ES</option>
+            <option value="es-MX-m">🇲🇽 Español MX — Masculino</option>
+            <option value="es-MX-f">🇲🇽 Español MX — Femenino</option>
+            <option value="es-ES-m">🇪🇸 Español España — Masculino</option>
+            <option value="es-ES-f">🇪🇸 Español España — Femenino</option>
+            <option value="es-US-m">🇺🇸 Español US — Masculino</option>
           </select>
+          <div style="font-size:.63rem;color:var(--txt3);margin-top:4px">Usa las voces del navegador — sin APIs, sin cuenta</div>
         </div>
 
         <!-- ═══ CLONAR VOZ ═══ -->
@@ -844,6 +843,22 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
 
 <!-- ═══ TOAST ═══ -->
 <div id="toast"></div>
+
+<!-- ═══ SCRIPT EXPORT MODAL ═══ -->
+<div id="script-modal-backdrop" style="display:none;position:fixed;inset:0;background:#000a;z-index:200;display:none;align-items:center;justify-content:center" onclick="closeScriptModal(event)">
+  <div style="background:#0a1520;border:1px solid var(--brd);border-radius:14px;padding:24px;width:min(90vw,560px);max-height:80vh;display:flex;flex-direction:column;gap:12px" onclick="event.stopPropagation()">
+    <div style="display:flex;justify-content:space-between;align-items:center">
+      <div style="font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;color:var(--cyan2)">📄 Guión Listo</div>
+      <button onclick="closeScriptModal()" style="background:none;border:none;color:var(--txt3);cursor:pointer;font-size:1.2rem">✕</button>
+    </div>
+    <div id="script-modal-title" style="font-size:.8rem;color:var(--txt2)"></div>
+    <textarea id="script-modal-text" readonly style="flex:1;min-height:260px;background:#060e18;border:1px solid var(--brd);border-radius:8px;color:var(--txt1);font-family:'Inter',sans-serif;font-size:.78rem;padding:12px;resize:none;line-height:1.6"></textarea>
+    <div style="display:flex;gap:8px">
+      <button class="hbtn primary" onclick="copyScript()" style="flex:1">📋 Copiar Todo</button>
+      <button class="hbtn" onclick="closeScriptModal()">Cerrar</button>
+    </div>
+  </div>
+</div>
 
 <script>
 /* ═══════════════════════════════════════
@@ -1207,27 +1222,40 @@ function createVideo() {
   if (words > planWords) {
     toast(`Guión muy largo: ${words} palabras (máx ${planWords})`, 'err'); return;
   }
-  if (!apiKey) {
-    openSettings();
-    toast('Configura tu API key de HeyGen primero', 'err');
-    return;
-  }
 
-  const title = document.getElementById('post-title').value || 'Video';
-  document.getElementById('vp-status').innerHTML = '<div class="spin">⚙</div> Generando video con IA...';
+  const title = document.getElementById('post-title').value || 'Video OMROSLAB';
+  document.getElementById('vp-status').innerHTML = '<div class="spin">⚙</div> Preparando guión...';
   document.getElementById('main-create-btn').disabled = true;
-  document.getElementById('create-video-btn').disabled = true;
 
-  // Simulate API call (replace with real HeyGen API call)
   setTimeout(() => {
+    // Export as ready-to-use script file
+    const secs = Math.round((words / WPM) * 60);
+    const scriptTxt = [
+      '═══════════════════════════════════',
+      'OMROSLAB VIDEO STUDIO — GUIÓN',
+      '═══════════════════════════════════',
+      `Título:    ${title}`,
+      `Duración:  ${formatTime(secs)} aprox`,
+      `Palabras:  ${words}`,
+      `Fecha:     ${new Date().toLocaleDateString('es-MX')}`,
+      '───────────────────────────────────',
+      '',
+      raw,
+      '',
+      '───────────────────────────────────',
+      'Generado con OMROSLAB Video Studio',
+    ].join('\n');
+
+    // Show in copyable modal
+    showScriptModal(title, scriptTxt);
+
     videosMade++;
     document.getElementById('stat-videos-made').textContent = videosMade;
     saveState();
-    document.getElementById('vp-status').innerHTML = `✅ Video "${title.slice(0,30)}" generado<br><span style="font-size:.68rem;color:var(--txt3)">Revisa tu dashboard de HeyGen</span>`;
+    document.getElementById('vp-status').innerHTML = `✅ Guión "${title.slice(0,28)}" listo<br><span style="font-size:.68rem;color:var(--txt3)">Cópialo y úsalo en HeyGen, CapCut, Canva…</span>`;
     document.getElementById('main-create-btn').disabled = false;
-    document.getElementById('create-video-btn').disabled = false;
-    toast('¡Video enviado a HeyGen! 🎬', 'ok');
-  }, 2200);
+    toast('📄 Guión listo — cópialo desde el panel 🎬', 'ok');
+  }, 600);
 }
 
 // ── API key validation ────────────────
@@ -1242,8 +1270,8 @@ function validateApiKey() {
     txt.textContent = 'HeyGen conectado';
     badge.className = 'vp-badge ok';
   } else {
-    dot.className = 'api-dot err';
-    txt.textContent = key ? 'Key inválida' : 'Sin API key';
+    dot.className = 'api-dot';
+    txt.textContent = 'Modo offline — exporta el guión';
     badge.className = 'vp-badge free';
   }
   document.getElementById('modal-api-key').value = key;
@@ -1298,6 +1326,26 @@ function switchStab(tab) {
 function selectRatio(r) {
   currentRatio = r;
   document.querySelectorAll('.ratio-btn').forEach(b => b.classList.toggle('on', b.dataset.ratio === r));
+}
+
+// ── Script Export Modal ───────────────
+function showScriptModal(title, text) {
+  document.getElementById('script-modal-title').textContent = title;
+  document.getElementById('script-modal-text').value = text;
+  const bd = document.getElementById('script-modal-backdrop');
+  bd.style.display = 'flex';
+}
+
+function closeScriptModal(e) {
+  if (!e || e.target === document.getElementById('script-modal-backdrop'))
+    document.getElementById('script-modal-backdrop').style.display = 'none';
+}
+
+function copyScript() {
+  const ta = document.getElementById('script-modal-text');
+  navigator.clipboard?.writeText(ta.value)
+    .then(() => toast('¡Guión copiado! 📋', 'ok'))
+    .catch(() => { ta.select(); document.execCommand('copy'); toast('Copiado 📋', 'ok'); });
 }
 
 // ── Toast ─────────────────────────────
@@ -1487,61 +1535,62 @@ function updateElQuota() {
   document.getElementById('el-status-dot').style.color = elKey ? 'var(--green2)' : 'var(--txt3)';
 }
 
-async function generateAudio() {
-  const text = document.getElementById('script-editor').innerText.trim();
-  const voiceId = document.getElementById('vid-voice').value;
-  const key = elKey || document.getElementById('el-api-key').value.trim();
+let ttsUtterance = null;
 
+function generateAudio() {
+  const text = document.getElementById('script-editor').innerText.trim();
   if (!text) { toast('Escribe el guión primero', 'err'); return; }
-  if (!key) {
-    switchStab('settings');
-    toast('Agrega tu API key de ElevenLabs en Ajustes ⚙', 'err');
+  if (!('speechSynthesis' in window)) { toast('Tu navegador no soporta TTS', 'err'); return; }
+
+  // Stop if already speaking
+  if (speechSynthesis.speaking) {
+    speechSynthesis.cancel();
+    const btn = document.getElementById('listen-btn');
+    btn.textContent = '🎙 Escuchar';
     return;
   }
-  if (elCharsUsed + text.length > 10000) {
-    toast(`Sin cuota: necesitas ${text.length} chars, quedan ${10000 - elCharsUsed}`, 'err');
-    return;
+
+  const voiceKey = document.getElementById('vid-voice').value;
+  const speed = parseFloat(document.getElementById('vid-speed')?.value || '1.0');
+
+  // Pick best matching voice
+  const voices = speechSynthesis.getVoices();
+  const langMap = {
+    'es-MX-m': ['es-MX','es_MX'], 'es-MX-f': ['es-MX','es_MX'],
+    'es-ES-m': ['es-ES','es_ES'], 'es-ES-f': ['es-ES','es_ES'],
+    'es-US-m': ['es-US','es_US'],
+  };
+  const wantFemale = voiceKey.endsWith('-f');
+  const langs = langMap[voiceKey] || ['es-MX','es-ES','es'];
+
+  let chosen = null;
+  for (const lang of langs) {
+    const matches = voices.filter(v => v.lang.startsWith(lang.replace('_','-')));
+    if (!matches.length) continue;
+    chosen = matches.find(v => wantFemale
+      ? /female|mujer|woman/i.test(v.name)
+      : /male|hombre|man/i.test(v.name)
+    ) || matches[0];
+    if (chosen) break;
   }
+  if (!chosen) {
+    chosen = voices.find(v => v.lang.startsWith('es')) || voices[0];
+  }
+
+  ttsUtterance = new SpeechSynthesisUtterance(text);
+  ttsUtterance.lang = chosen?.lang || 'es-MX';
+  if (chosen) ttsUtterance.voice = chosen;
+  ttsUtterance.rate = speed;
+  ttsUtterance.pitch = 0.95;
 
   const btn = document.getElementById('listen-btn');
-  btn.disabled = true;
-  btn.textContent = '⏳ Generando...';
+  btn.textContent = '⏹ Detener';
 
-  try {
-    const speed = parseFloat(document.getElementById('vid-speed')?.value || '1.0');
-    const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json', 'xi-api-key': key },
-      body: JSON.stringify({
-        text,
-        model_id: 'eleven_multilingual_v2',
-        voice_settings: { stability: 0.5, similarity_boost: 0.75, speed },
-      }),
-    });
+  ttsUtterance.onend = () => { btn.textContent = '🎙 Escuchar'; };
+  ttsUtterance.onerror = () => { btn.textContent = '🎙 Escuchar'; toast('Error de voz', 'err'); };
 
-    if (!resp.ok) {
-      const err = await resp.json().catch(() => ({}));
-      throw new Error(err?.detail?.message || `HTTP ${resp.status}`);
-    }
-
-    const blob = await resp.blob();
-    const url = URL.createObjectURL(blob);
-    const player = document.getElementById('audio-player');
-    player.src = url;
-    document.getElementById('audio-wrap').style.display = 'block';
-    player.play();
-
-    elCharsUsed = Math.min(10000, elCharsUsed + text.length);
-    elKey = key;
-    saveState();
-    updateElQuota();
-    toast('🎙 Audio listo — escuchando', 'ok');
-  } catch(err) {
-    toast('Error ElevenLabs: ' + err.message, 'err');
-  } finally {
-    btn.disabled = false;
-    btn.textContent = '🎙 Escuchar';
-  }
+  speechSynthesis.speak(ttsUtterance);
+  toast('🎙 Leyendo guión — ' + (chosen?.name || 'voz del sistema'), 'ok');
 }
 
 // ── Keyboard shortcuts ────────────────
