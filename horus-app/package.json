@@ -1,0 +1,9 @@
+{
+  "name": "horus-spectrum-vision",
+  "version": "1.0.0",
+  "description": "HORUS - IA educativa de vision del espectro electromagnetico",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

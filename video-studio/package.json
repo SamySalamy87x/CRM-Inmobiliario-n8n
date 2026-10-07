@@ -1,0 +1,9 @@
+{
+  "name": "omroslab-video-studio",
+  "version": "1.0.0",
+  "description": "OMROSLAB Video Studio — Creador de videos con IA y editor de contenido tipo blog",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  }
+}

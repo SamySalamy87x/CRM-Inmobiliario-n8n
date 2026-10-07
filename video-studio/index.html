@@ -1,0 +1,1560 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>OMROSLAB · Video Studio</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;600;700;900&family=Inter:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#04070f;--bg2:#070c18;--bg3:#0b1220;--bg4:#0f1830;
+  --blue:#0ea5e9;--blue2:#38bdf8;--blue3:#7dd3fc;
+  --cyan:#06b6d4;--cyan2:#22d3ee;
+  --green:#10b981;--green2:#34d399;
+  --amber:#f59e0b;--red:#ef4444;
+  --gold:#fbbf24;
+  --txt:#e2e8f0;--txt2:#94a3b8;--txt3:#475569;
+  --border:rgba(14,165,233,.18);--border2:rgba(14,165,233,.32);
+  --glass:rgba(7,12,24,.88);--glass2:rgba(11,18,32,.96);
+  --acc:var(--blue);--acc-rgb:14,165,233;
+  --plan-color:var(--blue);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webkit-font-smoothing:antialiased;font-size:14px}
+
+/* Scrollbar */
+::-webkit-scrollbar{width:4px;height:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:rgba(14,165,233,.3);border-radius:2px}
+
+/* ── GRID ── */
+#app{
+  display:grid;height:100dvh;
+  grid-template-rows:52px 1fr;
+  grid-template-columns:72px 1fr 320px;
+  grid-template-areas:"hdr hdr hdr" "nav main side";
+  overflow:hidden;
+}
+
+/* ── HEADER ── */
+#hdr{
+  grid-area:hdr;display:flex;align-items:center;gap:14px;
+  padding:0 18px;background:rgba(4,7,15,.97);
+  border-bottom:1px solid var(--border2);z-index:20;
+}
+.logo-mark{
+  width:32px;height:32px;border-radius:8px;
+  background:linear-gradient(135deg,var(--blue),var(--cyan));
+  display:flex;align-items:center;justify-content:center;
+  font-family:'Orbitron',monospace;font-size:.75rem;font-weight:900;color:#000;
+  flex-shrink:0;box-shadow:0 0 14px rgba(14,165,233,.4);
+}
+#hdr-brand{font-family:'Orbitron',monospace;font-size:.9rem;font-weight:700;letter-spacing:.15em;color:var(--blue2)}
+#hdr-brand span{color:var(--txt3);font-weight:400;font-size:.7rem;letter-spacing:.1em;margin-left:6px;vertical-align:middle}
+#hdr-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.hbtn{
+  padding:5px 13px;border-radius:7px;border:1px solid var(--border);
+  background:rgba(255,255,255,.04);color:var(--txt2);cursor:pointer;
+  font-size:.75rem;font-weight:500;font-family:'Inter',sans-serif;
+  transition:all .18s;display:flex;align-items:center;gap:5px;
+}
+.hbtn:hover{background:rgba(14,165,233,.1);border-color:var(--acc);color:var(--blue2)}
+.hbtn.primary{background:linear-gradient(135deg,var(--blue),var(--cyan));border-color:transparent;color:#000;font-weight:600}
+.hbtn.primary:hover{filter:brightness(1.1);transform:translateY(-1px)}
+.hbtn.danger{background:rgba(239,68,68,.1);border-color:rgba(239,68,68,.35);color:#f87171}
+#plan-chip{
+  display:flex;align-items:center;gap:5px;padding:4px 10px;
+  border-radius:20px;border:1px solid rgba(var(--acc-rgb),.3);
+  background:rgba(var(--acc-rgb),.07);
+  font-size:.68rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+  color:var(--blue2);
+}
+.plan-dot{width:6px;height:6px;border-radius:50%;background:var(--acc);box-shadow:0 0 5px var(--acc);animation:pdot 2s ease-in-out infinite}
+@keyframes pdot{0%,100%{opacity:1}50%{opacity:.4}}
+
+/* ── NAV ── */
+#nav{
+  grid-area:nav;background:rgba(4,7,15,.98);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;align-items:center;padding:8px 0;gap:4px;
+}
+.nav-btn{
+  width:46px;height:46px;border-radius:10px;border:1px solid transparent;
+  background:transparent;color:var(--txt3);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:2px;font-size:.45rem;font-weight:600;letter-spacing:.04em;text-transform:uppercase;
+  transition:all .18s;
+}
+.nav-btn svg{width:18px;height:18px;stroke-width:1.6}
+.nav-btn:hover{background:rgba(14,165,233,.08);border-color:var(--border);color:var(--blue3)}
+.nav-btn.on{background:rgba(14,165,233,.14);border-color:var(--border2);color:var(--blue2)}
+.nav-sep{width:28px;height:1px;background:var(--border);margin:4px 0}
+
+/* ── MAIN ── */
+#main{grid-area:main;display:flex;flex-direction:column;overflow:hidden;background:var(--bg2)}
+
+/* View switcher */
+#view-tabs{
+  display:flex;gap:1px;padding:8px 16px 0;background:var(--bg2);flex-shrink:0;
+}
+.vtab{
+  padding:7px 16px;border-radius:8px 8px 0 0;background:rgba(255,255,255,.03);
+  border:1px solid transparent;border-bottom:none;cursor:pointer;
+  font-size:.73rem;font-weight:500;color:var(--txt3);transition:all .18s;
+  display:flex;align-items:center;gap:5px;
+}
+.vtab:hover{background:rgba(255,255,255,.06);color:var(--txt2)}
+.vtab.on{background:var(--bg3);border-color:var(--border);border-bottom-color:var(--bg3);color:var(--blue2)}
+
+/* Content area */
+#content{flex:1;overflow-y:auto;padding:16px;background:var(--bg3);border-top:1px solid var(--border)}
+
+/* ── EDITOR VIEW ── */
+#editor-view,#blog-view,#history-view{display:none}
+#editor-view.active,#blog-view.active,#history-view.active{display:flex;flex-direction:column;gap:12px;height:100%}
+
+/* Editor header row */
+.editor-row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.editor-row-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+
+/* Cards */
+.card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:10px;
+  padding:14px 16px;
+}
+.card-sm{padding:10px 14px}
+.card-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.card-title{font-size:.73rem;font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--txt3)}
+.card-val{font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;color:var(--txt);line-height:1}
+.card-sub{font-size:.67rem;color:var(--txt3);margin-top:3px}
+
+/* Title input */
+#post-title{
+  width:100%;background:rgba(255,255,255,.04);border:1px solid var(--border);
+  border-radius:8px;padding:10px 14px;color:var(--txt);font-size:1.05rem;
+  font-weight:600;font-family:'Inter',sans-serif;outline:none;
+  transition:border-color .18s,box-shadow .18s;
+}
+#post-title:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(var(--acc-rgb),.1)}
+#post-title::placeholder{color:var(--txt3)}
+
+/* Toolbar */
+.toolbar{
+  display:flex;align-items:center;gap:3px;padding:5px 8px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:8px;flex-wrap:wrap;
+}
+.tbtn{
+  padding:4px 8px;border-radius:5px;border:none;background:transparent;
+  color:var(--txt3);cursor:pointer;font-size:.78rem;font-family:'Inter',sans-serif;
+  font-weight:500;transition:all .15s;min-width:28px;
+  display:flex;align-items:center;justify-content:center;
+}
+.tbtn:hover{background:rgba(14,165,233,.12);color:var(--blue2)}
+.tbtn.on{background:rgba(14,165,233,.18);color:var(--blue2)}
+.tb-sep{width:1px;height:16px;background:var(--border);margin:0 3px;flex-shrink:0}
+
+/* Script editor */
+#script-editor{
+  flex:1;width:100%;min-height:200px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);
+  border-radius:8px;padding:14px 16px;
+  color:var(--txt);font-size:.88rem;line-height:1.8;
+  font-family:'Inter',sans-serif;
+  outline:none;resize:none;
+  transition:border-color .18s,box-shadow .18s;
+  overflow-y:auto;
+}
+#script-editor:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(var(--acc-rgb),.08)}
+#script-editor:empty::before{content:attr(data-ph);color:var(--txt3);pointer-events:none}
+
+/* Stats bar */
+#stats-bar{
+  display:flex;align-items:center;gap:12px;padding:7px 12px;
+  background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:8px;
+  flex-shrink:0;flex-wrap:wrap;
+}
+.stat-item{display:flex;align-items:center;gap:5px;font-size:.72rem}
+.stat-lbl{color:var(--txt3);letter-spacing:.04em}
+.stat-val{color:var(--txt);font-weight:600;font-family:'JetBrains Mono',monospace}
+.stat-val.warn{color:var(--amber)}
+.stat-val.danger{color:var(--red);animation:flash .8s ease-in-out infinite}
+@keyframes flash{0%,100%{opacity:1}50%{opacity:.5}}
+.stat-sep{width:1px;height:12px;background:var(--border)}
+
+/* Limit bar */
+.limit-bar-wrap{flex:1;display:flex;flex-direction:column;gap:3px;min-width:150px}
+.limit-bar-label{display:flex;justify-content:space-between;font-size:.65rem}
+.limit-bar{height:4px;background:rgba(255,255,255,.08);border-radius:2px;overflow:hidden}
+.limit-bar-fill{height:100%;border-radius:2px;transition:width .4s ease,background .4s}
+
+/* ── SIDEBAR ── */
+#side{
+  grid-area:side;background:var(--glass2);border-left:1px solid var(--border);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+#side-tabs{display:flex;border-bottom:1px solid var(--border);flex-shrink:0}
+.stab{
+  flex:1;padding:9px 4px;background:none;border:none;cursor:pointer;
+  font-family:'Inter',sans-serif;font-size:.67rem;font-weight:600;
+  letter-spacing:.06em;text-transform:uppercase;color:var(--txt3);
+  transition:color .18s;position:relative;
+}
+.stab.on{color:var(--blue2)}
+.stab.on::after{content:'';position:absolute;bottom:-1px;left:12%;right:12%;height:2px;background:var(--acc);border-radius:2px}
+#side-body{flex:1;overflow-y:auto;padding:14px}
+
+/* Quota card */
+.quota-card{
+  background:linear-gradient(135deg,rgba(14,165,233,.08),rgba(6,182,212,.04));
+  border:1px solid var(--border2);border-radius:10px;padding:14px;margin-bottom:14px;
+}
+.quota-title{font-size:.65rem;font-weight:600;letter-spacing:.1em;text-transform:uppercase;color:var(--txt3);margin-bottom:10px}
+.quota-main{display:flex;align-items:flex-end;gap:6px;margin-bottom:8px}
+.quota-time{font-family:'Orbitron',monospace;font-size:1.7rem;font-weight:700;color:var(--blue2);line-height:1}
+.quota-time-unit{font-size:.7rem;color:var(--txt3);margin-bottom:4px}
+.quota-of{font-size:.75rem;color:var(--txt3);margin-bottom:4px}
+.quota-total{font-family:'Orbitron',monospace;font-size:1rem;font-weight:600;color:var(--txt2)}
+.qbar{height:6px;background:rgba(255,255,255,.06);border-radius:3px;overflow:hidden;margin-bottom:6px}
+.qbar-fill{height:100%;border-radius:3px;transition:width .5s ease}
+.quota-meta{display:flex;justify-content:space-between;font-size:.65rem;color:var(--txt3)}
+
+/* Settings group */
+.s-group{margin-bottom:16px}
+.s-label{font-size:.65rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--txt3);margin-bottom:7px;display:flex;align-items:center;gap:6px}
+.s-select{
+  width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:7px;padding:8px 10px;color:var(--txt);font-size:.8rem;
+  font-family:'Inter',sans-serif;outline:none;cursor:pointer;
+  -webkit-appearance:none;appearance:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%2394a3b8' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");
+  background-repeat:no-repeat;background-position:right 10px center;padding-right:28px;
+}
+.s-select:focus{border-color:var(--acc)}
+.s-input{
+  width:100%;background:rgba(255,255,255,.05);border:1px solid var(--border);
+  border-radius:7px;padding:8px 10px;color:var(--txt);font-size:.8rem;
+  font-family:'JetBrains Mono',monospace;outline:none;
+}
+.s-input:focus{border-color:var(--acc);box-shadow:0 0 0 3px rgba(var(--acc-rgb),.1)}
+.s-input::placeholder{color:var(--txt3);font-family:'Inter',sans-serif}
+
+/* Toggle */
+.toggle-row{display:flex;align-items:center;justify-content:space-between;padding:5px 0}
+.toggle-lbl{font-size:.78rem;color:var(--txt2)}
+.toggle{position:relative;width:34px;height:18px;flex-shrink:0}
+.toggle input{opacity:0;width:0;height:0}
+.toggle-sl{
+  position:absolute;inset:0;background:rgba(255,255,255,.1);border-radius:9px;
+  cursor:pointer;transition:background .25s;border:1px solid var(--border);
+}
+.toggle-sl::before{
+  content:'';position:absolute;width:12px;height:12px;left:2px;top:2px;
+  background:var(--txt3);border-radius:50%;transition:all .25s;
+}
+.toggle input:checked+.toggle-sl{background:var(--blue);border-color:var(--blue)}
+.toggle input:checked+.toggle-sl::before{transform:translateX(16px);background:#fff}
+
+/* Aspect ratio picker */
+.ratio-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.ratio-btn{
+  aspect-ratio:1;border-radius:6px;border:1px solid var(--border);
+  background:rgba(255,255,255,.03);cursor:pointer;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  gap:3px;color:var(--txt3);font-size:.58rem;font-weight:600;transition:all .18s;
+}
+.ratio-btn:hover{border-color:var(--border2);color:var(--txt2)}
+.ratio-btn.on{border-color:var(--acc);background:rgba(14,165,233,.1);color:var(--blue2)}
+.ratio-icon{background:var(--txt3);border-radius:2px;transition:background .18s}
+.ratio-btn.on .ratio-icon{background:var(--acc)}
+
+/* Blog view */
+#blog-view{overflow:hidden}
+#blog-preview{
+  flex:1;overflow-y:auto;padding:32px 40px;max-width:740px;margin:0 auto;
+}
+.bp-date{font-size:.72rem;color:var(--txt3);letter-spacing:.08em;text-transform:uppercase;margin-bottom:6px}
+.bp-title{font-size:1.9rem;font-weight:700;color:var(--txt);line-height:1.25;margin-bottom:14px}
+.bp-meta{display:flex;align-items:center;gap:12px;margin-bottom:24px;padding-bottom:20px;border-bottom:1px solid var(--border)}
+.bp-author{display:flex;align-items:center;gap:8px}
+.bp-avatar{width:32px;height:32px;border-radius:50%;background:linear-gradient(135deg,var(--blue),var(--cyan));display:flex;align-items:center;justify-content:center;font-weight:700;font-size:.72rem;color:#000;flex-shrink:0}
+.bp-author-name{font-size:.8rem;font-weight:600;color:var(--txt2)}
+.bp-author-org{font-size:.68rem;color:var(--txt3)}
+.bp-tag{padding:3px 9px;border-radius:12px;background:rgba(14,165,233,.1);border:1px solid rgba(14,165,233,.2);color:var(--blue3);font-size:.65rem;font-weight:600;letter-spacing:.06em}
+.bp-body{font-size:.92rem;line-height:1.85;color:var(--txt);white-space:pre-wrap}
+.bp-body p{margin-bottom:1em}
+.bp-footer{margin-top:40px;padding-top:18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;font-size:.72rem;color:var(--txt3)}
+
+/* History view */
+#history-view{overflow:hidden}
+.history-list{display:flex;flex-direction:column;gap:8px;overflow-y:auto;flex:1}
+.post-card{
+  background:var(--bg2);border:1px solid var(--border);border-radius:9px;
+  padding:12px 14px;cursor:pointer;transition:all .18s;
+}
+.post-card:hover{border-color:var(--border2);background:var(--bg3)}
+.post-card-title{font-size:.88rem;font-weight:600;color:var(--txt);margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.post-card-meta{display:flex;align-items:center;gap:8px;font-size:.68rem;color:var(--txt3)}
+.post-card-preview{font-size:.72rem;color:var(--txt3);margin-top:5px;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+
+/* Action bar */
+#action-bar{
+  display:flex;align-items:center;gap:8px;padding:10px 16px;
+  background:var(--bg2);border-top:1px solid var(--border);flex-shrink:0;
+}
+#action-bar .spacer{flex:1}
+
+/* Spinner */
+.spin{animation:rotate 1s linear infinite;display:inline-block}
+@keyframes rotate{to{transform:rotate(360deg)}}
+
+/* API status badge */
+#api-status{
+  display:flex;align-items:center;gap:5px;font-size:.67rem;color:var(--txt3);
+  padding:4px 10px;border-radius:12px;border:1px solid var(--border);
+}
+.api-dot{width:6px;height:6px;border-radius:50%;background:var(--txt3)}
+.api-dot.ok{background:var(--green);box-shadow:0 0 5px var(--green)}
+.api-dot.err{background:var(--red);box-shadow:0 0 5px var(--red)}
+
+/* Toast */
+#toast{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);
+  background:var(--bg3);border:1px solid var(--border2);border-radius:10px;
+  padding:10px 20px;font-size:.8rem;color:var(--txt);box-shadow:0 8px 32px rgba(0,0,0,.4);
+  transition:transform .3s cubic-bezier(.4,0,.2,1);z-index:999;white-space:nowrap;
+}
+#toast.show{transform:translateX(-50%) translateY(0)}
+#toast.ok{border-color:rgba(16,185,129,.4);color:var(--green2)}
+#toast.err{border-color:rgba(239,68,68,.4);color:#f87171}
+
+/* Modal */
+#modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;display:none;align-items:center;justify-content:center}
+#modal-backdrop.vis{display:flex}
+.modal{background:var(--bg3);border:1px solid var(--border2);border-radius:14px;padding:24px;width:min(480px,90vw);box-shadow:0 24px 64px rgba(0,0,0,.6)}
+.modal-title{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:700;color:var(--blue2);margin-bottom:6px;letter-spacing:.1em}
+.modal-sub{font-size:.8rem;color:var(--txt3);margin-bottom:20px;line-height:1.5}
+.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}
+
+/* Video preview box */
+#vid-preview{
+  background:rgba(0,0,0,.4);border:1px solid var(--border);border-radius:8px;
+  aspect-ratio:16/9;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:8px;overflow:hidden;position:relative;
+}
+.vp-icon{font-size:2.5rem;opacity:.3}
+.vp-status{font-size:.73rem;color:var(--txt3);text-align:center}
+.vp-btn{
+  padding:7px 16px;border-radius:7px;background:linear-gradient(135deg,var(--blue),var(--cyan));
+  border:none;color:#000;font-size:.75rem;font-weight:700;cursor:pointer;
+  font-family:'Inter',sans-serif;letter-spacing:.04em;transition:all .2s;margin-top:4px;
+}
+.vp-btn:hover{filter:brightness(1.12);transform:translateY(-1px)}
+.vp-badge{
+  position:absolute;top:8px;right:8px;padding:3px 8px;border-radius:10px;
+  font-size:.6rem;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+}
+.vp-badge.free{background:rgba(245,158,11,.12);color:var(--amber);border:1px solid rgba(245,158,11,.3)}
+.vp-badge.ok{background:rgba(16,185,129,.12);color:var(--green2);border:1px solid rgba(16,185,129,.3)}
+
+/* Plan selector */
+.plan-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.plan-card{
+  border:1px solid var(--border);border-radius:8px;padding:10px 12px;cursor:pointer;
+  transition:all .2s;
+}
+.plan-card:hover,.plan-card.on{border-color:var(--acc);background:rgba(14,165,233,.07)}
+.plan-card-name{font-size:.75rem;font-weight:700;color:var(--txt);margin-bottom:2px}
+.plan-card-time{font-family:'Orbitron',monospace;font-size:.95rem;font-weight:700;color:var(--blue2)}
+.plan-card-words{font-size:.65rem;color:var(--txt3);margin-top:2px}
+.plan-card-price{font-size:.65rem;color:var(--txt3);margin-top:4px;padding-top:5px;border-top:1px solid var(--border)}
+
+/* Waveform (decoration) */
+.waveform{display:flex;align-items:center;gap:2px;height:24px}
+.wv-bar{width:3px;border-radius:2px;background:var(--acc);opacity:.5;transition:height .1s}
+.wv-bar.active{animation:wv 0.8s ease-in-out infinite alternate}
+@keyframes wv{to{height:100%}}
+
+/* Mobile tweaks */
+@media(max-width:900px){
+  #app{grid-template-columns:0 1fr 0;grid-template-areas:"hdr hdr hdr" "nav main main"}
+  #nav{display:none}
+  #side{display:none}
+}
+@media(max-width:600px){
+  #blog-preview{padding:20px 16px}
+}
+
+/* Glow effect */
+.glow-blue{text-shadow:0 0 12px rgba(14,165,233,.6)}
+</style>
+</head>
+<body>
+
+<div id="app">
+  <!-- ═══ HEADER ═══ -->
+  <header id="hdr">
+    <div class="logo-mark">OL</div>
+    <div>
+      <div id="hdr-brand">OMROSLAB <span>VIDEO STUDIO</span></div>
+    </div>
+    <div id="plan-chip">
+      <div class="plan-dot"></div>
+      <span id="plan-chip-label">Free</span>
+    </div>
+    <div id="hdr-right">
+      <div id="api-status"><div class="api-dot" id="api-dot"></div><span id="api-status-txt">Sin API key</span></div>
+      <button class="hbtn" onclick="openSettings()">⚙ Configurar</button>
+      <button class="hbtn primary" id="create-video-btn" onclick="createVideo()">🎬 Crear Video</button>
+    </div>
+  </header>
+
+  <!-- ═══ NAV ═══ -->
+  <nav id="nav">
+    <button class="nav-btn on" onclick="switchNav('editor')" id="nav-editor" title="Editor">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.12 2.12 0 013 3L12 15l-4 1 1-4z"/></svg>
+      Edit
+    </button>
+    <button class="nav-btn" onclick="switchNav('blog')" id="nav-blog" title="Blog Preview">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><path d="M2 3h6a4 4 0 014 4v14a3 3 0 00-3-3H2z"/><path d="M22 3h-6a4 4 0 00-4 4v14a3 3 0 013-3h7z"/></svg>
+      Blog
+    </button>
+    <button class="nav-btn" onclick="switchNav('history')" id="nav-history" title="Historial">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      Hist
+    </button>
+    <div class="nav-sep"></div>
+    <button class="nav-btn" onclick="openSettings()" title="Configuración">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M4.93 19.07l1.41-1.41M19.07 19.07l-1.41-1.41M20 12h-2M6 12H4M12 20v-2M12 6V4"/></svg>
+      Config
+    </button>
+  </nav>
+
+  <!-- ═══ MAIN ═══ -->
+  <main id="main">
+    <div id="view-tabs">
+      <button class="vtab on" data-view="editor" onclick="switchView('editor')">✏️ Editor de Guión</button>
+      <button class="vtab" data-view="blog" onclick="switchView('blog')">📄 Vista Blog</button>
+      <button class="vtab" data-view="history" onclick="switchView('history')">🗂 Mis Posts</button>
+    </div>
+
+    <div id="content">
+      <!-- ── EDITOR VIEW ── -->
+      <div id="editor-view" class="active">
+        <!-- Title -->
+        <input id="post-title" type="text" placeholder="Título del video / post...">
+
+        <!-- Metrics row -->
+        <div class="editor-row-3">
+          <div class="card card-sm">
+            <div class="card-hdr">
+              <div class="card-title">⏱ Duración Video</div>
+              <div class="waveform" id="waveform">
+                <div class="wv-bar" style="height:6px"></div>
+                <div class="wv-bar" style="height:10px"></div>
+                <div class="wv-bar" style="height:16px"></div>
+                <div class="wv-bar" style="height:8px"></div>
+                <div class="wv-bar" style="height:14px"></div>
+                <div class="wv-bar" style="height:20px"></div>
+                <div class="wv-bar" style="height:12px"></div>
+              </div>
+            </div>
+            <div class="card-val" id="metric-duration">0:00</div>
+            <div class="card-sub" id="metric-duration-sub">de <span id="limit-time-display">1:00</span> disponibles</div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-hdr"><div class="card-title">📝 Palabras</div></div>
+            <div class="card-val" id="metric-words">0</div>
+            <div class="card-sub">máx <span id="limit-words-display">130</span> palabras</div>
+          </div>
+          <div class="card card-sm">
+            <div class="card-hdr"><div class="card-title">📊 Caracteres</div></div>
+            <div class="card-val" id="metric-chars">0</div>
+            <div class="card-sub" id="metric-read-time">~0 min lectura</div>
+          </div>
+        </div>
+
+        <!-- Stats / progress bar -->
+        <div id="stats-bar">
+          <div class="stat-item">
+            <span class="stat-lbl">PALABRAS</span>
+            <span class="stat-val" id="sb-words">0</span>
+            <span class="stat-lbl">/ <span id="sb-word-limit">130</span></span>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-item">
+            <span class="stat-lbl">TIEMPO</span>
+            <span class="stat-val" id="sb-time">0:00</span>
+            <span class="stat-lbl">/ <span id="sb-time-limit">1:00</span></span>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="limit-bar-wrap">
+            <div class="limit-bar-label">
+              <span style="font-size:.65rem;color:var(--txt3)">Uso del límite</span>
+              <span style="font-size:.65rem;color:var(--txt3)" id="sb-pct">0%</span>
+            </div>
+            <div class="limit-bar"><div class="limit-bar-fill" id="sb-fill" style="width:0%;background:var(--green)"></div></div>
+          </div>
+          <div class="stat-sep"></div>
+          <div class="stat-item">
+            <span class="stat-lbl">PÁRRAFOS</span>
+            <span class="stat-val" id="sb-paras">0</span>
+          </div>
+        </div>
+
+        <!-- Toolbar -->
+        <div class="toolbar">
+          <button class="tbtn" onclick="fmt('bold')" title="Negrita"><b>B</b></button>
+          <button class="tbtn" onclick="fmt('italic')" title="Itálica"><i>I</i></button>
+          <button class="tbtn" onclick="fmt('underline')" title="Subrayado"><u>U</u></button>
+          <div class="tb-sep"></div>
+          <button class="tbtn" onclick="insertBlock('h2')" title="Título">H2</button>
+          <button class="tbtn" onclick="insertBlock('h3')" title="Subtítulo">H3</button>
+          <div class="tb-sep"></div>
+          <button class="tbtn" onclick="insertEmoji('🎯')" title="Emoji objetivo">🎯</button>
+          <button class="tbtn" onclick="insertEmoji('💡')" title="Idea">💡</button>
+          <button class="tbtn" onclick="insertEmoji('🔬')" title="Ciencia">🔬</button>
+          <button class="tbtn" onclick="insertEmoji('🚀')" title="Cohete">🚀</button>
+          <button class="tbtn" onclick="insertEmoji('📌')" title="Pin">📌</button>
+          <div class="tb-sep"></div>
+          <button class="tbtn" onclick="clearEditor()" title="Limpiar" style="color:var(--red)">🗑</button>
+          <button class="tbtn" onclick="savePost()" title="Guardar post" style="margin-left:auto;color:var(--green2)">💾 Guardar</button>
+        </div>
+
+        <!-- Editor -->
+        <div id="script-editor" contenteditable="true"
+             data-ph="Escribe el guión de tu video aquí... Empieza con una apertura poderosa que enganche a tu audiencia en los primeros 5 segundos. Recuerda: habla a 130 palabras por minuto en promedio."></div>
+
+        <!-- Audio player -->
+        <div id="audio-wrap" style="display:none;padding:10px 0;border-top:1px solid var(--brd)">
+          <audio id="audio-player" controls style="width:100%;height:36px;accent-color:var(--cyan2)"></audio>
+        </div>
+
+        <!-- Video preview placeholder -->
+        <div id="vid-preview">
+          <div class="vp-badge free" id="vp-plan-badge">Plan Free · 1 min</div>
+          <div class="vp-icon">🎬</div>
+          <div class="vp-status" id="vp-status">Escribe tu guión y configura tu avatar<br>para generar el video con IA</div>
+          <button class="vp-btn" onclick="createVideo()">▶ Generar Video</button>
+        </div>
+      </div>
+
+      <!-- ── BLOG VIEW ── -->
+      <div id="blog-view">
+        <div id="blog-preview">
+          <div class="bp-date" id="bp-date">—</div>
+          <div class="bp-title" id="bp-title">Sin título</div>
+          <div class="bp-meta">
+            <div class="bp-author">
+              <div class="bp-avatar">OR</div>
+              <div>
+                <div class="bp-author-name">Omar Rafael P.</div>
+                <div class="bp-author-org">OMROSLAB · Ciencia · Tecnología · Exploración</div>
+              </div>
+            </div>
+            <div class="bp-tag" id="bp-tag">Video Script</div>
+          </div>
+          <div class="bp-body" id="bp-body">El contenido de tu guión aparecerá aquí como una publicación de blog lista para compartir.</div>
+          <div class="bp-footer">
+            <span id="bp-wc">0 palabras</span>
+            <span id="bp-rt">0 min lectura</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- ── HISTORY VIEW ── -->
+      <div id="history-view">
+        <div class="history-list" id="history-list">
+          <div style="text-align:center;padding:40px 20px;color:var(--txt3);font-size:.85rem">
+            Tus posts guardados aparecerán aquí.<br>Guarda un guión desde el editor para empezar.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Action bar -->
+    <div id="action-bar">
+      <button class="hbtn" onclick="savePost()">💾 Guardar Post</button>
+      <button class="hbtn" onclick="exportBlog()">📋 Copiar Blog</button>
+      <button class="hbtn" onclick="switchView('blog')">👁 Vista Previa</button>
+      <button class="hbtn" id="listen-btn" onclick="generateAudio()" title="Escuchar guión con ElevenLabs TTS">🎙 Escuchar</button>
+      <div class="spacer"></div>
+      <button class="hbtn danger" onclick="newPost()">+ Nuevo Post</button>
+      <button class="hbtn primary" id="main-create-btn" onclick="createVideo()">🎬 Crear Video</button>
+    </div>
+  </main>
+
+  <!-- ═══ SIDEBAR ═══ -->
+  <aside id="side">
+    <div id="side-tabs">
+      <button class="stab on" data-stab="quota" onclick="switchStab('quota')">Cuota</button>
+      <button class="stab" data-stab="settings" onclick="switchStab('settings')">Ajustes</button>
+      <button class="stab" data-stab="video" onclick="switchStab('video')">Video</button>
+    </div>
+    <div id="side-body">
+
+      <!-- QUOTA TAB -->
+      <div id="stab-quota">
+        <div class="quota-card">
+          <div class="quota-title">⚡ Tiempo Disponible</div>
+          <div class="quota-main">
+            <div class="quota-time" id="quota-time">1:00</div>
+            <div class="quota-time-unit">min</div>
+            <div class="quota-of">de</div>
+            <div class="quota-total" id="quota-total">1:00</div>
+          </div>
+          <div class="qbar"><div class="qbar-fill" id="qbar-fill" style="width:100%;background:var(--green)"></div></div>
+          <div class="quota-meta">
+            <span id="quota-pct">100% libre</span>
+            <span id="quota-words-left">130 palabras</span>
+          </div>
+        </div>
+
+        <div class="s-group">
+          <div class="s-label">📦 Plan Activo</div>
+          <div class="plan-cards" id="plan-cards">
+            <div class="plan-card on" data-plan="free" onclick="selectPlan('free')">
+              <div class="plan-card-name">Free</div>
+              <div class="plan-card-time">1:00</div>
+              <div class="plan-card-words">~130 palabras</div>
+              <div class="plan-card-price">Gratis</div>
+            </div>
+            <div class="plan-card" data-plan="starter" onclick="selectPlan('starter')">
+              <div class="plan-card-name">Starter</div>
+              <div class="plan-card-time">5:00</div>
+              <div class="plan-card-words">~650 palabras</div>
+              <div class="plan-card-price">$24/mes</div>
+            </div>
+            <div class="plan-card" data-plan="creator" onclick="selectPlan('creator')">
+              <div class="plan-card-name">Creator</div>
+              <div class="plan-card-time">15:00</div>
+              <div class="plan-card-words">~1,950 palabras</div>
+              <div class="plan-card-price">$48/mes</div>
+            </div>
+            <div class="plan-card" data-plan="pro" onclick="selectPlan('pro')">
+              <div class="plan-card-name">Pro</div>
+              <div class="plan-card-time">30:00</div>
+              <div class="plan-card-words">~3,900 palabras</div>
+              <div class="plan-card-price">$89/mes</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="quota-card" style="background:linear-gradient(135deg,#0a1a2a,#071520);border-color:#0ea5e933">
+          <div class="quota-title">🎙 ElevenLabs TTS</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin:6px 0">
+            <span style="font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:700;color:var(--cyan2)" id="el-chars-used">0</span>
+            <span style="font-size:.7rem;color:var(--txt3)">/ 10,000 chars/mes</span>
+          </div>
+          <div class="qbar"><div class="qbar-fill" id="el-qbar" style="width:100%;background:var(--cyan2)"></div></div>
+          <div class="quota-meta">
+            <span id="el-chars-left">10,000 disponibles</span>
+            <span id="el-status-dot" style="font-size:.65rem;color:var(--txt3)">Sin key</span>
+          </div>
+        </div>
+
+        <div class="s-group">
+          <div class="s-label">📊 Este Mes</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div class="card card-sm" style="text-align:center">
+              <div style="font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;color:var(--blue2)" id="stat-videos-made">0</div>
+              <div style="font-size:.62rem;color:var(--txt3);margin-top:2px">Videos</div>
+            </div>
+            <div class="card card-sm" style="text-align:center">
+              <div style="font-family:'Orbitron',monospace;font-size:1.4rem;font-weight:700;color:var(--cyan2)" id="stat-posts-saved">0</div>
+              <div style="font-size:.62rem;color:var(--txt3);margin-top:2px">Posts</div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- SETTINGS TAB -->
+      <div id="stab-settings" style="display:none">
+        <div class="s-group">
+          <div class="s-label">🔑 HeyGen API Key</div>
+          <input type="password" class="s-input" id="api-key-input" placeholder="hg_..." oninput="validateApiKey()">
+          <div style="font-size:.66rem;color:var(--txt3);margin-top:4px">Obtén tu key en app.heygen.com/settings</div>
+        </div>
+        <div class="s-group">
+          <div class="s-label">🎙 ElevenLabs API Key</div>
+          <input type="password" class="s-input" id="el-api-key" placeholder="sk_..." oninput="saveElKey()">
+          <div style="font-size:.66rem;color:var(--txt3);margin-top:4px">elevenlabs.io → Profile → API Key · <span style="color:var(--cyan2)">10,000 chars/mes gratis</span></div>
+        </div>
+        <div class="s-group">
+          <div class="s-label">🌐 Idioma del Video</div>
+          <select class="s-select" id="vid-lang">
+            <option value="es">Español</option>
+            <option value="en">English</option>
+            <option value="pt">Português</option>
+            <option value="fr">Français</option>
+          </select>
+        </div>
+        <div class="s-group">
+          <div class="s-label">⚡ Velocidad de Habla</div>
+          <select class="s-select" id="vid-speed">
+            <option value="0.8">Lento (0.8x)</option>
+            <option value="1.0" selected>Normal (1.0x)</option>
+            <option value="1.2">Rápido (1.2x)</option>
+            <option value="1.5">Muy rápido (1.5x)</option>
+          </select>
+        </div>
+        <div class="s-group">
+          <div class="s-label">📝 Subtítulos</div>
+          <div class="toggle-row">
+            <span class="toggle-lbl">Generar subtítulos</span>
+            <label class="toggle"><input type="checkbox" id="tog-captions" checked><div class="toggle-sl"></div></label>
+          </div>
+          <div class="toggle-row" style="margin-top:6px">
+            <span class="toggle-lbl">Auto-save borrador</span>
+            <label class="toggle"><input type="checkbox" id="tog-autosave" checked><div class="toggle-sl"></div></label>
+          </div>
+        </div>
+        <div class="s-group">
+          <div class="s-label">👤 Autor del Blog</div>
+          <input type="text" class="s-input" id="author-name" placeholder="Omar Rafael P." style="font-family:'Inter',sans-serif;margin-bottom:6px">
+          <input type="text" class="s-input" id="author-org" placeholder="OMROSLAB" style="font-family:'Inter',sans-serif">
+        </div>
+      </div>
+
+      <!-- VIDEO TAB -->
+      <div id="stab-video" style="display:none">
+        <div class="s-group">
+          <div class="s-label">🎭 Avatar</div>
+          <select class="s-select" id="vid-avatar">
+            <option value="">— Seleccionar avatar —</option>
+            <option value="scientist">🔬 Científico (similar a OMROSLAB)</option>
+            <option value="presenter">🎤 Presentador profesional</option>
+            <option value="teacher">👨‍🏫 Docente / Educador</option>
+            <option value="ceo">💼 CEO / Ejecutivo</option>
+            <option value="custom">⚙ Avatar personalizado (HeyGen)</option>
+          </select>
+        </div>
+        <div class="s-group">
+          <div class="s-label">🎙 Voz ElevenLabs</div>
+          <select class="s-select" id="vid-voice">
+            <option value="69MPtsbmUppiEyKo3zhT">🌌 Joan — Documental / Espacio</option>
+            <option value="tbFPXYL9YuPVdXNrQVGj">🎙 Christian L — Narrador Storyteller</option>
+            <option value="hLWSpwRIXvafYWP2GPET">📚 Diego — Educativo / Calmo</option>
+            <option value="OPOVZvoMdH3Lfn5KgEiE">🇲🇽 Helel Petrov — Autoridad Estratégica MX</option>
+            <option value="kDzST3FMx0eYtPSCuBKd">⚡ Ricardo — Joven / Energético MX</option>
+            <option value="SzatlCk7ZMTGly6rtgt4">🎤 Gil — Natural MX</option>
+            <option value="OMWmRY8slGlr6mHJSqwy">🇪🇸 Gonzalo — Narrador Documental ES</option>
+          </select>
+        </div>
+
+        <!-- ═══ CLONAR VOZ ═══ -->
+        <div class="s-group" style="border:1px solid var(--cyan2)33;border-radius:10px;padding:12px;background:linear-gradient(135deg,#040f1a,#060d18)">
+          <div class="s-label" style="color:var(--cyan2);margin-bottom:10px">🧬 Clonar Mi Voz</div>
+          <input type="text" class="s-input" id="clone-voice-name" placeholder="Samy Salamy — Mi Voz" style="margin-bottom:8px">
+
+          <!-- Record UI -->
+          <div id="clone-rec-ui" style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <button id="rec-btn" class="hbtn" onclick="toggleRecord()" style="flex:1;background:var(--red)22;border-color:var(--red)55;color:var(--red)">⏺ Grabar</button>
+              <div id="rec-timer" style="font-family:'Orbitron',monospace;font-size:.9rem;color:var(--txt3);min-width:42px;text-align:right">0:00</div>
+            </div>
+            <div id="rec-bar" style="height:28px;border-radius:6px;background:#0a1520;border:1px solid var(--brd);overflow:hidden;display:none">
+              <canvas id="rec-canvas" style="width:100%;height:100%"></canvas>
+            </div>
+            <div id="rec-preview-wrap" style="display:none">
+              <audio id="rec-preview" controls style="width:100%;height:32px;accent-color:var(--cyan2)"></audio>
+            </div>
+            <div style="text-align:center;font-size:.63rem;color:var(--txt3)">— o —</div>
+            <label style="cursor:pointer">
+              <input type="file" id="clone-file" accept="audio/*" onchange="onCloneFile(this)" style="display:none">
+              <div class="hbtn" style="text-align:center;width:100%;box-sizing:border-box" onclick="document.getElementById('clone-file').click()">📁 Subir Audio</div>
+            </label>
+            <div id="clone-file-name" style="font-size:.65rem;color:var(--txt3);text-align:center;display:none"></div>
+          </div>
+
+          <button id="clone-submit-btn" class="hbtn primary" onclick="cloneVoice()" style="width:100%;margin-top:10px;box-sizing:border-box" disabled>🧬 Crear Clon de Voz</button>
+          <div id="clone-status" style="font-size:.67rem;color:var(--txt3);text-align:center;margin-top:6px;min-height:14px">Graba ≥ 30 seg o sube un audio claro sin música</div>
+        </div>
+        <div class="s-group">
+          <div class="s-label">📐 Formato de Video</div>
+          <div class="ratio-grid">
+            <button class="ratio-btn" data-ratio="16:9" onclick="selectRatio('16:9')">
+              <div class="ratio-icon" style="width:28px;height:16px"></div>
+              16:9
+            </button>
+            <button class="ratio-btn on" data-ratio="9:16" onclick="selectRatio('9:16')">
+              <div class="ratio-icon" style="width:16px;height:28px"></div>
+              9:16
+            </button>
+            <button class="ratio-btn" data-ratio="1:1" onclick="selectRatio('1:1')">
+              <div class="ratio-icon" style="width:22px;height:22px"></div>
+              1:1
+            </button>
+          </div>
+        </div>
+        <div class="s-group">
+          <div class="s-label">🖼 Fondo</div>
+          <select class="s-select" id="vid-bg">
+            <option value="office">🏢 Oficina moderna</option>
+            <option value="lab">🔬 Laboratorio / OSDR</option>
+            <option value="space">🌌 Espacio / NASA</option>
+            <option value="studio">🎬 Estudio verde</option>
+            <option value="custom">🖼 Imagen personalizada</option>
+          </select>
+        </div>
+        <div class="s-group">
+          <div class="s-label">🎨 Estilo de Captions</div>
+          <select class="s-select" id="vid-caption-style">
+            <option value="minimal">Minimal — texto pequeño inferior</option>
+            <option value="bold">Bold — subtítulos destacados</option>
+            <option value="karaoke">Karaoke — palabra por palabra</option>
+            <option value="none">Sin subtítulos</option>
+          </select>
+        </div>
+      </div>
+
+    </div>
+  </aside>
+</div>
+
+<!-- ═══ SETTINGS MODAL ═══ -->
+<div id="modal-backdrop" onclick="closeModal(event)">
+  <div class="modal" onclick="event.stopPropagation()">
+    <div class="modal-title">⚙ Configuración Rápida</div>
+    <div class="modal-sub">Conecta tu cuenta de HeyGen para crear videos con IA. Tu API key se guarda localmente en el navegador.</div>
+    <div class="s-group">
+      <div class="s-label" style="margin-bottom:7px">🔑 HeyGen API Key</div>
+      <input type="password" class="s-input" id="modal-api-key" placeholder="hg_xxxxxxxxxxxxxxxx">
+      <div style="font-size:.66rem;color:var(--txt3);margin-top:5px">
+        Consíguelo en: <span style="color:var(--blue3)">app.heygen.com → Settings → API</span>
+      </div>
+    </div>
+    <div class="s-group">
+      <div class="s-label" style="margin-bottom:7px">📦 Plan HeyGen</div>
+      <select class="s-select" id="modal-plan">
+        <option value="free">Free — 1 min/mes (~130 palabras)</option>
+        <option value="starter">Starter $24 — 5 min/mes (~650 palabras)</option>
+        <option value="creator">Creator $48 — 15 min/mes (~1,950 palabras)</option>
+        <option value="pro">Pro $89 — 30 min/mes (~3,900 palabras)</option>
+      </select>
+    </div>
+    <div class="modal-actions">
+      <button class="hbtn" onclick="closeModal()">Cancelar</button>
+      <button class="hbtn primary" onclick="saveSettings()">💾 Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ TOAST ═══ -->
+<div id="toast"></div>
+
+<script>
+/* ═══════════════════════════════════════
+   OMROSLAB Video Studio v1.0
+   Omar Rafael Perez Gallardo
+═══════════════════════════════════════ */
+
+// ── Plan definitions ──────────────────
+const PLANS = {
+  free:    { name:'Free',    mins:1,  price:'Gratis',  color:'var(--amber)' },
+  starter: { name:'Starter', mins:5,  price:'$24/mes', color:'var(--blue2)' },
+  creator: { name:'Creator', mins:15, price:'$48/mes', color:'var(--cyan2)' },
+  pro:     { name:'Pro',     mins:30, price:'$89/mes', color:'var(--green2)' },
+};
+const WPM = 130; // words per minute speaking rate
+
+// ── State ─────────────────────────────
+let currentPlan = 'free';
+let currentRatio = '9:16';
+let apiKey = '';
+let elKey = '';
+let elCharsUsed = 0;
+let myClonedVoiceId = '';
+let myClonedVoiceName = '';
+let videosMade = 0;
+let savedPosts = [];
+let currentPostId = null;
+let autoSaveTimer = null;
+
+// ── Init ──────────────────────────────
+function init() {
+  loadState();
+  updatePlanUI();
+  updateStats();
+  renderHistory();
+  setupEditor();
+  loadDraft();
+  if(apiKey) validateApiKey();
+  updateElQuota();
+}
+
+function loadState() {
+  try {
+    const s = JSON.parse(localStorage.getItem('vs-state') || '{}');
+    currentPlan = s.plan || 'free';
+    apiKey = s.apiKey || '';
+    elKey = s.elKey || '';
+    elCharsUsed = s.elCharsUsed || 0;
+    myClonedVoiceId = s.clonedVoiceId || '';
+    myClonedVoiceName = s.clonedVoiceName || '';
+    videosMade = s.videosMade || 0;
+    savedPosts = s.posts || [];
+    document.getElementById('api-key-input').value = apiKey;
+    document.getElementById('modal-api-key').value = apiKey;
+    document.getElementById('modal-plan').value = currentPlan;
+    document.getElementById('el-api-key').value = elKey;
+    if (myClonedVoiceId) {
+      const sel = document.getElementById('vid-voice');
+      if (!sel.querySelector(`option[value="${myClonedVoiceId}"]`)) {
+        const opt = document.createElement('option');
+        opt.value = myClonedVoiceId;
+        opt.textContent = '🧬 ' + (myClonedVoiceName || 'Mi Voz Clonada') + ' (Tu Voz)';
+        sel.insertBefore(opt, sel.firstChild);
+      }
+      sel.value = myClonedVoiceId;
+    }
+    document.getElementById('author-name').value = s.authorName || 'Omar Rafael P.';
+    document.getElementById('author-org').value = s.authorOrg || 'OMROSLAB';
+    document.getElementById('stat-posts-saved').textContent = savedPosts.length;
+    document.getElementById('stat-videos-made').textContent = videosMade;
+  } catch(e) {}
+}
+
+function saveState() {
+  const s = {
+    plan: currentPlan,
+    apiKey,
+    elKey,
+    elCharsUsed,
+    clonedVoiceId: myClonedVoiceId,
+    clonedVoiceName: myClonedVoiceName,
+    videosMade,
+    posts: savedPosts,
+    authorName: document.getElementById('author-name').value || 'Omar Rafael P.',
+    authorOrg: document.getElementById('author-org').value || 'OMROSLAB',
+  };
+  localStorage.setItem('vs-state', JSON.stringify(s));
+}
+
+// ── Plan ──────────────────────────────
+function selectPlan(plan) {
+  currentPlan = plan;
+  document.querySelectorAll('.plan-card').forEach(c => c.classList.toggle('on', c.dataset.plan === plan));
+  document.getElementById('modal-plan').value = plan;
+  updatePlanUI();
+  updateStats();
+  saveState();
+  toast(`Plan cambiado a ${PLANS[plan].name} · ${PLANS[plan].mins} min/mes`);
+}
+
+function updatePlanUI() {
+  const p = PLANS[currentPlan];
+  const mins = p.mins;
+  const words = mins * WPM;
+  const timeStr = formatTime(mins * 60);
+
+  document.getElementById('plan-chip-label').textContent = p.name;
+  document.getElementById('quota-total').textContent = timeStr;
+  document.getElementById('limit-time-display').textContent = timeStr;
+  document.getElementById('limit-words-display').textContent = words.toLocaleString();
+  document.getElementById('sb-word-limit').textContent = words;
+  document.getElementById('sb-time-limit').textContent = timeStr;
+  document.getElementById('vp-plan-badge').textContent = `Plan ${p.name} · ${timeStr}`;
+
+  const isOk = document.getElementById('api-dot').classList.contains('ok');
+  document.getElementById('vp-plan-badge').className = `vp-badge ${isOk ? 'ok' : 'free'}`;
+
+  updateQuotaBar(0, mins * 60);
+}
+
+// ── Stats / Live counter ──────────────
+function updateStats() {
+  const editor = document.getElementById('script-editor');
+  const raw = editor.innerText || '';
+  const words = countWords(raw);
+  const chars = raw.length;
+  const paras = raw.split(/\n\s*\n/).filter(p => p.trim()).length || (raw.trim() ? 1 : 0);
+  const secs = Math.round((words / WPM) * 60);
+  const readMins = Math.max(1, Math.ceil(words / 200));
+  const planMins = PLANS[currentPlan].mins;
+  const planSecs = planMins * 60;
+  const planWords = planMins * WPM;
+  const pct = planSecs > 0 ? Math.min(100, Math.round((secs / planSecs) * 100)) : 0;
+
+  // Metric cards
+  document.getElementById('metric-duration').textContent = formatTime(secs);
+  document.getElementById('metric-words').textContent = words.toLocaleString();
+  document.getElementById('metric-chars').textContent = chars.toLocaleString();
+  document.getElementById('metric-read-time').textContent = `~${readMins} min lectura`;
+
+  // Stats bar
+  const wv = document.getElementById('sb-words');
+  wv.textContent = words;
+  wv.className = 'stat-val' + (words > planWords ? ' danger' : words > planWords * 0.85 ? ' warn' : '');
+
+  document.getElementById('sb-time').textContent = formatTime(secs);
+  document.getElementById('sb-paras').textContent = paras;
+  document.getElementById('sb-pct').textContent = pct + '%';
+
+  // Fill bar
+  const fill = document.getElementById('sb-fill');
+  fill.style.width = pct + '%';
+  fill.style.background = pct > 95 ? 'var(--red)' : pct > 75 ? 'var(--amber)' : 'var(--green)';
+
+  // Quota sidebar
+  const remaining = Math.max(0, planSecs - secs);
+  document.getElementById('quota-time').textContent = formatTime(remaining);
+  document.getElementById('quota-pct').textContent = Math.round((remaining / planSecs) * 100) + '% libre';
+  document.getElementById('quota-words-left').textContent = Math.max(0, planWords - words) + ' palabras';
+  updateQuotaBar(secs, planSecs);
+
+  // Update blog view
+  updateBlogPreview();
+
+  // Auto-save draft
+  if (document.getElementById('tog-autosave').checked) {
+    clearTimeout(autoSaveTimer);
+    autoSaveTimer = setTimeout(() => saveDraft(), 2000);
+  }
+}
+
+function updateQuotaBar(usedSecs, totalSecs) {
+  const pct = totalSecs > 0 ? Math.min(100, (usedSecs / totalSecs) * 100) : 0;
+  const fill = document.getElementById('qbar-fill');
+  fill.style.width = (100 - pct) + '%';
+  fill.style.background = pct > 95 ? 'var(--red)' : pct > 75 ? 'var(--amber)' : 'var(--green)';
+}
+
+function countWords(text) {
+  return text.trim().split(/\s+/).filter(w => w.length > 0).length;
+}
+
+function formatTime(totalSecs) {
+  const m = Math.floor(totalSecs / 60);
+  const s = Math.floor(totalSecs % 60);
+  return `${m}:${s.toString().padStart(2,'0')}`;
+}
+
+// ── Editor ────────────────────────────
+function setupEditor() {
+  const ed = document.getElementById('script-editor');
+  ed.addEventListener('input', updateStats);
+  ed.addEventListener('paste', e => {
+    e.preventDefault();
+    const text = e.clipboardData.getData('text/plain');
+    document.execCommand('insertText', false, text);
+  });
+}
+
+function fmt(cmd) {
+  document.execCommand(cmd);
+  document.getElementById('script-editor').focus();
+}
+
+function insertBlock(tag) {
+  const text = window.getSelection().toString() || 'Título aquí';
+  const map = { h2:'## ', h3:'### ' };
+  document.execCommand('insertText', false, '\n' + map[tag] + text + '\n');
+}
+
+function insertEmoji(emoji) {
+  document.execCommand('insertText', false, emoji + ' ');
+  document.getElementById('script-editor').focus();
+}
+
+function clearEditor() {
+  if (!confirm('¿Limpiar el editor? Se perderá el contenido no guardado.')) return;
+  document.getElementById('script-editor').innerHTML = '';
+  document.getElementById('post-title').value = '';
+  currentPostId = null;
+  updateStats();
+}
+
+function newPost() {
+  if (!confirm('¿Crear nuevo post? Guarda el actual primero si es necesario.')) return;
+  document.getElementById('script-editor').innerHTML = '';
+  document.getElementById('post-title').value = '';
+  currentPostId = null;
+  updateStats();
+  switchView('editor');
+  toast('Nuevo post listo ✏️');
+}
+
+// ── Draft auto-save ───────────────────
+function saveDraft() {
+  const title = document.getElementById('post-title').value;
+  const body = document.getElementById('script-editor').innerHTML;
+  if (!body.trim()) return;
+  localStorage.setItem('vs-draft', JSON.stringify({ title, body, ts: Date.now() }));
+}
+
+function loadDraft() {
+  try {
+    const d = JSON.parse(localStorage.getItem('vs-draft') || 'null');
+    if (!d || !d.body) return;
+    document.getElementById('post-title').value = d.title || '';
+    document.getElementById('script-editor').innerHTML = d.body;
+    updateStats();
+  } catch(e) {}
+}
+
+// ── Save/Load Posts ───────────────────
+function savePost() {
+  const title = document.getElementById('post-title').value.trim() || 'Sin título';
+  const body = document.getElementById('script-editor').innerHTML;
+  const raw = document.getElementById('script-editor').innerText;
+  if (!raw.trim()) { toast('El editor está vacío', 'err'); return; }
+
+  const post = {
+    id: currentPostId || Date.now().toString(),
+    title,
+    body,
+    raw,
+    words: countWords(raw),
+    ts: Date.now(),
+    plan: currentPlan,
+  };
+
+  const idx = savedPosts.findIndex(p => p.id === post.id);
+  if (idx >= 0) savedPosts[idx] = post;
+  else savedPosts.unshift(post);
+
+  if (savedPosts.length > 50) savedPosts.pop();
+  currentPostId = post.id;
+
+  document.getElementById('stat-posts-saved').textContent = savedPosts.length;
+  saveState();
+  renderHistory();
+  toast(`"${title.slice(0,30)}" guardado 💾`, 'ok');
+}
+
+function loadPost(id) {
+  const post = savedPosts.find(p => p.id === id);
+  if (!post) return;
+  document.getElementById('post-title').value = post.title;
+  document.getElementById('script-editor').innerHTML = post.body;
+  currentPostId = post.id;
+  updateStats();
+  switchView('editor');
+  toast(`Post cargado: "${post.title.slice(0,30)}"`);
+}
+
+function deletePost(id, e) {
+  e.stopPropagation();
+  if (!confirm('¿Eliminar este post?')) return;
+  savedPosts = savedPosts.filter(p => p.id !== id);
+  if (currentPostId === id) currentPostId = null;
+  document.getElementById('stat-posts-saved').textContent = savedPosts.length;
+  saveState();
+  renderHistory();
+  toast('Post eliminado', 'err');
+}
+
+function renderHistory() {
+  const list = document.getElementById('history-list');
+  if (!savedPosts.length) {
+    list.innerHTML = '<div style="text-align:center;padding:40px 20px;color:var(--txt3);font-size:.85rem">Tus posts guardados aparecerán aquí.<br>Guarda un guión desde el editor para empezar.</div>';
+    return;
+  }
+  list.innerHTML = savedPosts.map(p => `
+    <div class="post-card" onclick="loadPost('${p.id}')">
+      <div class="post-card-title">${p.title}</div>
+      <div class="post-card-meta">
+        <span>${new Date(p.ts).toLocaleDateString('es-MX',{day:'2-digit',month:'short',year:'numeric'})}</span>
+        <span>·</span>
+        <span>${p.words} palabras</span>
+        <span>·</span>
+        <span>${formatTime(Math.round((p.words/WPM)*60))}</span>
+        <button onclick="deletePost('${p.id}',event)" style="margin-left:auto;background:none;border:none;color:var(--txt3);cursor:pointer;font-size:.75rem;padding:0 4px" title="Eliminar">🗑</button>
+      </div>
+      <div class="post-card-preview">${p.raw.slice(0,120)}...</div>
+    </div>
+  `).join('');
+}
+
+// ── Blog Preview ──────────────────────
+function updateBlogPreview() {
+  const title = document.getElementById('post-title').value || 'Sin título';
+  const raw = document.getElementById('script-editor').innerText || '';
+  const words = countWords(raw);
+  const readMins = Math.max(1, Math.ceil(words / 200));
+  const authorName = document.getElementById('author-name').value || 'Omar Rafael P.';
+  const authorOrg = document.getElementById('author-org').value || 'OMROSLAB';
+
+  document.getElementById('bp-title').textContent = title;
+  document.getElementById('bp-body').textContent = raw || 'El contenido de tu guión aparecerá aquí.';
+  document.getElementById('bp-date').textContent = new Date().toLocaleDateString('es-MX', {weekday:'long',year:'numeric',month:'long',day:'numeric'});
+  document.getElementById('bp-wc').textContent = words.toLocaleString() + ' palabras';
+  document.getElementById('bp-rt').textContent = readMins + ' min lectura';
+  document.querySelector('.bp-author-name').textContent = authorName;
+  document.querySelector('.bp-author-org').textContent = authorOrg;
+  document.querySelector('.bp-avatar').textContent = authorName.charAt(0).toUpperCase();
+}
+
+function exportBlog() {
+  const title = document.getElementById('bp-title').textContent;
+  const body = document.getElementById('bp-body').textContent;
+  const date = document.getElementById('bp-date').textContent;
+  const text = `# ${title}\n\n*${date}*\n\n${body}`;
+  navigator.clipboard?.writeText(text).then(() => toast('Blog copiado al portapapeles 📋', 'ok'))
+    .catch(() => toast('No se pudo copiar', 'err'));
+}
+
+// ── Video creation ────────────────────
+function createVideo() {
+  const raw = document.getElementById('script-editor').innerText || '';
+  const words = countWords(raw);
+  const planWords = PLANS[currentPlan].mins * WPM;
+
+  if (!raw.trim()) { toast('Escribe el guión primero', 'err'); return; }
+  if (words > planWords) {
+    toast(`Guión muy largo: ${words} palabras (máx ${planWords})`, 'err'); return;
+  }
+  if (!apiKey) {
+    openSettings();
+    toast('Configura tu API key de HeyGen primero', 'err');
+    return;
+  }
+
+  const title = document.getElementById('post-title').value || 'Video';
+  document.getElementById('vp-status').innerHTML = '<div class="spin">⚙</div> Generando video con IA...';
+  document.getElementById('main-create-btn').disabled = true;
+  document.getElementById('create-video-btn').disabled = true;
+
+  // Simulate API call (replace with real HeyGen API call)
+  setTimeout(() => {
+    videosMade++;
+    document.getElementById('stat-videos-made').textContent = videosMade;
+    saveState();
+    document.getElementById('vp-status').innerHTML = `✅ Video "${title.slice(0,30)}" generado<br><span style="font-size:.68rem;color:var(--txt3)">Revisa tu dashboard de HeyGen</span>`;
+    document.getElementById('main-create-btn').disabled = false;
+    document.getElementById('create-video-btn').disabled = false;
+    toast('¡Video enviado a HeyGen! 🎬', 'ok');
+  }, 2200);
+}
+
+// ── API key validation ────────────────
+function validateApiKey() {
+  const key = document.getElementById('api-key-input').value.trim();
+  apiKey = key;
+  const dot = document.getElementById('api-dot');
+  const txt = document.getElementById('api-status-txt');
+  const badge = document.getElementById('vp-plan-badge');
+  if (key.length > 10) {
+    dot.className = 'api-dot ok';
+    txt.textContent = 'HeyGen conectado';
+    badge.className = 'vp-badge ok';
+  } else {
+    dot.className = 'api-dot err';
+    txt.textContent = key ? 'Key inválida' : 'Sin API key';
+    badge.className = 'vp-badge free';
+  }
+  document.getElementById('modal-api-key').value = key;
+}
+
+// ── Settings ──────────────────────────
+function openSettings() {
+  document.getElementById('modal-backdrop').classList.add('vis');
+}
+
+function closeModal(e) {
+  if (!e || e.target === document.getElementById('modal-backdrop'))
+    document.getElementById('modal-backdrop').classList.remove('vis');
+}
+
+function saveSettings() {
+  apiKey = document.getElementById('modal-api-key').value.trim();
+  currentPlan = document.getElementById('modal-plan').value;
+  document.getElementById('api-key-input').value = apiKey;
+  updatePlanUI();
+  validateApiKey();
+  selectPlan(currentPlan);
+  saveState();
+  document.getElementById('modal-backdrop').classList.remove('vis');
+  toast('Configuración guardada ✅', 'ok');
+}
+
+// ── Navigation ────────────────────────
+function switchView(view) {
+  document.querySelectorAll('.vtab').forEach(t => t.classList.toggle('on', t.dataset.view === view));
+  document.getElementById('editor-view').classList.toggle('active', view === 'editor');
+  document.getElementById('blog-view').classList.toggle('active', view === 'blog');
+  document.getElementById('history-view').classList.toggle('active', view === 'history');
+  if (view === 'blog') updateBlogPreview();
+  if (view === 'history') renderHistory();
+}
+
+function switchNav(view) {
+  document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('on'));
+  document.getElementById('nav-' + view)?.classList.add('on');
+  switchView(view);
+}
+
+function switchStab(tab) {
+  document.querySelectorAll('.stab').forEach(b => b.classList.toggle('on', b.dataset.stab === tab));
+  ['quota','settings','video'].forEach(t => {
+    const el = document.getElementById('stab-' + t);
+    if (el) el.style.display = t === tab ? 'block' : 'none';
+  });
+}
+
+function selectRatio(r) {
+  currentRatio = r;
+  document.querySelectorAll('.ratio-btn').forEach(b => b.classList.toggle('on', b.dataset.ratio === r));
+}
+
+// ── Toast ─────────────────────────────
+function toast(msg, type) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.className = 'show' + (type ? ' ' + type : '');
+  setTimeout(() => t.className = '', 2800);
+}
+
+// ── Voice Cloning ─────────────────────
+let mediaRec = null, recStream = null, recChunks = [], recInterval = null, recSecs = 0;
+let cloneBlob = null; // recorded or uploaded audio blob
+
+function toggleRecord() {
+  if (mediaRec && mediaRec.state === 'recording') {
+    stopRecord();
+  } else {
+    startRecord();
+  }
+}
+
+async function startRecord() {
+  try {
+    recStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch(e) {
+    toast('Permiso de micrófono denegado', 'err'); return;
+  }
+  recChunks = [];
+  cloneBlob = null;
+  mediaRec = new MediaRecorder(recStream);
+  mediaRec.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+  mediaRec.onstop = () => {
+    cloneBlob = new Blob(recChunks, { type: 'audio/webm' });
+    const url = URL.createObjectURL(cloneBlob);
+    document.getElementById('rec-preview').src = url;
+    document.getElementById('rec-preview-wrap').style.display = 'block';
+    document.getElementById('clone-submit-btn').disabled = false;
+    document.getElementById('clone-status').textContent = `Audio listo: ${recSecs}s grabados`;
+  };
+
+  // Visualizer
+  try {
+    const ctx = new AudioContext();
+    const src = ctx.createMediaStreamSource(recStream);
+    const anal = ctx.createAnalyser();
+    anal.fftSize = 64;
+    src.connect(anal);
+    const buf = new Uint8Array(anal.frequencyBinCount);
+    const canvas = document.getElementById('rec-canvas');
+    const c = canvas.getContext('2d');
+    document.getElementById('rec-bar').style.display = 'block';
+    function drawViz() {
+      if (!mediaRec || mediaRec.state !== 'recording') return;
+      anal.getByteFrequencyData(buf);
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      c.clearRect(0,0,canvas.width,canvas.height);
+      const bw = canvas.width / buf.length;
+      buf.forEach((v,i) => {
+        const h = (v / 255) * canvas.height;
+        c.fillStyle = `hsl(${185 + v*0.3},80%,${40+v*0.12}%)`;
+        c.fillRect(i*bw, canvas.height-h, bw-1, h);
+      });
+      requestAnimationFrame(drawViz);
+    }
+    drawViz();
+  } catch(e) {}
+
+  mediaRec.start(200);
+  recSecs = 0;
+  const btn = document.getElementById('rec-btn');
+  btn.textContent = '⏹ Detener';
+  btn.style.background = 'var(--red)44';
+  btn.style.borderColor = 'var(--red)';
+  btn.style.color = 'var(--red)';
+  recInterval = setInterval(() => {
+    recSecs++;
+    const m = Math.floor(recSecs/60), s = recSecs%60;
+    document.getElementById('rec-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    document.getElementById('clone-status').textContent = `Grabando… ${recSecs}s (min 30s recomendado)`;
+  }, 1000);
+}
+
+function stopRecord() {
+  if (mediaRec && mediaRec.state === 'recording') mediaRec.stop();
+  if (recStream) recStream.getTracks().forEach(t => t.stop());
+  clearInterval(recInterval);
+  const btn = document.getElementById('rec-btn');
+  btn.textContent = '⏺ Re-grabar';
+  btn.style.background = 'var(--red)22';
+}
+
+function onCloneFile(input) {
+  const f = input.files[0];
+  if (!f) return;
+  cloneBlob = f;
+  document.getElementById('clone-file-name').textContent = f.name + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+  document.getElementById('clone-file-name').style.display = 'block';
+  document.getElementById('clone-submit-btn').disabled = false;
+  document.getElementById('clone-status').textContent = 'Archivo listo para clonar';
+  // preview uploaded
+  const url = URL.createObjectURL(f);
+  document.getElementById('rec-preview').src = url;
+  document.getElementById('rec-preview-wrap').style.display = 'block';
+}
+
+async function cloneVoice() {
+  const key = elKey || document.getElementById('el-api-key').value.trim();
+  if (!key) {
+    switchStab('settings');
+    toast('Agrega tu API key de ElevenLabs en Ajustes primero', 'err'); return;
+  }
+  if (!cloneBlob) { toast('Graba o sube un audio primero', 'err'); return; }
+
+  const name = document.getElementById('clone-voice-name').value.trim() || 'Samy Salamy — Mi Voz';
+  const btn = document.getElementById('clone-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Clonando...';
+  document.getElementById('clone-status').textContent = 'Enviando audio a ElevenLabs...';
+
+  try {
+    const form = new FormData();
+    form.append('name', name);
+    form.append('description', 'Voz clonada de ' + name + ' — OMROSLAB Video Studio');
+    form.append('files', cloneBlob, 'voice-sample.webm');
+
+    const resp = await fetch('https://api.elevenlabs.io/v1/voices/add', {
+      method: 'POST',
+      headers: { 'xi-api-key': key },
+      body: form,
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err?.detail?.message || `HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const voiceId = data.voice_id;
+
+    // Add cloned voice to selector as first option and select it
+    const sel = document.getElementById('vid-voice');
+    const existing = sel.querySelector(`option[value="${voiceId}"]`);
+    if (!existing) {
+      const opt = document.createElement('option');
+      opt.value = voiceId;
+      opt.textContent = '🧬 ' + name + ' (Tu Voz)';
+      sel.insertBefore(opt, sel.firstChild);
+    }
+    sel.value = voiceId;
+
+    // Persist cloned voice
+    myClonedVoiceId = voiceId;
+    myClonedVoiceName = name;
+    saveState();
+
+    document.getElementById('clone-status').textContent = '✅ ¡Voz clonada! Seleccionada en el selector.';
+    toast('🧬 Voz "' + name + '" clonada y lista para usar', 'ok');
+    btn.textContent = '✅ Clonada';
+  } catch(err) {
+    document.getElementById('clone-status').textContent = 'Error: ' + err.message;
+    toast('Error al clonar: ' + err.message, 'err');
+    btn.disabled = false;
+    btn.textContent = '🧬 Crear Clon de Voz';
+  }
+}
+
+// ── ElevenLabs TTS ───────────────────
+function saveElKey() {
+  elKey = document.getElementById('el-api-key').value.trim();
+  saveState();
+  updateElQuota();
+}
+
+function updateElQuota() {
+  const EL_FREE = 10000;
+  const used = elCharsUsed;
+  const left = Math.max(0, EL_FREE - used);
+  const pct = Math.min(100, (used / EL_FREE) * 100);
+  document.getElementById('el-chars-used').textContent = used.toLocaleString();
+  document.getElementById('el-chars-left').textContent = left.toLocaleString() + ' disponibles';
+  const bar = document.getElementById('el-qbar');
+  bar.style.width = (100 - pct) + '%';
+  bar.style.background = pct > 90 ? 'var(--red)' : pct > 70 ? 'var(--amber)' : 'var(--cyan2)';
+  document.getElementById('el-status-dot').textContent = elKey ? '🟢 Conectado' : 'Sin key';
+  document.getElementById('el-status-dot').style.color = elKey ? 'var(--green2)' : 'var(--txt3)';
+}
+
+async function generateAudio() {
+  const text = document.getElementById('script-editor').innerText.trim();
+  const voiceId = document.getElementById('vid-voice').value;
+  const key = elKey || document.getElementById('el-api-key').value.trim();
+
+  if (!text) { toast('Escribe el guión primero', 'err'); return; }
+  if (!key) {
+    switchStab('settings');
+    toast('Agrega tu API key de ElevenLabs en Ajustes ⚙', 'err');
+    return;
+  }
+  if (elCharsUsed + text.length > 10000) {
+    toast(`Sin cuota: necesitas ${text.length} chars, quedan ${10000 - elCharsUsed}`, 'err');
+    return;
+  }
+
+  const btn = document.getElementById('listen-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generando...';
+
+  try {
+    const speed = parseFloat(document.getElementById('vid-speed')?.value || '1.0');
+    const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'xi-api-key': key },
+      body: JSON.stringify({
+        text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75, speed },
+      }),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err?.detail?.message || `HTTP ${resp.status}`);
+    }
+
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const player = document.getElementById('audio-player');
+    player.src = url;
+    document.getElementById('audio-wrap').style.display = 'block';
+    player.play();
+
+    elCharsUsed = Math.min(10000, elCharsUsed + text.length);
+    elKey = key;
+    saveState();
+    updateElQuota();
+    toast('🎙 Audio listo — escuchando', 'ok');
+  } catch(err) {
+    toast('Error ElevenLabs: ' + err.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🎙 Escuchar';
+  }
+}
+
+// ── Keyboard shortcuts ────────────────
+document.addEventListener('keydown', e => {
+  if (e.metaKey || e.ctrlKey) {
+    if (e.key === 's') { e.preventDefault(); savePost(); }
+    if (e.key === 'Enter') { e.preventDefault(); createVideo(); }
+  }
+  if (e.key === 'Escape') closeModal();
+});
+
+// ── Start ─────────────────────────────
+init();
+</script>
+</body>
+</html>
