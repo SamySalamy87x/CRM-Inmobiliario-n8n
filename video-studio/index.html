@@ -743,6 +743,35 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
             <option value="OMWmRY8slGlr6mHJSqwy">🇪🇸 Gonzalo — Narrador Documental ES</option>
           </select>
         </div>
+
+        <!-- ═══ CLONAR VOZ ═══ -->
+        <div class="s-group" style="border:1px solid var(--cyan2)33;border-radius:10px;padding:12px;background:linear-gradient(135deg,#040f1a,#060d18)">
+          <div class="s-label" style="color:var(--cyan2);margin-bottom:10px">🧬 Clonar Mi Voz</div>
+          <input type="text" class="s-input" id="clone-voice-name" placeholder="Samy Salamy — Mi Voz" style="margin-bottom:8px">
+
+          <!-- Record UI -->
+          <div id="clone-rec-ui" style="display:flex;flex-direction:column;gap:8px">
+            <div style="display:flex;align-items:center;gap:8px">
+              <button id="rec-btn" class="hbtn" onclick="toggleRecord()" style="flex:1;background:var(--red)22;border-color:var(--red)55;color:var(--red)">⏺ Grabar</button>
+              <div id="rec-timer" style="font-family:'Orbitron',monospace;font-size:.9rem;color:var(--txt3);min-width:42px;text-align:right">0:00</div>
+            </div>
+            <div id="rec-bar" style="height:28px;border-radius:6px;background:#0a1520;border:1px solid var(--brd);overflow:hidden;display:none">
+              <canvas id="rec-canvas" style="width:100%;height:100%"></canvas>
+            </div>
+            <div id="rec-preview-wrap" style="display:none">
+              <audio id="rec-preview" controls style="width:100%;height:32px;accent-color:var(--cyan2)"></audio>
+            </div>
+            <div style="text-align:center;font-size:.63rem;color:var(--txt3)">— o —</div>
+            <label style="cursor:pointer">
+              <input type="file" id="clone-file" accept="audio/*" onchange="onCloneFile(this)" style="display:none">
+              <div class="hbtn" style="text-align:center;width:100%;box-sizing:border-box" onclick="document.getElementById('clone-file').click()">📁 Subir Audio</div>
+            </label>
+            <div id="clone-file-name" style="font-size:.65rem;color:var(--txt3);text-align:center;display:none"></div>
+          </div>
+
+          <button id="clone-submit-btn" class="hbtn primary" onclick="cloneVoice()" style="width:100%;margin-top:10px;box-sizing:border-box" disabled>🧬 Crear Clon de Voz</button>
+          <div id="clone-status" style="font-size:.67rem;color:var(--txt3);text-align:center;margin-top:6px;min-height:14px">Graba ≥ 30 seg o sube un audio claro sin música</div>
+        </div>
         <div class="s-group">
           <div class="s-label">📐 Formato de Video</div>
           <div class="ratio-grid">
@@ -837,6 +866,8 @@ let currentRatio = '9:16';
 let apiKey = '';
 let elKey = '';
 let elCharsUsed = 0;
+let myClonedVoiceId = '';
+let myClonedVoiceName = '';
 let videosMade = 0;
 let savedPosts = [];
 let currentPostId = null;
@@ -861,12 +892,24 @@ function loadState() {
     apiKey = s.apiKey || '';
     elKey = s.elKey || '';
     elCharsUsed = s.elCharsUsed || 0;
+    myClonedVoiceId = s.clonedVoiceId || '';
+    myClonedVoiceName = s.clonedVoiceName || '';
     videosMade = s.videosMade || 0;
     savedPosts = s.posts || [];
     document.getElementById('api-key-input').value = apiKey;
     document.getElementById('modal-api-key').value = apiKey;
     document.getElementById('modal-plan').value = currentPlan;
     document.getElementById('el-api-key').value = elKey;
+    if (myClonedVoiceId) {
+      const sel = document.getElementById('vid-voice');
+      if (!sel.querySelector(`option[value="${myClonedVoiceId}"]`)) {
+        const opt = document.createElement('option');
+        opt.value = myClonedVoiceId;
+        opt.textContent = '🧬 ' + (myClonedVoiceName || 'Mi Voz Clonada') + ' (Tu Voz)';
+        sel.insertBefore(opt, sel.firstChild);
+      }
+      sel.value = myClonedVoiceId;
+    }
     document.getElementById('author-name').value = s.authorName || 'Omar Rafael P.';
     document.getElementById('author-org').value = s.authorOrg || 'OMROSLAB';
     document.getElementById('stat-posts-saved').textContent = savedPosts.length;
@@ -880,6 +923,8 @@ function saveState() {
     apiKey,
     elKey,
     elCharsUsed,
+    clonedVoiceId: myClonedVoiceId,
+    clonedVoiceName: myClonedVoiceName,
     videosMade,
     posts: savedPosts,
     authorName: document.getElementById('author-name').value || 'Omar Rafael P.',
@@ -1261,6 +1306,164 @@ function toast(msg, type) {
   t.textContent = msg;
   t.className = 'show' + (type ? ' ' + type : '');
   setTimeout(() => t.className = '', 2800);
+}
+
+// ── Voice Cloning ─────────────────────
+let mediaRec = null, recStream = null, recChunks = [], recInterval = null, recSecs = 0;
+let cloneBlob = null; // recorded or uploaded audio blob
+
+function toggleRecord() {
+  if (mediaRec && mediaRec.state === 'recording') {
+    stopRecord();
+  } else {
+    startRecord();
+  }
+}
+
+async function startRecord() {
+  try {
+    recStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+  } catch(e) {
+    toast('Permiso de micrófono denegado', 'err'); return;
+  }
+  recChunks = [];
+  cloneBlob = null;
+  mediaRec = new MediaRecorder(recStream);
+  mediaRec.ondataavailable = e => { if (e.data.size > 0) recChunks.push(e.data); };
+  mediaRec.onstop = () => {
+    cloneBlob = new Blob(recChunks, { type: 'audio/webm' });
+    const url = URL.createObjectURL(cloneBlob);
+    document.getElementById('rec-preview').src = url;
+    document.getElementById('rec-preview-wrap').style.display = 'block';
+    document.getElementById('clone-submit-btn').disabled = false;
+    document.getElementById('clone-status').textContent = `Audio listo: ${recSecs}s grabados`;
+  };
+
+  // Visualizer
+  try {
+    const ctx = new AudioContext();
+    const src = ctx.createMediaStreamSource(recStream);
+    const anal = ctx.createAnalyser();
+    anal.fftSize = 64;
+    src.connect(anal);
+    const buf = new Uint8Array(anal.frequencyBinCount);
+    const canvas = document.getElementById('rec-canvas');
+    const c = canvas.getContext('2d');
+    document.getElementById('rec-bar').style.display = 'block';
+    function drawViz() {
+      if (!mediaRec || mediaRec.state !== 'recording') return;
+      anal.getByteFrequencyData(buf);
+      canvas.width = canvas.offsetWidth;
+      canvas.height = canvas.offsetHeight;
+      c.clearRect(0,0,canvas.width,canvas.height);
+      const bw = canvas.width / buf.length;
+      buf.forEach((v,i) => {
+        const h = (v / 255) * canvas.height;
+        c.fillStyle = `hsl(${185 + v*0.3},80%,${40+v*0.12}%)`;
+        c.fillRect(i*bw, canvas.height-h, bw-1, h);
+      });
+      requestAnimationFrame(drawViz);
+    }
+    drawViz();
+  } catch(e) {}
+
+  mediaRec.start(200);
+  recSecs = 0;
+  const btn = document.getElementById('rec-btn');
+  btn.textContent = '⏹ Detener';
+  btn.style.background = 'var(--red)44';
+  btn.style.borderColor = 'var(--red)';
+  btn.style.color = 'var(--red)';
+  recInterval = setInterval(() => {
+    recSecs++;
+    const m = Math.floor(recSecs/60), s = recSecs%60;
+    document.getElementById('rec-timer').textContent = `${m}:${s.toString().padStart(2,'0')}`;
+    document.getElementById('clone-status').textContent = `Grabando… ${recSecs}s (min 30s recomendado)`;
+  }, 1000);
+}
+
+function stopRecord() {
+  if (mediaRec && mediaRec.state === 'recording') mediaRec.stop();
+  if (recStream) recStream.getTracks().forEach(t => t.stop());
+  clearInterval(recInterval);
+  const btn = document.getElementById('rec-btn');
+  btn.textContent = '⏺ Re-grabar';
+  btn.style.background = 'var(--red)22';
+}
+
+function onCloneFile(input) {
+  const f = input.files[0];
+  if (!f) return;
+  cloneBlob = f;
+  document.getElementById('clone-file-name').textContent = f.name + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+  document.getElementById('clone-file-name').style.display = 'block';
+  document.getElementById('clone-submit-btn').disabled = false;
+  document.getElementById('clone-status').textContent = 'Archivo listo para clonar';
+  // preview uploaded
+  const url = URL.createObjectURL(f);
+  document.getElementById('rec-preview').src = url;
+  document.getElementById('rec-preview-wrap').style.display = 'block';
+}
+
+async function cloneVoice() {
+  const key = elKey || document.getElementById('el-api-key').value.trim();
+  if (!key) {
+    switchStab('settings');
+    toast('Agrega tu API key de ElevenLabs en Ajustes primero', 'err'); return;
+  }
+  if (!cloneBlob) { toast('Graba o sube un audio primero', 'err'); return; }
+
+  const name = document.getElementById('clone-voice-name').value.trim() || 'Samy Salamy — Mi Voz';
+  const btn = document.getElementById('clone-submit-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Clonando...';
+  document.getElementById('clone-status').textContent = 'Enviando audio a ElevenLabs...';
+
+  try {
+    const form = new FormData();
+    form.append('name', name);
+    form.append('description', 'Voz clonada de ' + name + ' — OMROSLAB Video Studio');
+    form.append('files', cloneBlob, 'voice-sample.webm');
+
+    const resp = await fetch('https://api.elevenlabs.io/v1/voices/add', {
+      method: 'POST',
+      headers: { 'xi-api-key': key },
+      body: form,
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err?.detail?.message || `HTTP ${resp.status}`);
+    }
+
+    const data = await resp.json();
+    const voiceId = data.voice_id;
+
+    // Add cloned voice to selector as first option and select it
+    const sel = document.getElementById('vid-voice');
+    const existing = sel.querySelector(`option[value="${voiceId}"]`);
+    if (!existing) {
+      const opt = document.createElement('option');
+      opt.value = voiceId;
+      opt.textContent = '🧬 ' + name + ' (Tu Voz)';
+      sel.insertBefore(opt, sel.firstChild);
+    }
+    sel.value = voiceId;
+
+    // Persist cloned voice
+    myClonedVoiceId = voiceId;
+    myClonedVoiceName = name;
+    saveState();
+
+    document.getElementById('clone-status').textContent = '✅ ¡Voz clonada! Seleccionada en el selector.';
+    toast('🧬 Voz "' + name + '" clonada y lista para usar', 'ok');
+    btn.textContent = '✅ Clonada';
+  } catch(err) {
+    document.getElementById('clone-status').textContent = 'Error: ' + err.message;
+    toast('Error al clonar: ' + err.message, 'err');
+    btn.disabled = false;
+    btn.textContent = '🧬 Crear Clon de Voz';
+  }
 }
 
 // ── ElevenLabs TTS ───────────────────
