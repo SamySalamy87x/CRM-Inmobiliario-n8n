@@ -376,6 +376,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
 .wv-bar{width:3px;border-radius:2px;background:var(--acc);opacity:.5;transition:height .1s}
 .wv-bar.active{animation:wv 0.8s ease-in-out infinite alternate}
 @keyframes wv{to{height:100%}}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.2}}
 
 /* Mobile tweaks */
 @media(max-width:900px){
@@ -536,8 +537,17 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
         <div id="vid-preview">
           <div class="vp-badge free" id="vp-plan-badge">Plan Free · 1 min</div>
           <div class="vp-icon">🎬</div>
-          <div class="vp-status" id="vp-status">Escribe tu guión y configura tu avatar<br>para generar el video con IA</div>
-          <button class="vp-btn" onclick="createVideo()">▶ Generar Video</button>
+          <div class="vp-status" id="vp-status">Escribe tu guión y presiona Crear Video</div>
+          <button class="vp-btn" onclick="createVideo()">▶ Crear Video</button>
+        </div>
+
+        <!-- Canvas video renderer -->
+        <div id="vid-render-wrap" style="display:none;position:relative">
+          <canvas id="vid-canvas" style="width:100%;border-radius:12px;background:#000;display:block"></canvas>
+          <div id="vid-rec-hud" style="position:absolute;top:10px;right:10px;display:flex;align-items:center;gap:6px;background:#000a;border-radius:20px;padding:4px 10px">
+            <div style="width:8px;height:8px;border-radius:50%;background:#ef4444;animation:blink 1s infinite" id="rec-dot"></div>
+            <span style="font-family:'Orbitron',monospace;font-size:.65rem;color:#fff" id="rec-hud-time">0:00</span>
+          </div>
         </div>
       </div>
 
@@ -1213,7 +1223,7 @@ function exportBlog() {
 }
 
 // ── Video creation ────────────────────
-function createVideo() {
+async function createVideo() {
   const raw = document.getElementById('script-editor').innerText || '';
   const words = countWords(raw);
   const planWords = PLANS[currentPlan].mins * WPM;
@@ -1224,38 +1234,214 @@ function createVideo() {
   }
 
   const title = document.getElementById('post-title').value || 'Video OMROSLAB';
-  document.getElementById('vp-status').innerHTML = '<div class="spin">⚙</div> Preparando guión...';
-  document.getElementById('main-create-btn').disabled = true;
+  const btn = document.getElementById('main-create-btn');
+  btn.disabled = true;
 
-  setTimeout(() => {
-    // Export as ready-to-use script file
-    const secs = Math.round((words / WPM) * 60);
-    const scriptTxt = [
-      '═══════════════════════════════════',
-      'OMROSLAB VIDEO STUDIO — GUIÓN',
-      '═══════════════════════════════════',
-      `Título:    ${title}`,
-      `Duración:  ${formatTime(secs)} aprox`,
-      `Palabras:  ${words}`,
-      `Fecha:     ${new Date().toLocaleDateString('es-MX')}`,
-      '───────────────────────────────────',
-      '',
-      raw,
-      '',
-      '───────────────────────────────────',
-      'Generado con OMROSLAB Video Studio',
-    ].join('\n');
+  // Canvas size by ratio
+  const dims = {'9:16':[1080,1920],'16:9':[1920,1080],'1:1':[1080,1080]};
+  const [W,H] = dims[currentRatio] || [1080,1920];
 
-    // Show in copyable modal
-    showScriptModal(title, scriptTxt);
+  const canvas = document.getElementById('vid-canvas');
+  canvas.width = W; canvas.height = H;
+  document.getElementById('vid-preview').style.display = 'none';
+  document.getElementById('vid-render-wrap').style.display = 'block';
 
+  // Setup MediaRecorder
+  const mimeType = ['video/webm;codecs=vp9','video/webm;codecs=vp8','video/webm']
+    .find(t => MediaRecorder.isTypeSupported(t)) || 'video/webm';
+  const stream = canvas.captureStream(30);
+  const rec = new MediaRecorder(stream, {mimeType, videoBitsPerSecond: 4_000_000});
+  const chunks = [];
+  rec.ondataavailable = e => { if (e.data.size > 0) chunks.push(e.data); };
+
+  // HUD timer
+  let recSec = 0;
+  const hudTimer = setInterval(() => {
+    recSec++;
+    document.getElementById('rec-hud-time').textContent = formatTime(recSec);
+  }, 1000);
+
+  rec.onstop = async () => {
+    clearInterval(hudTimer);
+    const blob = new Blob(chunks, {type: 'video/webm'});
+    const fname = title.replace(/[^a-zA-Z0-9\s]/g,'').replace(/\s+/g,'-') + '.webm';
+
+    // Try downloads capability first, fallback to blob URL
+    try {
+      const dlApi = typeof claude !== 'undefined' ? await claude.use('downloads') : null;
+      if (dlApi) {
+        await dlApi.save({filename: fname, data: blob});
+        toast('🎬 Video descargado: ' + fname, 'ok');
+      } else { throw new Error('no capability'); }
+    } catch {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = fname; a.click();
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+      toast('🎬 Video listo — revisa tus descargas', 'ok');
+    }
+
+    document.getElementById('vid-render-wrap').style.display = 'none';
+    document.getElementById('vid-preview').style.display = '';
+    document.getElementById('vp-status').innerHTML =
+      `✅ "${title.slice(0,28)}" · ${formatTime(recSec)}<br><span style="font-size:.68rem;color:var(--txt3)">Video WebM descargado</span>`;
+    btn.disabled = false;
     videosMade++;
     document.getElementById('stat-videos-made').textContent = videosMade;
     saveState();
-    document.getElementById('vp-status').innerHTML = `✅ Guión "${title.slice(0,28)}" listo<br><span style="font-size:.68rem;color:var(--txt3)">Cópialo y úsalo en HeyGen, CapCut, Canva…</span>`;
-    document.getElementById('main-create-btn').disabled = false;
-    toast('📄 Guión listo — cópialo desde el panel 🎬', 'ok');
-  }, 600);
+  };
+
+  rec.start(200);
+  await renderVideoFrames(canvas, raw, title, W, H);
+  rec.stop();
+}
+
+// ── Canvas video renderer ─────────────
+function renderVideoFrames(canvas, raw, title, W, H) {
+  return new Promise(resolve => {
+    const ctx = canvas.getContext('2d');
+    const paragraphs = raw.split(/\n\s*\n/).map(p => p.trim()).filter(Boolean);
+    if (!paragraphs.length) { resolve(); return; }
+
+    // Starfield
+    const stars = Array.from({length: 160}, () => ({
+      x: Math.random()*W, y: Math.random()*H,
+      r: Math.random()*1.8+.3, sp: Math.random()*.4+.1,
+      a: Math.random()*.7+.3
+    }));
+
+    // Timeline: intro(2.5s) + paragraphs + outro(2s)
+    const timeline = [{type:'intro', start:0, end:2.5}];
+    let t = 2.5;
+    for (const para of paragraphs) {
+      const dur = Math.max(2.5, (countWords(para)/WPM)*60 + .6);
+      timeline.push({type:'para', text:para, start:t, end:t+dur});
+      t += dur;
+    }
+    timeline.push({type:'outro', start:t, end:t+2});
+    const totalDur = t + 2;
+
+    let startTs = null;
+    function render(ts) {
+      if (!startTs) startTs = ts;
+      const elapsed = (ts - startTs) / 1000;
+
+      // Background
+      ctx.fillStyle = '#04070f';
+      ctx.fillRect(0, 0, W, H);
+
+      // Animated nebula glow
+      const ng = ctx.createRadialGradient(W/2, H*.6, 0, W/2, H*.6, W*.7);
+      ng.addColorStop(0, `rgba(6,182,212,${.06 + .02*Math.sin(elapsed*.4)})`);
+      ng.addColorStop(.5, 'rgba(14,165,233,.03)');
+      ng.addColorStop(1, 'transparent');
+      ctx.fillStyle = ng;
+      ctx.fillRect(0, 0, W, H);
+
+      // Stars
+      for (const s of stars) {
+        s.y += s.sp;
+        if (s.y > H) { s.y = 0; s.x = Math.random()*W; }
+        ctx.beginPath();
+        ctx.arc(s.x, s.y, s.r, 0, Math.PI*2);
+        ctx.fillStyle = `rgba(200,230,255,${s.a})`;
+        ctx.fill();
+      }
+
+      // Grid lines
+      ctx.strokeStyle = 'rgba(14,165,233,.035)';
+      ctx.lineWidth = 1;
+      for (let gx = 0; gx < W; gx += 90) {
+        ctx.beginPath(); ctx.moveTo(gx,0); ctx.lineTo(gx,H); ctx.stroke();
+      }
+      for (let gy = 0; gy < H; gy += 90) {
+        ctx.beginPath(); ctx.moveTo(0,gy); ctx.lineTo(W,gy); ctx.stroke();
+      }
+
+      // Find current segment
+      const seg = timeline.find(s => elapsed >= s.start && elapsed < s.end);
+      if (seg) {
+        const sp = (elapsed - seg.start) / (seg.end - seg.start);
+        const fadeLen = Math.min(.4, (seg.end-seg.start)*.2);
+        const fadeDur = seg.end - seg.start;
+        const alpha = Math.min(
+          Math.min(1, (elapsed - seg.start) / fadeLen),
+          Math.min(1, (seg.end - elapsed) / Math.max(.15, fadeDur*.15))
+        );
+
+        ctx.save();
+        ctx.globalAlpha = Math.max(0, alpha);
+
+        if (seg.type === 'intro' || seg.type === 'outro') {
+          // Logo
+          const logoSz = W * .06;
+          ctx.font = `900 ${logoSz}px 'Orbitron', monospace`;
+          ctx.textAlign = 'center';
+          ctx.shadowColor = '#06b6d4';
+          ctx.shadowBlur = W*.04;
+          ctx.fillStyle = '#22d3ee';
+          ctx.fillText('OMROSLAB', W/2, H*.44);
+          // Divider line
+          ctx.shadowBlur = 0;
+          const lw = W*.3, lx = W/2-lw/2;
+          const g2 = ctx.createLinearGradient(lx,0,lx+lw,0);
+          g2.addColorStop(0,'transparent'); g2.addColorStop(.5,'#0ea5e9'); g2.addColorStop(1,'transparent');
+          ctx.strokeStyle = g2; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(lx, H*.475); ctx.lineTo(lx+lw, H*.475); ctx.stroke();
+          // Title
+          ctx.font = `500 ${W*.028}px 'Inter', sans-serif`;
+          ctx.fillStyle = '#94a3b8';
+          ctx.fillText(seg.type==='intro' ? title.toUpperCase() : 'VIDEO STUDIO', W/2, H*.52);
+
+        } else {
+          // Paragraph text
+          const fs = Math.min(W*.04, 48);
+          ctx.font = `400 ${fs}px 'Inter', sans-serif`;
+          ctx.fillStyle = '#e2e8f0';
+          ctx.textAlign = 'center';
+          ctx.shadowColor = '#0ea5e9';
+          ctx.shadowBlur = 12;
+
+          // Word wrap
+          const maxW = W*.82, lh = fs*1.65;
+          const words2 = seg.text.split(/\s+/);
+          const lines = []; let line = '';
+          for (const w of words2) {
+            const test = line ? line+' '+w : w;
+            if (ctx.measureText(test).width > maxW && line) { lines.push(line); line=w; }
+            else line = test;
+          }
+          if (line) lines.push(line);
+
+          const totalH2 = lines.length * lh;
+          let ly = H/2 - totalH2/2 + fs/2;
+          for (const l of lines) { ctx.fillText(l, W/2, ly); ly += lh; }
+        }
+        ctx.restore();
+      }
+
+      // Progress bar (bottom)
+      const prog = Math.min(1, elapsed/totalDur);
+      ctx.fillStyle = 'rgba(14,165,233,.2)';
+      ctx.fillRect(0, H-10, W, 10);
+      const pbg = ctx.createLinearGradient(0,0,W*prog,0);
+      pbg.addColorStop(0,'#0ea5e9'); pbg.addColorStop(1,'#22d3ee');
+      ctx.fillStyle = pbg;
+      ctx.shadowColor = '#22d3ee'; ctx.shadowBlur = 15;
+      ctx.fillRect(0, H-10, W*prog, 10);
+      ctx.shadowBlur = 0;
+
+      // CRT scan lines
+      for (let sy = 0; sy < H; sy += 4) {
+        ctx.fillStyle = 'rgba(0,0,0,.07)';
+        ctx.fillRect(0, sy, W, 2);
+      }
+
+      if (elapsed < totalDur) requestAnimationFrame(render);
+      else resolve();
+    }
+    requestAnimationFrame(render);
+  });
 }
 
 // ── API key validation ────────────────
@@ -1537,60 +1723,69 @@ function updateElQuota() {
 
 let ttsUtterance = null;
 
+function pickBestVoice(voiceKey) {
+  const voices = speechSynthesis.getVoices();
+  if (!voices.length) return null;
+  const wantFemale = voiceKey.endsWith('-f');
+  const langPriority = {
+    'es-MX-m':['es-MX','es-419','es'], 'es-MX-f':['es-MX','es-419','es'],
+    'es-ES-m':['es-ES','es'],          'es-ES-f':['es-ES','es'],
+    'es-US-m':['es-US','es-MX','es'],
+  }[voiceKey] || ['es-MX','es-ES','es'];
+
+  const score = v => {
+    let s = 0;
+    if (/Online \(Natural\)/i.test(v.name)) s += 200;  // Microsoft neural — best quality
+    else if (/Online/i.test(v.name)) s += 80;           // Microsoft online
+    else if (/Siri|Google/i.test(v.name)) s += 60;      // Apple/Google quality
+    if (wantFemale ? /(?:female|mujer|Dalia|Paulina|Sofia|Carmen)/i.test(v.name)
+                   : /(?:male|hombre|Raúl|Raul|Pablo|Jorge|Miguel)/i.test(v.name)) s += 30;
+    return s;
+  };
+
+  for (const lang of langPriority) {
+    const pool = voices.filter(v => v.lang.replace('_','-').startsWith(lang));
+    if (pool.length) return pool.sort((a,b) => score(b)-score(a))[0];
+  }
+  return voices.find(v => /^es/i.test(v.lang)) || voices[0];
+}
+
 function generateAudio() {
   const text = document.getElementById('script-editor').innerText.trim();
   if (!text) { toast('Escribe el guión primero', 'err'); return; }
   if (!('speechSynthesis' in window)) { toast('Tu navegador no soporta TTS', 'err'); return; }
 
-  // Stop if already speaking
   if (speechSynthesis.speaking) {
     speechSynthesis.cancel();
-    const btn = document.getElementById('listen-btn');
-    btn.textContent = '🎙 Escuchar';
+    document.getElementById('listen-btn').textContent = '🎙 Escuchar';
     return;
   }
 
   const voiceKey = document.getElementById('vid-voice').value;
   const speed = parseFloat(document.getElementById('vid-speed')?.value || '1.0');
 
-  // Pick best matching voice
-  const voices = speechSynthesis.getVoices();
-  const langMap = {
-    'es-MX-m': ['es-MX','es_MX'], 'es-MX-f': ['es-MX','es_MX'],
-    'es-ES-m': ['es-ES','es_ES'], 'es-ES-f': ['es-ES','es_ES'],
-    'es-US-m': ['es-US','es_US'],
+  const doSpeak = () => {
+    const chosen = pickBestVoice(voiceKey);
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.lang = chosen?.lang || 'es-MX';
+    if (chosen) utt.voice = chosen;
+    utt.rate = speed;
+    utt.pitch = 1.0;
+
+    const btn = document.getElementById('listen-btn');
+    btn.textContent = '⏹ Detener';
+    utt.onend = utt.onerror = () => { btn.textContent = '🎙 Escuchar'; };
+    speechSynthesis.speak(utt);
+
+    const quality = chosen?.name?.includes('Online (Natural)') ? '🌟 Neural' :
+                    chosen?.name?.includes('Online') ? '⚡ Online' : '📢 Sistema';
+    toast(`${quality}: ${chosen?.name?.split(' ').slice(0,3).join(' ') || 'voz del sistema'}`, 'ok');
   };
-  const wantFemale = voiceKey.endsWith('-f');
-  const langs = langMap[voiceKey] || ['es-MX','es-ES','es'];
 
-  let chosen = null;
-  for (const lang of langs) {
-    const matches = voices.filter(v => v.lang.startsWith(lang.replace('_','-')));
-    if (!matches.length) continue;
-    chosen = matches.find(v => wantFemale
-      ? /female|mujer|woman/i.test(v.name)
-      : /male|hombre|man/i.test(v.name)
-    ) || matches[0];
-    if (chosen) break;
-  }
-  if (!chosen) {
-    chosen = voices.find(v => v.lang.startsWith('es')) || voices[0];
-  }
-
-  ttsUtterance = new SpeechSynthesisUtterance(text);
-  ttsUtterance.lang = chosen?.lang || 'es-MX';
-  if (chosen) ttsUtterance.voice = chosen;
-  ttsUtterance.rate = speed;
-  ttsUtterance.pitch = 0.95;
-
-  const btn = document.getElementById('listen-btn');
-  btn.textContent = '⏹ Detener';
-
-  ttsUtterance.onend = () => { btn.textContent = '🎙 Escuchar'; };
-  ttsUtterance.onerror = () => { btn.textContent = '🎙 Escuchar'; toast('Error de voz', 'err'); };
-
-  speechSynthesis.speak(ttsUtterance);
-  toast('🎙 Leyendo guión — ' + (chosen?.name || 'voz del sistema'), 'ok');
+  // Voices may not be loaded yet on first call
+  const voices = speechSynthesis.getVoices();
+  if (voices.length) { doSpeak(); }
+  else { speechSynthesis.onvoiceschanged = () => { speechSynthesis.onvoiceschanged = null; doSpeak(); }; }
 }
 
 // ── Keyboard shortcuts ────────────────
