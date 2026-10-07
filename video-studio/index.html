@@ -527,6 +527,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
         <div id="script-editor" contenteditable="true"
              data-ph="Escribe el guión de tu video aquí... Empieza con una apertura poderosa que enganche a tu audiencia en los primeros 5 segundos. Recuerda: habla a 130 palabras por minuto en promedio."></div>
 
+        <!-- Audio player -->
+        <div id="audio-wrap" style="display:none;padding:10px 0;border-top:1px solid var(--brd)">
+          <audio id="audio-player" controls style="width:100%;height:36px;accent-color:var(--cyan2)"></audio>
+        </div>
+
         <!-- Video preview placeholder -->
         <div id="vid-preview">
           <div class="vp-badge free" id="vp-plan-badge">Plan Free · 1 min</div>
@@ -574,6 +579,7 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
       <button class="hbtn" onclick="savePost()">💾 Guardar Post</button>
       <button class="hbtn" onclick="exportBlog()">📋 Copiar Blog</button>
       <button class="hbtn" onclick="switchView('blog')">👁 Vista Previa</button>
+      <button class="hbtn" id="listen-btn" onclick="generateAudio()" title="Escuchar guión con ElevenLabs TTS">🎙 Escuchar</button>
       <div class="spacer"></div>
       <button class="hbtn danger" onclick="newPost()">+ Nuevo Post</button>
       <button class="hbtn primary" id="main-create-btn" onclick="createVideo()">🎬 Crear Video</button>
@@ -636,6 +642,19 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
           </div>
         </div>
 
+        <div class="quota-card" style="background:linear-gradient(135deg,#0a1a2a,#071520);border-color:#0ea5e933">
+          <div class="quota-title">🎙 ElevenLabs TTS</div>
+          <div style="display:flex;align-items:baseline;gap:6px;margin:6px 0">
+            <span style="font-family:'Orbitron',monospace;font-size:1.6rem;font-weight:700;color:var(--cyan2)" id="el-chars-used">0</span>
+            <span style="font-size:.7rem;color:var(--txt3)">/ 10,000 chars/mes</span>
+          </div>
+          <div class="qbar"><div class="qbar-fill" id="el-qbar" style="width:100%;background:var(--cyan2)"></div></div>
+          <div class="quota-meta">
+            <span id="el-chars-left">10,000 disponibles</span>
+            <span id="el-status-dot" style="font-size:.65rem;color:var(--txt3)">Sin key</span>
+          </div>
+        </div>
+
         <div class="s-group">
           <div class="s-label">📊 Este Mes</div>
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
@@ -657,6 +676,11 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
           <div class="s-label">🔑 HeyGen API Key</div>
           <input type="password" class="s-input" id="api-key-input" placeholder="hg_..." oninput="validateApiKey()">
           <div style="font-size:.66rem;color:var(--txt3);margin-top:4px">Obtén tu key en app.heygen.com/settings</div>
+        </div>
+        <div class="s-group">
+          <div class="s-label">🎙 ElevenLabs API Key</div>
+          <input type="password" class="s-input" id="el-api-key" placeholder="sk_..." oninput="saveElKey()">
+          <div style="font-size:.66rem;color:var(--txt3);margin-top:4px">elevenlabs.io → Profile → API Key · <span style="color:var(--cyan2)">10,000 chars/mes gratis</span></div>
         </div>
         <div class="s-group">
           <div class="s-label">🌐 Idioma del Video</div>
@@ -708,13 +732,15 @@ body{font-family:'Inter',sans-serif;background:var(--bg);color:var(--txt);-webki
           </select>
         </div>
         <div class="s-group">
-          <div class="s-label">🎙 Voz</div>
+          <div class="s-label">🎙 Voz ElevenLabs</div>
           <select class="s-select" id="vid-voice">
-            <option value="es-mx-m1">🇲🇽 Español MX · Masculino 1</option>
-            <option value="es-mx-m2">🇲🇽 Español MX · Masculino 2</option>
-            <option value="es-es-m1">🇪🇸 Español ES · Masculino</option>
-            <option value="es-mx-f1">🇲🇽 Español MX · Femenino</option>
-            <option value="en-us-m1">🇺🇸 English US · Male</option>
+            <option value="69MPtsbmUppiEyKo3zhT">🌌 Joan — Documental / Espacio</option>
+            <option value="tbFPXYL9YuPVdXNrQVGj">🎙 Christian L — Narrador Storyteller</option>
+            <option value="hLWSpwRIXvafYWP2GPET">📚 Diego — Educativo / Calmo</option>
+            <option value="OPOVZvoMdH3Lfn5KgEiE">🇲🇽 Helel Petrov — Autoridad Estratégica MX</option>
+            <option value="kDzST3FMx0eYtPSCuBKd">⚡ Ricardo — Joven / Energético MX</option>
+            <option value="SzatlCk7ZMTGly6rtgt4">🎤 Gil — Natural MX</option>
+            <option value="OMWmRY8slGlr6mHJSqwy">🇪🇸 Gonzalo — Narrador Documental ES</option>
           </select>
         </div>
         <div class="s-group">
@@ -809,6 +835,8 @@ const WPM = 130; // words per minute speaking rate
 let currentPlan = 'free';
 let currentRatio = '9:16';
 let apiKey = '';
+let elKey = '';
+let elCharsUsed = 0;
 let videosMade = 0;
 let savedPosts = [];
 let currentPostId = null;
@@ -823,6 +851,7 @@ function init() {
   setupEditor();
   loadDraft();
   if(apiKey) validateApiKey();
+  updateElQuota();
 }
 
 function loadState() {
@@ -830,11 +859,14 @@ function loadState() {
     const s = JSON.parse(localStorage.getItem('vs-state') || '{}');
     currentPlan = s.plan || 'free';
     apiKey = s.apiKey || '';
+    elKey = s.elKey || '';
+    elCharsUsed = s.elCharsUsed || 0;
     videosMade = s.videosMade || 0;
     savedPosts = s.posts || [];
     document.getElementById('api-key-input').value = apiKey;
     document.getElementById('modal-api-key').value = apiKey;
     document.getElementById('modal-plan').value = currentPlan;
+    document.getElementById('el-api-key').value = elKey;
     document.getElementById('author-name').value = s.authorName || 'Omar Rafael P.';
     document.getElementById('author-org').value = s.authorOrg || 'OMROSLAB';
     document.getElementById('stat-posts-saved').textContent = savedPosts.length;
@@ -846,6 +878,8 @@ function saveState() {
   const s = {
     plan: currentPlan,
     apiKey,
+    elKey,
+    elCharsUsed,
     videosMade,
     posts: savedPosts,
     authorName: document.getElementById('author-name').value || 'Omar Rafael P.',
@@ -1227,6 +1261,84 @@ function toast(msg, type) {
   t.textContent = msg;
   t.className = 'show' + (type ? ' ' + type : '');
   setTimeout(() => t.className = '', 2800);
+}
+
+// ── ElevenLabs TTS ───────────────────
+function saveElKey() {
+  elKey = document.getElementById('el-api-key').value.trim();
+  saveState();
+  updateElQuota();
+}
+
+function updateElQuota() {
+  const EL_FREE = 10000;
+  const used = elCharsUsed;
+  const left = Math.max(0, EL_FREE - used);
+  const pct = Math.min(100, (used / EL_FREE) * 100);
+  document.getElementById('el-chars-used').textContent = used.toLocaleString();
+  document.getElementById('el-chars-left').textContent = left.toLocaleString() + ' disponibles';
+  const bar = document.getElementById('el-qbar');
+  bar.style.width = (100 - pct) + '%';
+  bar.style.background = pct > 90 ? 'var(--red)' : pct > 70 ? 'var(--amber)' : 'var(--cyan2)';
+  document.getElementById('el-status-dot').textContent = elKey ? '🟢 Conectado' : 'Sin key';
+  document.getElementById('el-status-dot').style.color = elKey ? 'var(--green2)' : 'var(--txt3)';
+}
+
+async function generateAudio() {
+  const text = document.getElementById('script-editor').innerText.trim();
+  const voiceId = document.getElementById('vid-voice').value;
+  const key = elKey || document.getElementById('el-api-key').value.trim();
+
+  if (!text) { toast('Escribe el guión primero', 'err'); return; }
+  if (!key) {
+    switchStab('settings');
+    toast('Agrega tu API key de ElevenLabs en Ajustes ⚙', 'err');
+    return;
+  }
+  if (elCharsUsed + text.length > 10000) {
+    toast(`Sin cuota: necesitas ${text.length} chars, quedan ${10000 - elCharsUsed}`, 'err');
+    return;
+  }
+
+  const btn = document.getElementById('listen-btn');
+  btn.disabled = true;
+  btn.textContent = '⏳ Generando...';
+
+  try {
+    const speed = parseFloat(document.getElementById('vid-speed')?.value || '1.0');
+    const resp = await fetch(`https://api.elevenlabs.io/v1/text-to-speech/${voiceId}`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json', 'xi-api-key': key },
+      body: JSON.stringify({
+        text,
+        model_id: 'eleven_multilingual_v2',
+        voice_settings: { stability: 0.5, similarity_boost: 0.75, speed },
+      }),
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json().catch(() => ({}));
+      throw new Error(err?.detail?.message || `HTTP ${resp.status}`);
+    }
+
+    const blob = await resp.blob();
+    const url = URL.createObjectURL(blob);
+    const player = document.getElementById('audio-player');
+    player.src = url;
+    document.getElementById('audio-wrap').style.display = 'block';
+    player.play();
+
+    elCharsUsed = Math.min(10000, elCharsUsed + text.length);
+    elKey = key;
+    saveState();
+    updateElQuota();
+    toast('🎙 Audio listo — escuchando', 'ok');
+  } catch(err) {
+    toast('Error ElevenLabs: ' + err.message, 'err');
+  } finally {
+    btn.disabled = false;
+    btn.textContent = '🎙 Escuchar';
+  }
 }
 
 // ── Keyboard shortcuts ────────────────
